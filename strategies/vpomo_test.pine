@@ -1,0 +1,26 @@
+﻿// © vpomo
+
+//@version=5
+strategy("My Strategy", overlay=true)
+
+// Create Indicator's
+shortSMA = ta.sma(close, 10)
+longSMA = ta.sma(close, 30)
+rsi = ta.rsi(close, 14)
+
+// Specify crossover conditions
+longCondition = ta.crossover(shortSMA, longSMA)
+shortCondition = ta.crossunder(shortSMA, longSMA)
+
+// Execute trade if condition is True
+if (longCondition)
+    if rsi > 50
+        strategy.entry("long", strategy.long, 100)
+
+if (shortCondition)
+    if rsi < 50
+        strategy.entry("short", strategy.short, 100)
+
+// Plot Moving Average's to chart
+plot(shortSMA)
+plot(longSMA, color=color.black)
