@@ -47,14 +47,18 @@ func ConnectDB() {
 	db = conn
 
 	if err != nil {
-		blogger.Errorf("Failed to connect to database. \n", err)
+		blogger.Errorf("Failed to connect to database: %s", err)
 	}
 
 	blogger.Infoln("connected")
 
 	blogger.Infoln("running migrations")
-	conn.Debug().AutoMigrate(&Account{}, &Contact{}, &TradingViewSignal{}, &SignalObject{})
-	//conn.Debug().AutoMigrate(&SignalObject{}, &Bot{})
+	err = conn.Debug().AutoMigrate(&Account{}, &Contact{}, &TradingViewSignalReceive{}, &Signal{})
+	err = conn.Debug().AutoMigrate(&Bot{})
+	if err != nil {
+		blogger.Errorf("Failed to migrate database: %s", err)
+	}
+
 }
 
 func GetDB() *gorm.DB {

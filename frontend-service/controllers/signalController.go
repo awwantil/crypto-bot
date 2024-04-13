@@ -17,7 +17,7 @@ var (
 
 var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 
-	signal := &models.TradingViewSignal{}
+	signal := &models.TradingViewSignalReceive{}
 
 	err := json.NewDecoder(r.Body).Decode(signal)
 	if err != nil {
@@ -29,9 +29,9 @@ var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, u.Message(true, "The signal was received"))
 }
 
-var CreateSignalObject = func(w http.ResponseWriter, r *http.Request) {
+var CreateSignal = func(w http.ResponseWriter, r *http.Request) {
 
-	signal := &models.SignalObject{}
+	signal := &models.Signal{}
 
 	err := json.NewDecoder(r.Body).Decode(signal)
 	if err != nil {

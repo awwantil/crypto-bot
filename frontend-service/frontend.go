@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/controllers"
+	"okx-bot/frontend-service/models"
 	"os"
 	"os/signal"
 	"syscall"
@@ -35,15 +36,17 @@ func main() {
 	router.HandleFunc("/api/contacts/new", controllers.CreateContact).Methods("POST")
 	router.HandleFunc("/api/me/contacts", controllers.GetContactsFor).Methods("GET") //  user/2/contacts
 
-	router.HandleFunc("/api/signal/receive", controllers.ReceiveSignal).Methods("POST")     //  user/2/contacts
-	router.HandleFunc("/api/signal/create", controllers.CreateSignalObject).Methods("POST") //  user/2/contacts
+	router.HandleFunc("/api/signal/receive", controllers.ReceiveSignal).Methods("POST") //  user/2/contacts
+	router.HandleFunc("/api/signal/create", controllers.CreateSignal).Methods("POST")   //  user/2/contacts
+
+	router.HandleFunc("/api/bot/create", controllers.CreateBot).Methods("POST") //  user/2/contacts
 
 	router.Use(app.JwtAuthentication) //attach JWT auth middleware
 	//router.NotFoundHandler = http.NotFoundHandler()
 
-	//go func() {
-	//	models.ConnectDB()
-	//}()
+	go func() {
+		models.ConnectDB()
+	}()
 
 	go func() {
 		app.InitOkxApi()

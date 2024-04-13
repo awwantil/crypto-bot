@@ -6,7 +6,7 @@ import (
 	u "okx-bot/frontend-service/utils"
 )
 
-type TradingViewSignal struct {
+type TradingViewSignalReceive struct {
 	gorm.Model
 	IdOrder                string `json:"idOrder"`
 	Action                 string `json:"action"`
@@ -20,14 +20,16 @@ type TradingViewSignal struct {
 	Amount                 string `json:"amount"`
 }
 
-type SignalObject struct {
+type Signal struct {
 	gorm.Model
-	SignalId     string `gorm:"uniqueIndex"`
+	ID           uint   `gorm:"primary_key"`
+	Code         string `gorm:"uniqueIndex"`
 	NameToken    string `json:"nameToken"`
 	TimeInterval string `json:"timeInterval"`
+	Bot          []Bot  `gorm:"foreignKey:SignalRefer"`
 }
 
-func (tradingViewSignal *TradingViewSignal) Save() map[string]interface{} {
+func (tradingViewSignal *TradingViewSignalReceive) Save() map[string]interface{} {
 
 	GetDB().Create(tradingViewSignal)
 
@@ -36,14 +38,14 @@ func (tradingViewSignal *TradingViewSignal) Save() map[string]interface{} {
 	return response
 }
 
-func (signalObject *SignalObject) Create(nameToken string, interval string) map[string]interface{} {
-	signalObject.SignalId = nanoid.New()
-	signalObject.NameToken = nameToken
-	signalObject.TimeInterval = interval
+func (signal *Signal) Create(nameToken string, interval string) map[string]interface{} {
+	signal.Code = nanoid.New()
+	signal.NameToken = nameToken
+	signal.TimeInterval = interval
 
-	GetDB().Create(signalObject)
+	GetDB().Create(signal)
 
-	response := u.Message(true, "SignalObject has been created")
-	response["signalObject"] = signalObject
+	response := u.Message(true, "Signal has been created")
+	response["signal"] = signal
 	return response
 }
