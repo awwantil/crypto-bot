@@ -13,7 +13,7 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v4
       - name: docker-compose
-        run: docker-compose up -d
+        run: docker compose up -d
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_NAME: ${{ secrets.DB_NAME }}
