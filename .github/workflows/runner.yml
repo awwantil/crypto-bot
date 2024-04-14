@@ -11,6 +11,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Run Container
+        run: docker compose up -d --build
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_NAME: ${{ secrets.DB_NAME }}
@@ -19,11 +21,6 @@ jobs:
           okx_api_passphrase: ${{ secrets.okx_api_passphrase }}
           okx_api_key: ${{ secrets.okx_api_key }}
           okx_api_secret_key: ${{ secrets.okx_api_secret_key }}
-
-      - name: Run Container
-        run: docker compose up -d --build
-        env:
-          TOKEN: ${{ secrets.TOKEN }}
 
       - name: Cleanup Unused Images
         run: docker image prune -f
