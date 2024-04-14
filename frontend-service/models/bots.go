@@ -70,10 +70,18 @@ func (bot *Bot) Create(codeId string, initialAmount float64) map[string]interfac
 	return response
 }
 
-func (bot *Bot) Delete(id uint) map[string]interface{} {
+func (bot *Bot) Delete() map[string]interface{} {
 
 	db.Delete(&bot)
 
 	response := u.Message(true, "Bot has been deleted")
 	return response
+}
+
+func Find(botDeleteRequest BotDeleteRequest) Bot {
+	var foundBot = Bot{}
+	db.Where("id = ?", botDeleteRequest.Id).First(&foundBot)
+	logger.Infoln("Found bot: %v", foundBot)
+
+	return foundBot
 }

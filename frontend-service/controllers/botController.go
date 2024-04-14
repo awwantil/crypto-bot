@@ -34,13 +34,10 @@ var DeleteBot = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var foundBot = models.Bot{}
-	db.Where("id = ?", botDeleteRequest.).First(&foundBot)
+	foundBot := models.Find(*botDeleteRequest)
+	foundBot.Delete()
 
-	logger.Infoln("foundBot", foundBot)
-
-	resp := bot.Delete(botRequest.CodeSignalId, botRequest.InitialAmount)
-	u.Respond(w, resp)
+	u.Respond(w, u.Message(true, "Success delete bot"))
 }
 
 var GetBots = func(w http.ResponseWriter, r *http.Request) {
