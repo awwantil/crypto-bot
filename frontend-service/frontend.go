@@ -38,8 +38,10 @@ func main() {
 
 	router.HandleFunc("/api/signal/receive", controllers.ReceiveSignal).Methods("POST") //  user/2/contacts
 	router.HandleFunc("/api/signal/create", controllers.CreateSignal).Methods("POST")   //  user/2/contacts
+	router.HandleFunc("/api/signal/bots", controllers.GetBots).Methods("GET")           //  user/2/contacts
 
-	router.HandleFunc("/api/bot/create", controllers.CreateBot).Methods("POST") //  user/2/contacts
+	router.HandleFunc("/api/bot/create", controllers.CreateBot).Methods("POST")   //  user/2/contacts
+	router.HandleFunc("/api/bot/delete", controllers.DeleteBot).Methods("DELETE") //  user/2/contacts
 
 	router.Use(app.JwtAuthentication) //attach JWT auth middleware
 	//router.NotFoundHandler = http.NotFoundHandler()

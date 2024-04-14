@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/aidarkhanov/nanoid"
 	"gorm.io/gorm"
 	u "okx-bot/frontend-service/utils"
@@ -26,7 +27,7 @@ type Signal struct {
 	Code         string `gorm:"uniqueIndex"`
 	NameToken    string `json:"nameToken"`
 	TimeInterval string `json:"timeInterval"`
-	Bot          []Bot  `gorm:"foreignKey:SignalRefer"`
+	Bots         []Bot  `gorm:"foreignKey:SignalRefer"`
 }
 
 func (tradingViewSignal *TradingViewSignalReceive) Save() map[string]interface{} {
@@ -48,4 +49,16 @@ func (signal *Signal) Create(nameToken string, interval string) map[string]inter
 	response := u.Message(true, "Signal has been created")
 	response["signal"] = signal
 	return response
+}
+
+func GetBots(signalCodeId string) []Bot {
+	findSignal := &Signal{}
+
+	err := GetDB().Table("signals").Where("code = ?", signalCodeId).Preload("Bots").Find(&findSignal).Error
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	return findSignal.Bots
 }

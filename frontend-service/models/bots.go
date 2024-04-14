@@ -29,10 +29,13 @@ type Bot struct {
 	//Deals     []Deal       `json:"deals" gorm:"foreignKey:UserRefer"`
 }
 
-type BotRequest struct {
-	gorm.Model
+type BotCreateRequest struct {
 	InitialAmount float64 `json:"initialAmount"`
 	CodeSignalId  string  `json:"codeSignalId"`
+}
+
+type BotDeleteRequest struct {
+	Id string `json:"id"`
 }
 
 var (
@@ -52,18 +55,25 @@ func (index BotStatus) EnumIndex() int {
 
 func (bot *Bot) Create(codeId string, initialAmount float64) map[string]interface{} {
 	var signal = Signal{Code: codeId}
-	db.First(&signal)
+	db.Where("code = ?", codeId).First(&signal)
 
 	logger.Infoln("signal", signal)
 
 	bot.Status = Created
 	bot.InitialAmount = initialAmount
-	//GetDB().Create(bot)
 
-	signal.Bot = append(signal.Bot, *bot)
+	signal.Bots = append(signal.Bots, *bot)
 	db.Save(&signal)
 
 	response := u.Message(true, "Bot has been created")
 	response["bot"] = bot
+	return response
+}
+
+func (bot *Bot) Delete(id uint) map[string]interface{} {
+
+	db.Delete(&bot)
+
+	response := u.Message(true, "Bot has been deleted")
 	return response
 }
