@@ -24,6 +24,6 @@ COPY --from=builder /build/backend /build/backend
 
 #COPY --from=builder ./build/.env /build/.env
 
-EXPOSE 8050
+EXPOSE 8020
 
 CMD ["/build/backend"]
