@@ -31,7 +31,7 @@ func main() {
 	router.HandleFunc("/", controllers2.Info).Methods("GET")
 
 	go func() {
-		port := "8050"
+		port := "8020"
 		err := http.ListenAndServe(":"+port, router)
 		if err != nil {
 			logger.Error(err)
