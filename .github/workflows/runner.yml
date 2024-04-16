@@ -21,4 +21,4 @@ jobs:
           okx_api_passphrase: ${{ secrets.okx_api_passphrase }}
           okx_api_key: ${{ secrets.okx_api_key }}
           okx_api_secret_key: ${{ secrets.okx_api_secret_key }}
-        run: docker compose rm && docker compose up -d
+        run: docker compose build && docker compose up -d

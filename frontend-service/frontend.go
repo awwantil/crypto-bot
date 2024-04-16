@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/controllers"
+	"okx-bot/frontend-service/models"
 	"os"
 	"os/signal"
 	"syscall"
@@ -29,9 +30,6 @@ func main() {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
 	logger.Info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-	dbName := os.Getenv("DB_NAME")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	logger.Infof("dbName: %s, dbPassword: %s\n", dbName, dbPassword)
 
 	router := mux.NewRouter()
 
@@ -51,7 +49,7 @@ func main() {
 	//router.NotFoundHandler = http.NotFoundHandler()
 
 	go func() {
-		//models.ConnectDB()
+		models.ConnectDB()
 	}()
 
 	go func() {
