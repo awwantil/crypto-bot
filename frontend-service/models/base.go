@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,11 +19,11 @@ var db *gorm.DB
 func ConnectDB() {
 	blogger.Infoln("Connecting to DB")
 
-	e := godotenv.Load()
-	if e != nil {
-		fmt.Print(e)
-	}
-	logger.Info("2 - !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	//e := godotenv.Load()
+	//if e != nil {
+	//	fmt.Print(e)
+	//}
+	logger.Info("3 - !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 	dbName := os.Getenv("DB_NAME")
 	dbPassword := os.Getenv("DB_PASSWORD")
