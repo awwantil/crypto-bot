@@ -12,7 +12,7 @@ COPY . .
 
 RUN go build -trimpath -o backend ./backend-service/backend.go
 
-COPY ./.env ./build/.env
+#COPY ./.env ./build/.env
 
 FROM alpine
 
@@ -22,7 +22,7 @@ WORKDIR /build
 
 COPY --from=builder /build/backend /build/backend
 
-COPY --from=builder ./build/.env /build/.env
+#COPY --from=builder ./build/.env /build/.env
 
 EXPOSE 8020
 

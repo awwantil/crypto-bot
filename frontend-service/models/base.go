@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,10 +19,10 @@ var db *gorm.DB
 func ConnectDB() {
 	blogger.Infoln("Connecting to DB")
 
-	e := godotenv.Load()
-	if e != nil {
-		fmt.Print(e)
-	}
+	//e := godotenv.Load()
+	//if e != nil {
+	//	fmt.Print(e)
+	//}
 
 	hostName := os.Getenv("DB_HOST")
 	if os.Getenv("NODE_ENV") == "dev" {

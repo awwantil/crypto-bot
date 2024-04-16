@@ -31,6 +31,7 @@ func main() {
 
 	dbName := os.Getenv("DB_NAME")
 	dbPassword := os.Getenv("DB_PASSWORD")
+	logger.Info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 	logger.Infof("dbName: %s, dbPassword: %s\n", dbName, dbPassword)
 
 	router := mux.NewRouter()
