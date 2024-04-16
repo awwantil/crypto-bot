@@ -10,12 +10,9 @@ jobs:
     environment: production
 
     steps:
-      - run: env
-      - run: echo $DB_NAME
       - name: checkout repo
         uses: actions/checkout@v4
       - name: docker-compose
-        run: docker compose kill && docker compose rm && docker compose up -d
         env:
           DB_HOST: ${{ secrets.DB_HOST }}
           DB_NAME: $DB_NAME
@@ -24,3 +21,4 @@ jobs:
           okx_api_passphrase: ${{ secrets.okx_api_passphrase }}
           okx_api_key: ${{ secrets.okx_api_key }}
           okx_api_secret_key: ${{ secrets.okx_api_secret_key }}
+        run: docker compose kill && docker compose rm && docker compose up -d
