@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
+
       - name: docker-compose
         run: docker compose kill && docker compose rm && docker compose up -d
         env:
