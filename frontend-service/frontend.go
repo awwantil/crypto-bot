@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/controllers"
-	"okx-bot/frontend-service/models"
 	"os"
 	"os/signal"
 	"syscall"
@@ -29,9 +28,9 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
+	logger.Info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 	dbName := os.Getenv("DB_NAME")
 	dbPassword := os.Getenv("DB_PASSWORD")
-	logger.Info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 	logger.Infof("dbName: %s, dbPassword: %s\n", dbName, dbPassword)
 
 	router := mux.NewRouter()
@@ -52,16 +51,16 @@ func main() {
 	//router.NotFoundHandler = http.NotFoundHandler()
 
 	go func() {
-		models.ConnectDB()
+		//models.ConnectDB()
 	}()
 
 	go func() {
 		app.InitOkxApi()
 		//app.StartDeal("SOL-USDT", "short")
-		resp1, resp2, err := app.GetApi().Isolated.GetAccount("SOL")
-		logger.Info("err: ", err)
-		logger.Info("resp1: ", resp1)
-		logger.Info("resp2: ", string(resp2))
+		//resp1, resp2, err := app.GetApi().Isolated.GetAccount("SOL")
+		//logger.Info("err: ", err)
+		//logger.Info("resp1: ", resp1)
+		//logger.Info("resp2: ", string(resp2))
 		//1345253813988876288
 
 		//opts := model.OptionParameter{
