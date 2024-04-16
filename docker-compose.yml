@@ -12,7 +12,7 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       okx_api_passphrase: ${okx_api_passphrase}
-      okx_api_key: ${okx_api_key}
+      OKX_API_KEY: ${OKX_API_KEY}
       okx_api_secret_key: ${okx_api_secret_key}
     networks:
       - postgres
