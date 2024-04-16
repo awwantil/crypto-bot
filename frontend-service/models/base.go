@@ -24,6 +24,7 @@ func ConnectDB() {
 	if e != nil {
 		fmt.Print(e)
 	}
+	logger.Info("2 - !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 	dbName := os.Getenv("DB_NAME")
 	dbPassword := os.Getenv("DB_PASSWORD")
