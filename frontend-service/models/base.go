@@ -24,7 +24,7 @@ func ConnectDB() {
 	//	fmt.Print(e)
 	//}
 
-	logger.Info("***** 2-3 *****")
+	logger.Info("***** 3-3 *****")
 
 	dbHost := os.Getenv("DB_HOST")
 	logger.Info("dbHost", dbHost)
