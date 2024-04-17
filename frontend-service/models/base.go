@@ -30,7 +30,7 @@ func ConnectDB() {
 	logger.Info("nodeEnv", nodeEnv)
 
 	dsn := fmt.Sprintf(
-		"host=db user=%s password=%s dbname=%s port=5432 sslmode=disable",
+		"host=127.0.0.1 user=%s password=%s dbname=%s port=5432 sslmode=disable",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
@@ -43,17 +43,16 @@ func ConnectDB() {
 
 	if err != nil {
 		blogger.Errorf("Failed to connect to database: %s", err)
+	} else {
+		blogger.Infoln("connected")
+
+		blogger.Infoln("running migrations")
+		err = conn.Debug().AutoMigrate(&Account{}, &Contact{}, &TradingViewSignalReceive{}, &Signal{})
+		err = conn.Debug().AutoMigrate(&Bot{})
+		if err != nil {
+			blogger.Errorf("Failed to migrate database: %s", err)
+		}
 	}
-
-	blogger.Infoln("connected")
-
-	blogger.Infoln("running migrations")
-	err = conn.Debug().AutoMigrate(&Account{}, &Contact{}, &TradingViewSignalReceive{}, &Signal{})
-	err = conn.Debug().AutoMigrate(&Bot{})
-	if err != nil {
-		blogger.Errorf("Failed to migrate database: %s", err)
-	}
-
 }
 
 func GetDB() *gorm.DB {
