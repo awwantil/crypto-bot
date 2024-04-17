@@ -26,6 +26,9 @@ func ConnectDB() {
 	tokenA := os.Getenv("TOKEN_PASSWORD")
 	logger.Info("tokenA", tokenA)
 
+	nodeEnv := os.Getenv("NODE_ENV")
+	logger.Info("nodeEnv", nodeEnv)
+
 	dsn := fmt.Sprintf(
 		"host=localhost user=%s password=%s dbname=%s port=5432 sslmode=disable",
 		os.Getenv("DB_USER"),
