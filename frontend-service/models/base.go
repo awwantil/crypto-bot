@@ -23,23 +23,11 @@ func ConnectDB() {
 	//if e != nil {
 	//	fmt.Print(e)
 	//}
-	logger.Info("5 - !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
-	dbName := os.Getenv("DB_NAME")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	logger.Infof("dbName: %s, dbPassword: %s\n", dbName, dbPassword)
-
-	hostName := os.Getenv("DB_HOST")
-	if os.Getenv("NODE_ENV") == "dev" {
-		hostName = "localhost"
-	} else {
-		blogger.Infoln("Waiting 5 second ...")
-		//time.Sleep(5 * time.Second)
-	}
+	logger.Info("7 - !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable",
-		hostName,
+		os.Getenv("DB_HOST"),
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
