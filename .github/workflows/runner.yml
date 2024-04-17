@@ -13,4 +13,12 @@ jobs:
       - name: checkout repo
         uses: actions/checkout@v4
       - name: docker-compose
+        env:
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST}}
+          okx_api_passphrase: ${{ secrets.okx_api_passphrase }}
+          okx_api_key: ${{ secrets.okx_api_key }}
+          okx_api_secret_key: ${{ secrets.okx_api_secret_key }}
         run: docker compose build && docker compose up -d
