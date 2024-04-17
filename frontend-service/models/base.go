@@ -24,13 +24,13 @@ func ConnectDB() {
 	//	fmt.Print(e)
 	//}
 	tokenA := os.Getenv("TOKEN_PASSWORD")
-	logger.Info("tokenA", tokenA)
+	logger.Info("16 = tokenA", tokenA)
 
 	nodeEnv := os.Getenv("NODE_ENV")
 	logger.Info("nodeEnv", nodeEnv)
 
 	dsn := fmt.Sprintf(
-		"host=localhost user=%s password=%s dbname=%s port=5432 sslmode=disable",
+		"host=db user=%s password=%s dbname=%s port=5432 sslmode=disable",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
