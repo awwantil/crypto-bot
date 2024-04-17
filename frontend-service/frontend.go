@@ -29,8 +29,6 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
-	logger.Info("1 - !!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
 	router := mux.NewRouter()
 
 	router.HandleFunc("/api/user/new", controllers.CreateAccount).Methods("POST")
@@ -53,7 +51,7 @@ func main() {
 	}()
 
 	go func() {
-		app.InitOkxApi()
+		//app.InitOkxApi()
 		//app.StartDeal("SOL-USDT", "short")
 		//resp1, resp2, err := app.GetApi().Isolated.GetAccount("SOL")
 		//logger.Info("err: ", err)
