@@ -23,12 +23,12 @@ func ConnectDB() {
 	//if e != nil {
 	//	fmt.Print(e)
 	//}
-	prodHost := os.Getenv("DB_HOST")
-	logger.Infof("11 - !!!!!!!!!!!!!!!!!!!!!!!!!!!! %s", prodHost)
+	prodHost := os.Getenv("DB_PROD_HOST")
+	logger.Infof("12 - !!!!!!!!!!!!!!!!!!!!!!!!!!!! %s", prodHost)
 
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable",
-		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PROD_HOST"),
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
