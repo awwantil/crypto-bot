@@ -9,4 +9,5 @@ type Deal struct {
 	gorm.Model
 	StartTime time.Time `json:"startTime"`
 	EndTime   time.Time `json:"endTime"`
+	Amount    string    `json:"amount"`
 }

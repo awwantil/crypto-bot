@@ -25,7 +25,7 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 
 var DeleteBot = func(w http.ResponseWriter, r *http.Request) {
 
-	botDeleteRequest := &models.BotDeleteRequest{}
+	botDeleteRequest := &models.BotWithIdRequest{}
 
 	err := json.NewDecoder(r.Body).Decode(botDeleteRequest)
 	if err != nil {

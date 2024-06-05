@@ -34,7 +34,7 @@ type BotCreateRequest struct {
 	CodeSignalId  string  `json:"codeSignalId"`
 }
 
-type BotDeleteRequest struct {
+type BotWithIdRequest struct {
 	Id string `json:"id"`
 }
 
@@ -61,6 +61,7 @@ func (bot *Bot) Create(codeId string, initialAmount float64) map[string]interfac
 
 	bot.Status = Created
 	bot.InitialAmount = initialAmount
+	bot.StartTime = time.Now()
 
 	signal.Bots = append(signal.Bots, *bot)
 	db.Save(&signal)
@@ -78,9 +79,9 @@ func (bot *Bot) Delete() map[string]interface{} {
 	return response
 }
 
-func Find(botDeleteRequest BotDeleteRequest) Bot {
+func Find(botIdRequest BotWithIdRequest) Bot {
 	var foundBot = Bot{}
-	db.Where("id = ?", botDeleteRequest.Id).First(&foundBot)
+	db.Where("id = ?", botIdRequest.Id).First(&foundBot)
 	logger.Infoln("Found bot: %v", foundBot)
 
 	return foundBot

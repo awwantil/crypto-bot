@@ -42,3 +42,10 @@ var CreateSignal = func(w http.ResponseWriter, r *http.Request) {
 	resp := signal.Create(signal.NameToken, signal.TimeInterval)
 	u.Respond(w, resp)
 }
+
+func startDeal(signalCode string) {
+	bots := models.GetBots(signalCode)
+	for _, bot := range bots {
+		logger.Infof("start bot's deal with id %d", bot.ID)
+	}
+}
