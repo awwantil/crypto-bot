@@ -26,7 +26,7 @@ type Bot struct {
 	InitialAmount float64   `json:"initialAmount"`
 	CurrentAmount float64   `json:"currentAmount"`
 	SignalRefer   uint
-	//Deals     []Deal       `json:"deals" gorm:"foreignKey:UserRefer"`
+	Deals         []Deal `json:"deals" gorm:"foreignKey:BotRefer"`
 }
 
 type BotCreateRequest struct {
@@ -85,4 +85,9 @@ func Find(botIdRequest BotWithIdRequest) Bot {
 	logger.Infoln("Found bot: %v", foundBot)
 
 	return foundBot
+}
+
+func (bot *Bot) Update(column string) bool {
+	GetDB().Update(column, bot)
+	return true
 }

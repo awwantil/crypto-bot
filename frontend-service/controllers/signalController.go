@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
+	"time"
 )
 
 var (
@@ -13,6 +14,11 @@ var (
 		"app":       "okx-bot",
 		"component": "app.signal-controllers",
 	})
+)
+
+const (
+	SELL string = "sell"
+	BUY  string = "buy"
 )
 
 var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
@@ -26,6 +32,14 @@ var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	signal.Save()
+
+	if signal.Action == BUY {
+		startDeal(signal.SignalToken)
+	}
+	if signal.Action == SELL {
+		endDeal(signal.SignalToken)
+	}
+
 	u.Respond(w, u.Message(true, "The signal was received"))
 }
 
@@ -47,5 +61,27 @@ func startDeal(signalCode string) {
 	bots := models.GetBots(signalCode)
 	for _, bot := range bots {
 		logger.Infof("start bot's deal with id %d", bot.ID)
+		deal := models.FindByStatus(bot.ID, models.DealStarted)
+		if deal.ID == 0 {
+			deal := new(models.Deal)
+			deal.StartTime = time.Now()
+			startAmount := float64(23)
+			deal.Start(bot.ID, startAmount)
+		} else {
+			endAmount := float64(12)
+			deal.Failure(endAmount)
+		}
+	}
+}
+
+func endDeal(signalCode string) {
+	bots := models.GetBots(signalCode)
+	for _, bot := range bots {
+		logger.Infof("end bot's deal with id %d", bot.ID)
+		deal := models.FindByStatus(bot.ID, models.DealStarted)
+		if deal.ID > 0 {
+			endAmount := float64(23)
+			deal.Finish(endAmount)
+		}
 	}
 }

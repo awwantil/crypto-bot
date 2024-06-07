@@ -5,15 +5,9 @@ import (
 	"time"
 )
 
-type Stat struct {
-	gorm.Model
-	StatTime time.Time `json:"statTime"`
-	Value    float64   `json:"value"`
-}
-
 type DealStats struct {
 	gorm.Model
-	StartTime time.Time `json:"startTime"`
-	EndTime   time.Time `json:"endTime"`
-	Stats     []Stat    `json:"stats"`
+	CurrentTime time.Time `json:"startTime"`
+	Value       float64   `json:"value"`
+	DealRefer   uint      `json:"dealRefer"`
 }
