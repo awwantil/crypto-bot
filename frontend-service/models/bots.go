@@ -25,8 +25,9 @@ type Bot struct {
 	Status        BotStatus `json:"status"`
 	InitialAmount float64   `json:"initialAmount"`
 	CurrentAmount float64   `json:"currentAmount"`
-	SignalRefer   uint
-	Deals         []Deal `json:"deals" gorm:"foreignKey:BotRefer"`
+	SignalRefer   uint      `json:"signalRefer"`
+	UserId        uint      `json:"userId"`
+	Deals         []Deal    `json:"deals" gorm:"foreignKey:BotRefer"`
 }
 
 type BotCreateRequest struct {

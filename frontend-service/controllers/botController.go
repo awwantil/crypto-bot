@@ -8,6 +8,7 @@ import (
 )
 
 var CreateBot = func(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(uint) //Grab the id of the user that send the request
 
 	botRequest := &models.BotCreateRequest{}
 
@@ -18,6 +19,7 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	bot := new(models.Bot)
+	bot.UserId = user
 
 	resp := bot.Create(botRequest.CodeSignalId, botRequest.InitialAmount)
 	u.Respond(w, resp)

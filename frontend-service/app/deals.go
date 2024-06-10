@@ -44,6 +44,29 @@ func InitOkxApi() {
 	logger.Infoln("Exchange API created")
 }
 
+func GetOkxApi() *futures.PrvApi {
+	envParams := make(map[string]string)
+	envParams, err := godotenv.Read()
+	if err != nil {
+		logger.Fatal("Error loading .env file")
+	}
+
+	OKx := okx.New()
+	okx.DefaultHttpCli.SetTimeout(5)
+
+	api := OKx.Futures.NewPrvApi(
+		options.WithApiKey(envParams["okx_api_key"]),
+		options.WithApiSecretKey(envParams["okx_api_secret_key"]),
+		options.WithPassphrase(envParams["okx_api_passphrase"]))
+
+	if api == nil {
+		logger.Fatal("Error creating Exchange OKx API")
+		return nil
+	}
+
+	return api
+}
+
 func StartDeal(pair string, posSide string) (id string) {
 	//https://www.okx.com/docs-v5/en/#order-book-trading-trade-post-place-order
 	orderRequest := new(model.PlaceOrderRequest)
