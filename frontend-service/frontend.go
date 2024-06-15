@@ -43,8 +43,12 @@ func main() {
 	router.HandleFunc("/api/bot/create", controllers.CreateBot).Methods("POST")   //  user/2/contacts
 	router.HandleFunc("/api/bot/delete", controllers.DeleteBot).Methods("DELETE") //  user/2/contacts
 
+	router.HandleFunc("/api/okx/create", controllers.CreateOkxApi).Methods("POST")
+	router.HandleFunc("/api/okx/keys", controllers.GetOkxApiFor).Methods("GET")
+
 	router.Use(app.JwtAuthentication) //attach JWT auth middleware
 	//router.NotFoundHandler = http.NotFoundHandler()
+	//GetUserApi
 
 	go func() {
 		models.ConnectDB()

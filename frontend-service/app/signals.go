@@ -7,6 +7,7 @@ import (
 	"okx-bot/exchange/okx"
 	"okx-bot/exchange/okx/futures"
 	"okx-bot/exchange/options"
+	"okx-bot/frontend-service/models"
 )
 
 var (
@@ -44,20 +45,19 @@ func InitOkxApi() {
 	logger.Infoln("Exchange API created")
 }
 
-func GetOkxApi() *futures.PrvApi {
-	envParams := make(map[string]string)
-	envParams, err := godotenv.Read()
-	if err != nil {
-		logger.Fatal("Error loading .env file")
+func GetOkxApi(userId uint) *futures.PrvApi {
+	userOkxApi := models.GetUserApi(userId)
+	if userOkxApi != nil {
+		logger.Fatal("Error loading user OKx API")
 	}
 
 	OKx := okx.New()
 	okx.DefaultHttpCli.SetTimeout(5)
 
 	api := OKx.Futures.NewPrvApi(
-		options.WithApiKey(envParams["okx_api_key"]),
-		options.WithApiSecretKey(envParams["okx_api_secret_key"]),
-		options.WithPassphrase(envParams["okx_api_passphrase"]))
+		options.WithApiKey(userOkxApi.MainKey),
+		options.WithApiSecretKey(userOkxApi.SpecialKey),
+		options.WithPassphrase(userOkxApi.Phrase))
 
 	if api == nil {
 		logger.Fatal("Error creating Exchange OKx API")

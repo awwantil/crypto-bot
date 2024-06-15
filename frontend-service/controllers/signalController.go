@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
 	"time"
@@ -32,9 +33,10 @@ var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	signal.Save()
+	userId := r.Context().Value("user").(uint)
 
 	if signal.Action == BUY {
-		startDeal(signal.SignalToken)
+		startDeal(signal.SignalToken, userId)
 	}
 	if signal.Action == SELL {
 		endDeal(signal.SignalToken)
@@ -57,12 +59,15 @@ var CreateSignal = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
-func startDeal(signalCode string) {
+func startDeal(signalCode string, userId uint) {
 	bots := models.GetBots(signalCode)
 	for _, bot := range bots {
 		logger.Infof("start bot's deal with id %d", bot.ID)
 		deal := models.FindByStatus(bot.ID, models.DealStarted)
 		if deal.ID == 0 {
+			api := app.GetOkxApi(userId)
+			logger.Info("api", api.GetName())
+
 			deal := new(models.Deal)
 			deal.StartTime = time.Now()
 			startAmount := float64(23)

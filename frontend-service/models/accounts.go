@@ -9,15 +9,11 @@ import (
 	"strings"
 )
 
-/*
-JWT claims struct
-*/
 type Token struct {
 	UserId uint
 	jwt.StandardClaims
 }
 
-// a struct to rep user account
 type Account struct {
 	gorm.Model
 	Email    string `json:"email"`
@@ -108,10 +104,10 @@ func Login(email, password string) map[string]interface{} {
 	return resp
 }
 
-func GetUser(u uint) *Account {
+func GetUser(id uint) *Account {
 
 	acc := &Account{}
-	GetDB().Table("accounts").Where("id = ?", u).First(acc)
+	GetDB().Table("accounts").Where("id = ?", id).First(acc)
 	if acc.Email == "" { //User not found!
 		return nil
 	}
