@@ -18,6 +18,7 @@ type TradingViewSignalReceive struct {
 	Instrument             string `json:"instrument"`
 	SignalToken            string `json:"signalToken"`
 	Timestamp              string `json:"timestamp"`
+	InvestmentType         string `json:"investmentType"`
 	Amount                 string `json:"amount"`
 }
 

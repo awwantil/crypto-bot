@@ -31,11 +31,12 @@ func (api *OKxApi) Create() map[string]interface{} {
 	return response
 }
 
-func GetUserApi(userId uint) *OKxApi {
+func GetUserApi(userId uint) (*OKxApi, error) {
 	api := &OKxApi{}
 	err := GetDB().Table("o_kx_apis").Where("user_id = ?", userId).First(api).Error
 	if err != nil {
-		return nil
+		logger.Error(err)
+		return nil, err
 	}
-	return api
+	return api, nil
 }

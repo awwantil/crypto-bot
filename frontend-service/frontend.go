@@ -46,6 +46,8 @@ func main() {
 	router.HandleFunc("/api/okx/create", controllers.CreateOkxApi).Methods("POST")
 	router.HandleFunc("/api/okx/keys", controllers.GetOkxApiFor).Methods("GET")
 
+	router.HandleFunc("/api/check/okx", controllers.CheckOkx).Methods("GET") //  user/2/contacts
+
 	router.Use(app.JwtAuthentication) //attach JWT auth middleware
 	//router.NotFoundHandler = http.NotFoundHandler()
 	//GetUserApi

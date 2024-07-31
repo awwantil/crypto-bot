@@ -505,6 +505,134 @@ func (un *RespUnmarshaler) UnmarshalGetPositionsHisotoryResponse(data []byte) ([
 	return positionsHistory, err
 }
 
+func (un *RespUnmarshaler) UnmarshalGetAccountBalanceResponse(data []byte) (model.BalanceResponse, error) {
+	logger.Info(string(data))
+
+	var balanceResponse = new(model.BalanceResponse)
+	var detailsResponseData = new(model.BalanceDetails)
+
+	_, err := jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {
+			detailsStr := string(respData)
+			switch string(key) {
+			case "uTime":
+				balanceResponse.UTime = detailsStr
+			case "totalEq":
+				balanceResponse.TotalEq = detailsStr
+			case "isoEq":
+				balanceResponse.IsoEq = detailsStr
+			case "adjEq":
+				balanceResponse.AdjEq = detailsStr
+			case "ordFroz":
+				balanceResponse.OrdFroz = detailsStr
+			case "imr":
+				balanceResponse.Imr = detailsStr
+			case "mmr":
+				balanceResponse.Mmr = detailsStr
+			case "borrowFroz":
+				balanceResponse.BorrowFroz = detailsStr
+			case "mgnRatio":
+				balanceResponse.MgnRatio = detailsStr
+			case "notionalUsd":
+				balanceResponse.NotionalUsd = detailsStr
+			case "upl":
+				balanceResponse.Upl = detailsStr
+			case "details":
+				_, err = jsonparser.ArrayEach(respData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+					err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {
+						detailsStr := string(respData)
+						switch string(key) {
+						case "ccy":
+							detailsResponseData.Ccy = detailsStr
+						case "eq":
+							detailsResponseData.Eq = detailsStr
+						case "cashBal":
+							detailsResponseData.CashBal = detailsStr
+						case "uTime":
+							detailsResponseData.UTime = detailsStr
+						case "isoEq":
+							detailsResponseData.IsoEq = detailsStr
+						case "availEq":
+							detailsResponseData.AvailEq = detailsStr
+						case "disEq":
+							detailsResponseData.DisEq = detailsStr
+						case "fixedBal":
+							detailsResponseData.FixedBal = detailsStr
+						case "availBal":
+							detailsResponseData.AvailBal = detailsStr
+						case "frozenBal":
+							detailsResponseData.FrozenBal = detailsStr
+						case "ordFrozen":
+							detailsResponseData.OrdFrozen = detailsStr
+						case "liab":
+							detailsResponseData.Liab = detailsStr
+						case "upl":
+							detailsResponseData.Upl = detailsStr
+						case "uplLiab":
+							detailsResponseData.UplLiab = detailsStr
+						case "crossLiab":
+							detailsResponseData.CrossLiab = detailsStr
+						case "rewardBal":
+							detailsResponseData.RewardBal = detailsStr
+						case "isoLiab":
+							detailsResponseData.IsoLiab = detailsStr
+						case "mgnRatio":
+							detailsResponseData.MgnRatio = detailsStr
+						case "interest":
+							detailsResponseData.Interest = detailsStr
+						case "twap":
+							detailsResponseData.Twap = detailsStr
+						case "maxLoan":
+							detailsResponseData.MaxLoan = detailsStr
+						case "eqUsd":
+							detailsResponseData.EqUsd = detailsStr
+						case "borrowFroz":
+							detailsResponseData.BorrowFroz = detailsStr
+						case "notionalLever":
+							detailsResponseData.NotionalLever = detailsStr
+						case "stgyEq":
+							detailsResponseData.StgyEq = detailsStr
+						case "isoUpl":
+							detailsResponseData.IsoUpl = detailsStr
+						case "spotInUseAmt":
+							detailsResponseData.SpotInUseAmt = detailsStr
+						case "clSpotInUseAmt":
+							detailsResponseData.ClSpotInUseAmt = detailsStr
+						case "maxSpotInUseAmt":
+							detailsResponseData.MaxSpotInUseAmt = detailsStr
+						case "spotIsoBal":
+							detailsResponseData.SpotIsoBal = detailsStr
+						case "imr":
+							detailsResponseData.Imr = detailsStr
+						case "mmr":
+							detailsResponseData.Mmr = detailsStr
+						case "smtSyncEq":
+							detailsResponseData.SmtSyncEq = detailsStr
+						}
+						return err
+					})
+					if err != nil {
+						logger.Error(err)
+						return
+					}
+					balanceResponse.Details = append(balanceResponse.Details, *detailsResponseData)
+				})
+			}
+			return err
+		})
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+	})
+	if err != nil {
+		logger.Error(err)
+		return *balanceResponse, err
+	}
+
+	return *balanceResponse, nil
+}
+
 func (un *RespUnmarshaler) UnmarshalGetExchangeInfoResponse(data []byte) (map[string]model.CurrencyPair, error) {
 	var (
 		err             error
@@ -818,12 +946,10 @@ func (un *RespUnmarshaler) UnmarshalPostPlaceGridAlgoOrder(data []byte) (model.P
 func (un *RespUnmarshaler) UnmarshalPlaceOrder(respPlaceOrderData []byte) (model.PlaceOrderResponse, error) {
 	var placeOrderResponse = new(model.PlaceOrderResponse)
 	var placeOrderResponseData = new(model.PlaceOrderResponseData)
-	logger.Info("********* respPlaceOrderData ", string(respPlaceOrderData))
 
 	_, err := jsonparser.ArrayEach(respPlaceOrderData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {
 			detailsStr := string(respData)
-			logger.Info("!!!!!    key ", string(key), " = ", detailsStr)
 			switch string(key) {
 			case "code":
 				placeOrderResponse.Code = detailsStr
@@ -872,7 +998,6 @@ func (un *RespUnmarshaler) UnmarshalPlaceOrder(respPlaceOrderData []byte) (model
 func (un *RespUnmarshaler) UnmarshalAmendOrderResponse(respAmendOrderData []byte) (model.AmendOrderResponse, error) {
 	var amendOrderResponse = new(model.AmendOrderResponse)
 	var amendOrderResponseData = new(model.AmendOrderResponseData)
-	logger.Info("********* respAmendOrderData ", string(respAmendOrderData))
 
 	_, err := jsonparser.ArrayEach(respAmendOrderData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {

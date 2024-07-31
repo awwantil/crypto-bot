@@ -74,6 +74,21 @@ func (prv *PrvApi) GetPositionsHistory(request model.FuturesPositionHistoryReque
 	return positionsHistory, responseBody, err
 }
 
+func (prv *PrvApi) GetAccountBalance(request model.BalanceRequest, opts ...model.OptionParameter) (model.BalanceResponse, []byte, error) {
+	reqUrl := fmt.Sprintf("%s%s", prv.OKxV5.UriOpts.Endpoint, prv.OKxV5.UriOpts.GetAccountBalanceUri)
+	params := url.Values{}
+	if request.CCY != "" {
+		params.Set("ccy", request.CCY)
+	}
+	util.MergeOptionParams(&params, opts...)
+	data, responseBody, err := prv.DoAuthRequest(http.MethodGet, reqUrl, &params, nil)
+	if err != nil {
+		return *new(model.BalanceResponse), responseBody, err
+	}
+	balance, err := prv.OKxV5.UnmarshalOpts.GetAccountBalanceResponseUnmarshaler(data)
+	return balance, nil, nil
+}
+
 func (prv *PrvApi) GetHistoryOrders(pair model.CurrencyPair, opt ...model.OptionParameter) ([]model.OrderInfoResponse, []byte, error) {
 	opt = append(opt, model.OptionParameter{
 		Key:   "instType",

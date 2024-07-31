@@ -26,8 +26,11 @@ var CreateOkxApi = func(w http.ResponseWriter, r *http.Request) {
 
 var GetOkxApiFor = func(w http.ResponseWriter, r *http.Request) {
 	id := r.Context().Value("user").(uint)
-	data := models.GetUserApi(id)
+	data, err := models.GetUserApi(id)
 	resp := u.Message(true, "success")
 	resp["data"] = data
+	if err != nil {
+		resp = u.Message(false, "error")
+	}
 	u.Respond(w, resp)
 }

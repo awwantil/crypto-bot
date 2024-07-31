@@ -14,7 +14,7 @@ type Spot struct {
 
 func New() *Spot {
 	v5 := common.New()
-	log.Info("make New()")
+	log.Info("make New() spot")
 	currencyPairCacheMap := make(map[string]model.CurrencyPair, 64)
 	return &Spot{v5, currencyPairCacheMap}
 }

@@ -201,6 +201,63 @@ type ComputeMinInvestmentResponse struct {
 	SingleAmt      string           `json:"single_amt,omitempty"`
 }
 
+// https://www.okx.com/docs-v5/en/#trading-account-rest-api-get-balance
+// GET /api/v5/account/balance
+type BalanceRequest struct {
+	CCY string
+}
+
+type BalanceResponse struct {
+	UTime       string `json:"uTime,omitempty"`
+	TotalEq     string `json:"totalEq,omitempty"`
+	IsoEq       string `json:"isoEq,omitempty"`
+	AdjEq       string `json:"adjEq,omitempty"`
+	OrdFroz     string `json:"ordFroz,omitempty"`
+	Imr         string `json:"imr,omitempty"`
+	Mmr         string `json:"mmr,omitempty"`
+	BorrowFroz  string `json:"borrowFroz,omitempty"`
+	MgnRatio    string `json:"mgnRatio,omitempty"`
+	NotionalUsd string `json:"notionalUsd,omitempty"`
+	Upl         string `json:"upl,omitempty"`
+	Details     []BalanceDetails
+}
+
+type BalanceDetails struct {
+	Ccy             string
+	Eq              string
+	CashBal         string
+	UTime           string
+	IsoEq           string
+	AvailEq         string
+	DisEq           string
+	FixedBal        string
+	AvailBal        string
+	FrozenBal       string
+	OrdFrozen       string
+	Liab            string
+	Upl             string
+	UplLiab         string
+	CrossLiab       string
+	RewardBal       string
+	IsoLiab         string
+	MgnRatio        string
+	Interest        string
+	Twap            string
+	MaxLoan         string
+	EqUsd           string
+	BorrowFroz      string
+	NotionalLever   string
+	StgyEq          string
+	IsoUpl          string
+	SpotInUseAmt    string
+	ClSpotInUseAmt  string
+	MaxSpotInUseAmt string
+	SpotIsoBal      string
+	Imr             string
+	Mmr             string
+	SmtSyncEq       string
+}
+
 // https://www.okx.com/docs-v5/en/#order-book-trading-grid-trading-get-grid-algo-order-details
 // GET /api/v5/tradingBot/grid/orders-algo-details
 type GridAlgoOrderDetailsRequest struct {
@@ -327,7 +384,6 @@ type StopGridAlgoOrderResponse struct {
 	Tag         string `json:"tag,omitempty"`
 }
 
-// https://www.okx.com/docs-v5/en/#order-book-trading-trade-post-place-order
 // https://www.okx.com/docs-v5/en/#order-book-trading-trade-post-place-order
 // POST /api/v5/trade/order
 type PlaceOrderRequest struct {

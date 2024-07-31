@@ -62,6 +62,7 @@ func (bot *Bot) Create(codeId string, initialAmount float64) map[string]interfac
 
 	bot.Status = Created
 	bot.InitialAmount = initialAmount
+	bot.CurrentAmount = initialAmount
 	bot.StartTime = time.Now()
 
 	signal.Bots = append(signal.Bots, *bot)

@@ -15,6 +15,7 @@ type UriOptions struct {
 	GetAccountUri             string
 	GetPositionsUri           string
 	GetPositionsHistoryUri    string
+	GetAccountBalanceUri      string
 	GetExchangeInfoUri        string
 	PostPlaceGridAlgoOrderUri string
 	PostStopGridAlgoOrderUri  string

@@ -21,10 +21,11 @@ type Deal struct {
 	EndAmount   float64     `json:"endAmount"`
 	Status      DealStatus  `json:"status"`
 	BotRefer    uint        `json:"botRefer"`
+	OrderId     string      `json:"orderId"`
 	Stats       []DealStats `json:"stats" gorm:"foreignKey:DealRefer"`
 }
 
-func (deal *Deal) Start(botId uint, startAmount float64) bool {
+func (deal *Deal) StartDbSave(botId uint, startAmount float64) bool {
 	var bot = Bot{ID: botId}
 	db.Where("id = ?", botId).First(&bot)
 
@@ -40,7 +41,7 @@ func (deal *Deal) Start(botId uint, startAmount float64) bool {
 	return true
 }
 
-func (deal *Deal) Finish(endAmount float64) bool {
+func (deal *Deal) FinishDbSave(endAmount float64) bool {
 	deal.EndAmount = endAmount
 	deal.Status = DealFinished
 	deal.EndTime = time.Now()
