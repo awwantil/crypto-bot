@@ -56,6 +56,7 @@ func ConnectDB() {
 		//blogger.Infoln("running migrations")
 		//err = conn.Debug().AutoMigrate(&Account{}, &Contact{}, &TradingViewSignalReceive{}, &Signal{})
 		//err = conn.Debug().AutoMigrate(&Bot{}, &OKxApi{}, &DealStats{}, &Deal{})
+		//err = conn.Debug().AutoMigrate()
 		if err != nil {
 			blogger.Errorf("Failed to migrate database: %s", err)
 		}

@@ -89,7 +89,7 @@ func Find(botIdRequest BotWithIdRequest) Bot {
 	return foundBot
 }
 
-func (bot *Bot) Update(column string) bool {
-	GetDB().Update(column, bot)
+func (bot *Bot) Update() bool {
+	GetDB().Save(bot)
 	return true
 }

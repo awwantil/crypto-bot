@@ -72,7 +72,7 @@ func startDeal(signalCode string) {
 			deal.StartTime = time.Now()
 			availAmount, frozenAmount := getOkxAmount(bot.UserId, "USDT")
 			logger.Infof("Available amount: %d, frozen amount: %d", availAmount, frozenAmount)
-			//deal.StartDbSave(bot.ID, startAmount)
+			deal.StartDbSave(bot.ID, bot.CurrentAmount)
 			//bot.CurrentAmount = startAmount
 			//bot.Update("current_amount")
 		} else {
@@ -89,15 +89,17 @@ func endDeal(signalCode string) {
 	bots := models.GetBots(signalCode)
 	for _, bot := range bots {
 		logger.Infof("end bot's deal with id %d", bot.ID)
-		//deal := models.FindByStatus(bot.ID, models.DealStarted)
+		deal := models.FindByStatus(bot.ID, models.DealStarted)
 		//stop deal
 		availAmount, frozenAmount := getOkxAmount(bot.UserId, "USDT")
 		logger.Infof("Available amount: %d, frozen amount: %d", availAmount, frozenAmount)
-		//bot.CurrentAmount = endedAmount
-		//if deal.ID > 0 {
-		//	endAmount := endedAmount
-		//	deal.FinishDbSave(endAmount)
-		//}
+		endedAmount := availAmount
+		bot.CurrentAmount = endedAmount
+		bot.Update()
+		if deal.ID > 0 {
+			endAmount := endedAmount
+			deal.FinishDbSave(endAmount)
+		}
 	}
 }
 

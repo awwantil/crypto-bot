@@ -1,26 +1,5 @@
 https://tproger.ru/translations/deploy-a-secure-golang-rest-api
 
-1. POST - http://localhost:8000/api/user/new
-   {
-   "email": "pomo@gmail.com",
-   "password": "rrr444@@"
-   }
-2. POST - http://localhost:8000/api/user/login
-   {
-   "email": "pomo@gmail.com",
-   "password": "rrr444@@"
-   }
-3. POST - http://localhost:8000/api/contacts/new
-   {
-   "name": "Иван",
-   "phone": "981-082-099"
-   }
-4. GET - http://localhost:8000/api/me/contacts
-
-   	resp1, resp2, err := app.GetApi().Isolated.GetAccount("USDT")
-   	logger.Info("err: ", err)
-   	logger.Info("resp1: ", resp1)
-   	logger.Info("resp2: ", string(resp2))
 INFO[2024-04-07T14:21:25+03:00] resp1: map[USDT:{USDT 4980.455107212083 4920.07177387875 60.383333333333326}]  app=okx-bot component=app.main-rest
 INFO[2024-04-07T14:21:25+03:00] resp2: {"code":"0","data":[{"adjEq":"","borrowFroz":"","details":[{"availBal":"4920.07177387875","availEq":"4920.07177387875","borrowFroz":"","cashB
 al":"4920.07177387875","ccy":"USDT","clSpotInUseAmt":"","crossLiab":"","disEq":"4981.5508073356705","eq":"4980.455107212083","eqUsd":"4981.5508073356705","fixedBal":"0","frozenBal"
@@ -70,3 +49,79 @@ INFO[2024-04-08T17:47:32+03:00] resp4: {"code":"0","data":[{"accFillSz":"10","al
 :"","source":"","state":"filled","stpId":"","stpMode":"cancel_maker","sz":"10","tag":"86d4a3bf87bcBCDE",
 "tdMode":"isolated","tgtCcy":"","tpOrdPx":"","tpTriggerPx":"","tpTriggerPxType":"","tradeId":"68435015",
 "uTime":"1712586286269"}],"msg":""}  app=okx-bot component=app.main-rest
+
+## Порядок работы
+1. СОздаем пользователя
+POST: http://{{ServerHost}}:{{ServerPort}}/api/user/new
+   {
+   "email": "user@gmail.com",
+   "password": "@pass&"
+   }
+   2. Регистрируемся в системе:
+   POST: http://{{ServerHost}}:{{ServerPort}}/api/user/login
+      {
+      "email": "user@gmail.com",
+      "password": "@pass&"
+      }
+   Получаем ответ:
+      {
+            "account": {
+            "ID": 1,
+            "CreatedAt": "2024-04-17T12:52:30.701514Z",
+            "UpdatedAt": "2024-04-17T12:52:30.701514Z",
+            "DeletedAt": null,
+            "email": "user@gmail.com",
+            "password": "",
+            "token": "7yJhbGciOiJIUz61NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjF9.Vcp2grZ53t_OG3jwSXsRwfc_LUjboNgZarkAGiX0jgM"
+            },
+            "message": "Logged In",
+            "status": true
+      }
+В Header в "Authorization" вставляем "token_password" из .env-файла + token из ответа
+      3. Создаем новый сигнал:
+         POST: http://{{ServerHost}}:{{ServerPort}}/api/signal/create
+               {
+                     "nameToken": "SOL",
+                     "timeInterval": "30m"
+               }
+      Запоминаем "Code" из ответа:
+         {
+            "message": "Signal has been created",
+            "signal": {
+               "CreatedAt": "2024-08-01T17:29:27.2752848+03:00",
+               "UpdatedAt": "2024-08-01T17:29:27.2752848+03:00",
+               "DeletedAt": null,
+               "ID": 5,
+               "Code": "1qEiJdddDVG-L0puPELKg",
+               "nameToken": "SOL",
+               "timeInterval": "30m",
+               "Bots": null
+            },
+            "status": true
+         }
+         4. Регистрируем бота
+            POST: http://{{ServerHost}}:{{ServerPort}}/api/bot/create
+              {
+                 "initialAmount": 100.0,
+                 "codeSignalId": "1qEiJdddDVG-L0puPELKg"
+              }
+         Получаем ответ:
+            {
+              "bot": {
+                        "CreatedAt": "0001-01-01T00:00:00Z",
+                        "UpdatedAt": "0001-01-01T00:00:00Z",
+                        "DeletedAt": null,
+                        "ID": 0,
+                        "startTime": "2024-08-01T17:34:05.1820811+03:00",
+                        "status": 1,
+                        "initialAmount": 20,
+                        "currentAmount": 20,
+                        "signalRefer": 0,
+                        "userId": 2,
+                        "deals": null
+            },
+            "message": "Bot has been created",
+            "status": true
+        }
+
+5. ччч

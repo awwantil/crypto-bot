@@ -9,12 +9,12 @@ import (
 
 type TradingViewSignalReceive struct {
 	gorm.Model
-	IdOrder                string `json:"idOrder"`
+	Id                     string `json:"id"`
 	Action                 string `json:"action"`
-	MarketPosition         string `json:"marketPosition" sql:"-"`
-	PrevMarketPosition     string `json:"prevMarketPosition"`
-	MarketPositionSize     string `json:"marketPositionSize"`
-	PrevMarketPositionSize string `json:"prevMarketPositionSize"`
+	MarketPosition         string `json:"marketPosition"`
+	PrevMarketPosition     string `json:"prevMarketPosition" sql:"-"`
+	MarketPositionSize     string `json:"marketPositionSize" sql:"-"`
+	PrevMarketPositionSize string `json:"prevMarketPositionSize" sql:"-"`
 	Instrument             string `json:"instrument"`
 	SignalToken            string `json:"signalToken"`
 	Timestamp              string `json:"timestamp"`
