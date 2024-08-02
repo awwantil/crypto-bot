@@ -7,6 +7,8 @@ import (
 	"okx-bot/exchange/okx/futures"
 	"okx-bot/exchange/options"
 	"okx-bot/frontend-service/models"
+	"strconv"
+	"strings"
 )
 
 var (
@@ -32,42 +34,53 @@ func GetOkxApi(userId uint) (*futures.PrvApi, error) {
 	return api, nil
 }
 
-func CreateOrder(api *futures.PrvApi, pairName string, posSide string) (id string) {
+func CreateOrder(api *futures.PrvApi, pairName string, posSide string) (id string, err error) {
 	//https://www.okx.com/docs-v5/en/#order-book-trading-trade-post-place-order
 	orderRequest := new(model.PlaceOrderRequest)
 	orderRequest.InstId = pairName + "-SWAP"
 	orderRequest.TdMode = "isolated"
-	orderRequest.Side = "sell"
+	orderRequest.Side = "buy"
 	orderRequest.OrdType = "market"
-	orderRequest.Sz = "10"
+	orderRequest.Sz = posSide
 	//orderRequest.PxUsd = "12"
 
-	newOrder, _, err := api.Isolated.PlaceOrder(*orderRequest)
+	newOrder, data, err := api.Isolated.PlaceOrder(*orderRequest)
 	if err != nil {
-		logger.Error("Error place order", err)
+		logger.Errorf("Error place order: %v, data: %v", err, string(data))
+		return "", err
 	}
 	orderId := newOrder.Id
 	logger.Info("ordId = ", orderId)
 
-	return orderId
+	return orderId, nil
 }
 
-func EndDeal(api *futures.PrvApi, pair string, orderId string, posSide string) {
-	// ordId = 1341342760297025536
+func EndDeal(api *futures.PrvApi, pairName string, orderId string, posSide string) error {
 	closePositionsRequest := new(model.ClosePositionsRequest)
-	closePositionsRequest.InstId = pair + "-SWAP"
+	closePositionsRequest.InstId = pairName + "-SWAP"
 	closePositionsRequest.ClOrdId = orderId
-	closePositionsRequest.PosSide = posSide
-	respBody, respModel, err := api.Isolated.ClosePositions(closePositionsRequest)
+	respModel, data, err := api.Isolated.ClosePositions(closePositionsRequest)
 	if err != nil {
-		logger.Error("Error close order: ", err)
-		return
+		logger.Errorf("Error close order: %v data: %v", err, data)
+		return err
 	}
-	logger.Info("CLose order resp: ", respBody)
 	logger.Info("CLose order respModel: ", respModel)
+	return nil
 }
 
-func getAmount(api *futures.PrvApi) float64 {
-	//api.Isolated.
-	return 0
+func GetOkxAmount(api *futures.PrvApi, userId uint, currencyName string) (float64, float64) {
+	requestBalance := new(model.BalanceRequest)
+	requestBalance.CCY = currencyName
+	resp, data, err := api.GetAccountBalance(*requestBalance)
+	if err != nil {
+		logger.Errorf("Error in GetOkxAmount: %v", err)
+	}
+	logger.Infoln("data", string(data))
+	if len(resp.Details) > 0 {
+		availBalance, _ := strconv.ParseFloat(strings.TrimSpace(resp.Details[0].AvailBal), 64)
+		frozenBalance, _ := strconv.ParseFloat(strings.TrimSpace(resp.Details[0].FrozenBal), 64)
+		return availBalance, frozenBalance
+	}
+
+	return 0.0, 0.0
 }

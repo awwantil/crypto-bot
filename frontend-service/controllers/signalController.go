@@ -4,12 +4,9 @@ import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"okx-bot/exchange/model"
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -70,13 +67,22 @@ func startDeal(signalCode string) {
 			//start deal
 			deal := new(models.Deal)
 			deal.StartTime = time.Now()
-			availAmount, frozenAmount := getOkxAmount(bot.UserId, "USDT")
-			logger.Infof("Available amount: %d, frozen amount: %d", availAmount, frozenAmount)
-			deal.StartDbSave(bot.ID, bot.CurrentAmount)
-			//bot.CurrentAmount = startAmount
-			//bot.Update("current_amount")
+			beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, "USDT")
+			logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
+
+			deal.OrderId = openOrder(bot.UserId, "SOL")
+
+			if deal.OrderId != "" {
+				afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, "USDT")
+				logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
+				diffAmount := beforeAvailAmount - afterAvailAmount
+				deal.StartAmount = diffAmount
+				deal.StartDbSave(bot.ID, diffAmount)
+				bot.CurrentAmount = diffAmount
+				bot.Update()
+			}
 		} else {
-			availAmount, frozenAmount := getOkxAmount(bot.UserId, "USDT")
+			availAmount, frozenAmount := getAmount(bot.UserId, "USDT")
 			logger.Infof("Available amount: %d, frozen amount: %d", availAmount, frozenAmount)
 			//deal.Failure(endAmount)
 			//bot.Status = models.Waiting
@@ -90,50 +96,69 @@ func endDeal(signalCode string) {
 	for _, bot := range bots {
 		logger.Infof("end bot's deal with id %d", bot.ID)
 		deal := models.FindByStatus(bot.ID, models.DealStarted)
-		//stop deal
-		availAmount, frozenAmount := getOkxAmount(bot.UserId, "USDT")
-		logger.Infof("Available amount: %d, frozen amount: %d", availAmount, frozenAmount)
-		endedAmount := availAmount
-		bot.CurrentAmount = endedAmount
-		bot.Update()
 		if deal.ID > 0 {
-			endAmount := endedAmount
-			deal.FinishDbSave(endAmount)
+			beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, "USDT")
+			logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
+
+			result := closeOrder(bot.UserId, "SOL", deal.OrderId)
+			if result {
+				afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, "USDT")
+				logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
+				diffAmount := afterAvailAmount - beforeAvailAmount
+				bot.CurrentAmount = diffAmount
+				bot.Update()
+				deal.FinishDbSave(diffAmount)
+			}
 		}
 	}
 }
 
-func getOkxAmount(userId uint, currencyName string) (float64, float64) {
+func openOrder(userId uint, currencyName string) (orderId string) {
 	api, err := app.GetOkxApi(userId)
 	if err != nil {
-		logger.Errorf("Error in getOkxAmount: %v", err)
-		return 0, 0
-	}
-	logger.Info("api", api.GetName())
-	requestBalance := new(model.BalanceRequest)
-	requestBalance.CCY = currencyName
-	resp, data, err := api.GetAccountBalance(*requestBalance)
-	if err != nil {
-		logger.Errorf("Error in getOkxAmount: %v", err)
-	}
-	logger.Infoln("data", data)
-	logger.Infoln("resp", resp)
-	if len(resp.Details) > 0 {
-		availBalance, _ := strconv.ParseFloat(strings.TrimSpace(resp.Details[0].AvailBal), 64)
-		frozenBalance, _ := strconv.ParseFloat(strings.TrimSpace(resp.Details[0].FrozenBal), 64)
-		return availBalance, frozenBalance
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return ""
 	}
 
-	return 0.0, 0.0
+	orderId, err = app.CreateOrder(api, currencyName+"-USDT", "2")
+	if err != nil {
+		return ""
+	}
+
+	return orderId
+}
+
+func closeOrder(userId uint, currencyName string, orderId string) bool {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return false
+	}
+
+	err = app.EndDeal(api, currencyName+"-USDT", orderId, "2")
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+func getAmount(userId uint, currencyName string) (float64, float64) {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return 0, 0
+	}
+	return app.GetOkxAmount(api, userId, currencyName)
 }
 
 var CheckOkx = func(w http.ResponseWriter, r *http.Request) {
 
 	user := r.Context().Value("user").(uint)
 
-	availAmount, frozenAmount := getOkxAmount(user, "USDT")
+	availAmount, frozenAmount := getAmount(user, "USDT")
 	logger.Infof("USDT available amount: %v, frozen amount: %v", availAmount, frozenAmount)
-	availAmount, frozenAmount = getOkxAmount(user, "SOL")
+	availAmount, frozenAmount = getAmount(user, "SOL")
 	logger.Infof("SOL available amount: %v, frozen amount: %v", availAmount, frozenAmount)
 
 	u.Respond(w, u.Message(true, "The checking was finished"))

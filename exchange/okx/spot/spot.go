@@ -1,7 +1,6 @@
 package spot
 
 import (
-	log "github.com/sirupsen/logrus"
 	"okx-bot/exchange/model"
 	"okx-bot/exchange/okx/common"
 	"okx-bot/exchange/options"
@@ -14,7 +13,6 @@ type Spot struct {
 
 func New() *Spot {
 	v5 := common.New()
-	log.Info("make New() spot")
 	currencyPairCacheMap := make(map[string]model.CurrencyPair, 64)
 	return &Spot{v5, currencyPairCacheMap}
 }
