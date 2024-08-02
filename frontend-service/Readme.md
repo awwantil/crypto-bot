@@ -125,3 +125,20 @@ POST: http://{{ServerHost}}:{{ServerPort}}/api/user/new
         }
 
 5. ччч
+
+
+### ===============================================================
+http://185.240.103.204:8000/api/signal/receive
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "9qMiJdddDVG-L0puPELKg",
+"timestamp": "{{timenow}}",
+"investmentType": "Price and Volume Breakout (40, 20, 200, Long)",
+"amount": "{{strategy.order.contracts}}"
+}

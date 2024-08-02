@@ -32,9 +32,6 @@ func ConnectDB() {
 		}
 	}
 
-	tokenPassword := os.Getenv("TOKEN_PASSWORD")
-	logger.Info("tokenPassword: ", tokenPassword)
-
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable",
 		os.Getenv("DB_HOST"),
@@ -42,8 +39,6 @@ func ConnectDB() {
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
 	)
-
-	blogger.Infoln("dsn: ", dsn)
 
 	conn, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	db = conn

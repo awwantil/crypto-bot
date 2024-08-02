@@ -64,29 +64,9 @@ func startDeal(signalCode string) {
 		logger.Infof("start bot's deal with id %d", bot.ID)
 		deal := models.FindByStatus(bot.ID, models.DealStarted)
 		if deal.ID == 0 {
-			//start deal
-			deal := new(models.Deal)
-			deal.StartTime = time.Now()
-			beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, "USDT")
-			logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
-
-			deal.OrderId = openOrder(bot.UserId, "SOL")
-
-			if deal.OrderId != "" {
-				afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, "USDT")
-				logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
-				diffAmount := beforeAvailAmount - afterAvailAmount
-				deal.StartAmount = diffAmount
-				deal.StartDbSave(bot.ID, diffAmount)
-				bot.CurrentAmount = diffAmount
-				bot.Update()
-			}
+			openDeal(&bot)
 		} else {
-			availAmount, frozenAmount := getAmount(bot.UserId, "USDT")
-			logger.Infof("Available amount: %d, frozen amount: %d", availAmount, frozenAmount)
-			//deal.Failure(endAmount)
-			//bot.Status = models.Waiting
-			//bot.Update("status")
+			logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, bot.ID)
 		}
 	}
 }
@@ -97,19 +77,47 @@ func endDeal(signalCode string) {
 		logger.Infof("end bot's deal with id %d", bot.ID)
 		deal := models.FindByStatus(bot.ID, models.DealStarted)
 		if deal.ID > 0 {
-			beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, "USDT")
-			logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
-
-			result := closeOrder(bot.UserId, "SOL", deal.OrderId)
-			if result {
-				afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, "USDT")
-				logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
-				diffAmount := afterAvailAmount - beforeAvailAmount
-				bot.CurrentAmount = diffAmount
-				bot.Update()
-				deal.FinishDbSave(diffAmount)
-			}
+			closeDeal(&deal, &bot)
+		} else {
+			logger.Errorf("There is no deal for the bot=%v and it cannot be closed", bot.ID)
 		}
+	}
+}
+
+func openDeal(bot *models.Bot) {
+	deal := new(models.Deal)
+	deal.StartTime = time.Now()
+	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, "USDT")
+	logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
+
+	deal.OrderId = openOrder(bot.UserId, "SOL")
+
+	if deal.OrderId != "" {
+		afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, "USDT")
+		logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
+		diffAmount := beforeAvailAmount - afterAvailAmount
+		deal.StartAmount = diffAmount
+		deal.StartDbSave(bot.ID, diffAmount)
+		bot.CurrentAmount = diffAmount
+		bot.Update()
+	} else {
+		logger.Errorf("An order cannot be created for a bot=%v on a crypto exchange", bot.ID)
+	}
+}
+
+func closeDeal(deal *models.Deal, bot *models.Bot) {
+	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, "USDT")
+	logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
+	result := closeOrder(bot.UserId, "SOL", deal.OrderId)
+	if result {
+		afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, "USDT")
+		logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
+		diffAmount := afterAvailAmount - beforeAvailAmount
+		bot.CurrentAmount = diffAmount
+		bot.Update()
+		deal.FinishDbSave(diffAmount)
+	} else {
+		logger.Errorf("An order on a crypto exchange cannot be closed for a bot=%v and a deal=%v", bot.ID, deal.ID)
 	}
 }
 
