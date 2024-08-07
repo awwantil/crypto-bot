@@ -63,3 +63,14 @@ func GetBots(signalCodeId string) []Bot {
 
 	return findSignal.Bots
 }
+
+func FindSignalByCode(signalCodeId string) (*Signal, error) {
+	findSignal := &Signal{}
+	err := GetDB().Table("signals").Where("code = ?", signalCodeId).Find(&findSignal).Error
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	return findSignal, nil
+}

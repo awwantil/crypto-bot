@@ -21,7 +21,7 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 	bot := new(models.Bot)
 	bot.UserId = user
 
-	resp := bot.Create(botRequest.CodeSignalId, botRequest.InitialAmount)
+	resp := bot.Create(botRequest.CodeSignalId, botRequest.InitialAmount, botRequest.PosSide)
 	u.Respond(w, resp)
 }
 

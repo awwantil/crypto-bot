@@ -7,6 +7,7 @@ import (
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
+	"strconv"
 	"time"
 )
 
@@ -18,8 +19,9 @@ var (
 )
 
 const (
-	SELL string = "sell"
-	BUY  string = "buy"
+	SELL          string = "sell"
+	BUY           string = "buy"
+	BASE_CURRENCY        = "USDT"
 )
 
 var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
@@ -59,12 +61,17 @@ var CreateSignal = func(w http.ResponseWriter, r *http.Request) {
 }
 
 func startDeal(signalCode string) {
+	signal, err := models.FindSignalByCode(signalCode)
+	if err != nil {
+		logger.Errorf("Error in startDeal: %v", err)
+		return
+	}
 	bots := models.GetBots(signalCode)
 	for _, bot := range bots {
 		logger.Infof("start bot's deal with id %d", bot.ID)
 		deal := models.FindByStatus(bot.ID, models.DealStarted)
 		if deal.ID == 0 {
-			openDeal(&bot)
+			openDeal(&bot, signal.NameToken)
 		} else {
 			logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, bot.ID)
 		}
@@ -72,28 +79,37 @@ func startDeal(signalCode string) {
 }
 
 func endDeal(signalCode string) {
+	signal, err := models.FindSignalByCode(signalCode)
+	if err != nil {
+		logger.Errorf("Error in startDeal: %v", err)
+		return
+	}
 	bots := models.GetBots(signalCode)
 	for _, bot := range bots {
 		logger.Infof("end bot's deal with id %d", bot.ID)
 		deal := models.FindByStatus(bot.ID, models.DealStarted)
 		if deal.ID > 0 {
-			closeDeal(&deal, &bot)
+			closeDeal(&deal, &bot, signal.NameToken)
 		} else {
 			logger.Errorf("There is no deal for the bot=%v and it cannot be closed", bot.ID)
 		}
 	}
 }
 
-func openDeal(bot *models.Bot) {
+func openDeal(bot *models.Bot, currencyName string) {
 	deal := new(models.Deal)
 	deal.StartTime = time.Now()
-	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, "USDT")
+	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, BASE_CURRENCY)
 	logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
 
-	deal.OrderId = openOrder(bot.UserId, "SOL")
+	posSide := "2"
+	if bot.PosSide > 0 {
+		posSide = strconv.FormatUint(uint64(bot.PosSide), 10)
+	}
+	deal.OrderId = openOrder(bot.UserId, currencyName, posSide)
 
 	if deal.OrderId != "" {
-		afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, "USDT")
+		afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, BASE_CURRENCY)
 		logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
 		diffAmount := beforeAvailAmount - afterAvailAmount
 		deal.StartAmount = diffAmount
@@ -105,12 +121,12 @@ func openDeal(bot *models.Bot) {
 	}
 }
 
-func closeDeal(deal *models.Deal, bot *models.Bot) {
-	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, "USDT")
+func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
+	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, BASE_CURRENCY)
 	logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
-	result := closeOrder(bot.UserId, "SOL", deal.OrderId)
+	result := closeOrder(bot.UserId, currencyName, deal.OrderId)
 	if result {
-		afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, "USDT")
+		afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, BASE_CURRENCY)
 		logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
 		diffAmount := afterAvailAmount - beforeAvailAmount
 		bot.CurrentAmount = diffAmount
@@ -121,14 +137,14 @@ func closeDeal(deal *models.Deal, bot *models.Bot) {
 	}
 }
 
-func openOrder(userId uint, currencyName string) (orderId string) {
+func openOrder(userId uint, currencyName string, posSide string) (orderId string) {
 	api, err := app.GetOkxApi(userId)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return ""
 	}
 
-	orderId, err = app.CreateOrder(api, currencyName+"-USDT", "2")
+	orderId, err = app.CreateOrder(api, currencyName+"-"+BASE_CURRENCY, posSide)
 	if err != nil {
 		return ""
 	}
@@ -143,7 +159,7 @@ func closeOrder(userId uint, currencyName string, orderId string) bool {
 		return false
 	}
 
-	err = app.EndDeal(api, currencyName+"-USDT", orderId, "2")
+	err = app.EndDeal(api, currencyName+"-"+BASE_CURRENCY, orderId, "2")
 	if err != nil {
 		return false
 	}
@@ -164,7 +180,7 @@ var CheckOkx = func(w http.ResponseWriter, r *http.Request) {
 
 	user := r.Context().Value("user").(uint)
 
-	availAmount, frozenAmount := getAmount(user, "USDT")
+	availAmount, frozenAmount := getAmount(user, BASE_CURRENCY)
 	logger.Infof("USDT available amount: %v, frozen amount: %v", availAmount, frozenAmount)
 	availAmount, frozenAmount = getAmount(user, "SOL")
 	logger.Infof("SOL available amount: %v, frozen amount: %v", availAmount, frozenAmount)
