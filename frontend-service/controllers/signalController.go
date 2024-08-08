@@ -56,7 +56,7 @@ var CreateSignal = func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := signal.Create(signal.NameToken, signal.TimeInterval)
+	resp := signal.Create(signal.StrategyName, signal.NameToken, signal.TimeInterval)
 	u.Respond(w, resp)
 }
 

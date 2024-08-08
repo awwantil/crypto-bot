@@ -128,7 +128,7 @@ POST: http://{{ServerHost}}:{{ServerPort}}/api/user/new
 
 
 ### ===============================================================
-http://185.240.103.204:8000/api/signal/receive
+http://185.240.103.204/api/signal/receive
 {
 "id": "{{strategy.order.id}}",
 "action": "{{strategy.order.action}}",
@@ -140,5 +140,19 @@ http://185.240.103.204:8000/api/signal/receive
 "signalToken": "9qMiJdddDVG-L0puPELKg",
 "timestamp": "{{timenow}}",
 "investmentType": "Price and Volume Breakout (40, 20, 200, Long)",
+"amount": "{{strategy.order.contracts}}"
+}
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "NnvrhGUNUaYxnc8x0ABao",
+"timestamp": "{{timenow}}",
+"investmentType": "Multi Trend Cross (ALMA, DEMA, 15, 200, 0.85, 6)",
 "amount": "{{strategy.order.contracts}}"
 }
