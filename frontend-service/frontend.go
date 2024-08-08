@@ -38,6 +38,7 @@ func main() {
 
 	router.HandleFunc("/api/signal/receive", controllers.ReceiveSignal).Methods("POST") //  user/2/contacts
 	router.HandleFunc("/api/signal/create", controllers.CreateSignal).Methods("POST")   //  user/2/contacts
+	router.HandleFunc("/api/signal", controllers.GetAllSignals).Methods("GET")          //  user/2/contacts
 	router.HandleFunc("/api/signal/bots", controllers.GetBots).Methods("GET")           //  user/2/contacts
 
 	router.HandleFunc("/api/bot/create", controllers.CreateBot).Methods("POST")   //  user/2/contacts
@@ -54,6 +55,25 @@ func main() {
 
 	go func() {
 		models.ConnectDB()
+
+		//logger.Infoln("Execute GetOrderInfo")
+		//opts := model.OptionParameter{
+		//	Key:   "contractAlias",
+		//	Value: "SWAP",
+		//}
+		//api, err := app.GetOkxApi(1)
+		//if err != nil {
+		//	logger.Errorf("Error in GetOkxApi: %v", err)
+		//}
+		//
+		//id := "1695898177540702208"
+		//req := new(model.BaseOrderRequest)
+		//req.InstId = "SOL-USDT-SWAP"
+		//req.OrdId = id
+		//resp3, resp4, err := api.Isolated.GetOrderInfo(*req, opts)
+		//logger.Info("err: ", err)
+		//logger.Info("resp3: ", resp3)
+		//logger.Info("resp4: ", string(resp4))
 	}()
 
 	go func() {
@@ -64,19 +84,6 @@ func main() {
 		//logger.Info("resp1: ", resp1)
 		//logger.Info("resp2: ", string(resp2))
 		//1345253813988876288
-
-		//opts := model.OptionParameter{
-		//	Key:   "contractAlias",
-		//	Value: "SWAP",
-		//}
-		//id := "1344992036067729408"
-		//req := new(model.BaseOrderRequest)
-		//req.InstId = "SOL-USDT-SWAP"
-		//req.OrdId = id
-		//resp3, resp4, err := app.GetApi().Isolated.GetOrderInfo(*req, opts)
-		//logger.Info("err: ", err)
-		//logger.Info("resp3: ", resp3)
-		//logger.Info("resp4: ", string(resp4))
 
 		//posHistoryRequest := new(model.FuturesPositionHistoryRequest)
 		//posHistoryRequest.InstId = "SOL-USDT-SWAP"
@@ -94,7 +101,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8000" //localhost
+		port = "8000"
 	}
 
 	go func() {

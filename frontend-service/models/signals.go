@@ -52,6 +52,18 @@ func (signal *Signal) Create(nameToken string, interval string) map[string]inter
 	return response
 }
 
+func GetAllSignals() *[]Signal {
+	findSignals := &[]Signal{}
+
+	err := GetDB().Table("signals").Find(&findSignals).Error
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	return findSignals
+}
+
 func GetBots(signalCodeId string) []Bot {
 	findSignal := &Signal{}
 

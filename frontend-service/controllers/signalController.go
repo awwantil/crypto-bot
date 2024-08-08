@@ -60,6 +60,16 @@ var CreateSignal = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
+var GetAllSignals = func(w http.ResponseWriter, r *http.Request) {
+
+	signals := models.GetAllSignals()
+	resp := u.Message(true, "success")
+	resp["signals"] = signals
+
+	logger.Infoln("resp", resp)
+	u.Respond(w, resp)
+}
+
 func startDeal(signalCode string) {
 	signal, err := models.FindSignalByCode(signalCode)
 	if err != nil {
