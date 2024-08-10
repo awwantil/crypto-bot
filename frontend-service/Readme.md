@@ -156,3 +156,17 @@ http://185.240.103.204/api/signal/receive
 "investmentType": "Multi Trend Cross (ALMA, DEMA, 15, 200, 0.85, 6)",
 "amount": "{{strategy.order.contracts}}"
 }
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "cqwJU6hqLjsDk8Kkv2_RG",
+"timestamp": "{{timenow}}",
+"investmentType": "Crypto Scalper - [100,зкр,14,25,45,EMA,EMA,0.02,0.02,0.22,0.225,1.04,0.055,0.03]",
+"amount": "{{strategy.order.contracts}}"
+}
