@@ -1,0 +1,78 @@
+package model
+
+// https://www.okx.com/docs-v5/en/#order-book-trading-signal-bot-trading-post-create-signal
+// POST /api/v5/tradingBot/signal/create-signal
+type CreateSignalRequest struct {
+	SignalChanName string `json:"signalChanName,omitempty"`
+	SignalChanDesc string `json:"signalChanDesc,omitempty"`
+}
+
+type CreateSignalResponse struct {
+	SignalChanId    string `json:"signalChanId,omitempty"`
+	SignalChanToken string `json:"signalChanToken,omitempty"`
+}
+
+// https://www.okx.com/docs-v5/en/#order-book-trading-signal-bot-trading-post-create-signal-bot
+// POST /api/v5/tradingBot/signal/order-algo
+type CreateSignalBotRequest struct {
+	SignalChanId string `json:"signalChanId,omitempty"`
+	Lever        string `json:"lever,omitempty"`
+	InvestAmt    string `json:"investAmt,omitempty"`
+	SubOrdType   string `json:"subOrdType,omitempty"`
+}
+
+type CreateSignalBotResponse struct {
+	AlgoId      string `json:"algoId,omitempty"`
+	AlgoClOrdId string `json:"algoClOrdId,omitempty"`
+	SCode       string `json:"sCode,omitempty"`
+	SMsg        string `json:"sMsg,omitempty"`
+}
+
+// https://www.okx.com/docs-v5/en/#order-book-trading-signal-bot-trading-post-cancel-signal-bots
+// POST /api/v5/tradingBot/signal/stop-order-algo
+type CancelSignalBotRequest struct {
+	AlgoId string `json:"algoId,omitempty"`
+}
+
+type CancelSignalBotResponse struct {
+	AlgoId string `json:"algoId,omitempty"`
+	SCode  string `json:"sCode,omitempty"`
+	SMsg   string `json:"sMsg,omitempty"`
+}
+
+// https://www.okx.com/docs-v5/en/#order-book-trading-signal-bot-trading-post-place-sub-order
+// POST /api/v5/tradingBot/signal/sub-order
+type PlaceSubOrderSignalBotRequest struct {
+	InstId  string `json:"instId,omitempty"`
+	AlgoId  string `json:"algoId,omitempty"`
+	Side    string `json:"side,omitempty"`
+	OrdType string `json:"ordType,omitempty"`
+	Sz      string `json:"sz,omitempty"`
+	Px      string `json:"px,omitempty"`
+}
+
+type PlaceSubOrderSignalBotResponse struct {
+	Code string `json:"code,omitempty"`
+	Msg  string `json:"msg,omitempty"`
+	Data string `json:"data,omitempty"`
+}
+
+// https://www.okx.com/docs-v5/en/#order-book-trading-signal-bot-trading-post-cancel-sub-order
+// POST /api/v5/tradingBot/signal/cancel-sub-order
+type CancelSubOrderSignalBotRequest struct {
+	InstId      string `json:"instId,omitempty"`
+	AlgoId      string `json:"algoId,omitempty"`
+	SignalOrdId string `json:"signalOrdId,omitempty"`
+}
+
+type CancelSubOrderSignalBotResponse struct {
+	Code string               `json:"code,omitempty"`
+	Msg  string               `json:"msg,omitempty"`
+	Data []CancelSubOrderData `json:"data,omitempty"`
+}
+
+type CancelSubOrderData struct {
+	SignalOrdId string `json:"signalOrdId,omitempty"`
+	SCode       string `json:"sCode,omitempty"`
+	SMsg        string `json:"sMsg,omitempty"`
+}
