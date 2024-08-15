@@ -445,6 +445,22 @@ type PlaceOrderResponseData struct {
 	Tag string
 }
 
+// POST /api/v5/account/set-leverage
+type SetLeverageRequest struct {
+	InstId  string `json:"instId,omitempty"`
+	Ccy     string `json:"ccy,omitempty"`
+	Lever   string `json:"lever,omitempty"`
+	MgnMode string `json:"mgnMode,omitempty"`
+	PosSide string `json:"posSide,omitempty"`
+}
+
+type SetLeverageResponse struct {
+	InstId  string `json:"instId,omitempty"`
+	Lever   string `json:"lever,omitempty"`
+	MgnMode string `json:"mgnMode,omitempty"`
+	PosSide string `json:"posSide,omitempty"`
+}
+
 // https://www.okx.com/docs-v5/en/#order-book-trading-trade-post-cancel-order
 type BaseOrderRequest struct {
 	InstId  string `json:"instId,omitempty"`

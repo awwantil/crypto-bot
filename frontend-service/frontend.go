@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"okx-bot/exchange/model"
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/controllers"
 	"okx-bot/frontend-service/models"
@@ -56,15 +57,15 @@ func main() {
 	go func() {
 		models.ConnectDB()
 
-		//logger.Infoln("Execute GetOrderInfo")
-		//opts := model.OptionParameter{
-		//	Key:   "contractAlias",
-		//	Value: "SWAP",
-		//}
-		//api, err := app.GetOkxApi(1)
-		//if err != nil {
-		//	logger.Errorf("Error in GetOkxApi: %v", err)
-		//}
+		logger.Infoln("Execute GetOrderInfo")
+		opts := model.OptionParameter{
+			Key:   "contractAlias",
+			Value: "SWAP",
+		}
+		api, err := app.GetOkxApi(1)
+		if err != nil {
+			logger.Errorf("Error in GetOkxApi: %v", err)
+		}
 		//
 		//id := "1695898177540702208"
 		//req := new(model.BaseOrderRequest)
@@ -74,6 +75,24 @@ func main() {
 		//logger.Info("err: ", err)
 		//logger.Info("resp3: ", resp3)
 		//logger.Info("resp4: ", string(resp4))
+
+		req := new(model.SetLeverageRequest)
+		req.InstId = "SOL-USDT-SWAP"
+		req.Lever = "3.02"
+		req.MgnMode = model.ISOLATED
+		//req.Ccy = "USDT"
+		//req.PosSide = model.LONG
+		resp3, resp4, err := api.Isolated.SetLeverage(*req, opts)
+		logger.Info("err: ", err)
+		logger.Info("resp3: ", resp3)
+		logger.Info("resp4: ", string(resp4))
+
+		orderId, err := app.CreateOrder(api, "SOL-USDT", "5")
+		if err != nil {
+			return
+		}
+		logger.Infoln(orderId)
+
 	}()
 
 	go func() {

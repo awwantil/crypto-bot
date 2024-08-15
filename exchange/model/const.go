@@ -141,3 +141,10 @@ const (
 //const (
 //	OKX = "okx.com"
 //)
+
+const (
+	LONG     = "long"
+	SHORT    = "short"
+	ISOLATED = "isolated"
+	CROSS    = "cross"
+)

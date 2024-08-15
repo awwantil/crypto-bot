@@ -143,6 +143,21 @@ func (un *RespUnmarshaler) UnmarshalCreateOrderResponse(data []byte) (*model.Ord
 	return ord, err
 }
 
+func (un *RespUnmarshaler) UnmarshalSetLeverageResponse(data []byte) (*model.SetLeverageResponse, error) {
+	var ord = new(model.SetLeverageResponse)
+	err := jsonparser.ObjectEach(data[1:len(data)-1], func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
+		valStr := string(value)
+		switch string(key) {
+		case "lever":
+			ord.Lever = valStr
+		case "instId":
+			ord.InstId = valStr
+		}
+		return nil
+	})
+	return ord, err
+}
+
 func (un *RespUnmarshaler) UnmarshalGetPendingOrdersResponse(data []byte) ([]model.OrderInfoResponse, error) {
 	var (
 		orders []model.OrderInfoResponse

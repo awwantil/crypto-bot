@@ -298,6 +298,32 @@ func (prv *Prv) PlaceOrder(req model.PlaceOrderRequest, opt ...model.OptionParam
 	return details, responseBody, err
 }
 
+func (prv *Prv) SetLeverage(req model.SetLeverageRequest, opt ...model.OptionParameter) (*model.SetLeverageResponse, []byte, error) {
+	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.SetLeverageUri)
+
+	params := url.Values{}
+	params.Set("instId", req.InstId)
+	params.Set("mgnMode", req.MgnMode)
+	params.Set("lever", req.Lever)
+	params.Set("posSide", req.PosSide)
+	params.Set("ccy", req.Ccy)
+
+	util.MergeOptionParams(&params, opt...)
+
+	data, responseBody, err := prv.DoAuthRequest(http.MethodPost, reqUrl, &params, nil)
+	if err != nil {
+		return nil, responseBody, err
+	}
+
+	logger.Info("responseBody", string(responseBody))
+	logger.Info("data", string(data))
+
+	details, err := prv.UnmarshalOpts.SetLeverageResponseUnmarshaler(data)
+	logger.Info("details", details)
+
+	return details, responseBody, err
+}
+
 func (prv *Prv) AmendOrder(req model.AmendOrderRequest, opt ...model.OptionParameter) (model.AmendOrderResponse, []byte, error) {
 	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.AmendOrderUri)
 

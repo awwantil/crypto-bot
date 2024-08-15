@@ -7,6 +7,7 @@ type GetTickerResponseUnmarshaler func([]byte) (*model.Ticker, error)
 type GetDepthResponseUnmarshaler func([]byte) (*model.Depth, error)
 type GetKlineResponseUnmarshaler func([]byte) ([]model.Kline, error)
 type CreateOrderResponseUnmarshaler func([]byte) (*model.Order, error)
+type SetLeverageResponseUnmarshaler func([]byte) (*model.SetLeverageResponse, error)
 type GetOrderInfoResponseUnmarshaler func([]byte) (*model.OrderInfoResponse, error)
 type GetPendingOrdersResponseUnmarshaler func([]byte) ([]model.OrderInfoResponse, error)
 type CancelOrderResponseUnmarshaler func([]byte) (model.CancelOrderResponse, error)
@@ -31,6 +32,7 @@ type UnmarshalerOptions struct {
 	DepthUnmarshaler                       GetDepthResponseUnmarshaler
 	KlineUnmarshaler                       GetKlineResponseUnmarshaler
 	CreateOrderResponseUnmarshaler         CreateOrderResponseUnmarshaler
+	SetLeverageResponseUnmarshaler         SetLeverageResponseUnmarshaler
 	GetOrderInfoResponseUnmarshaler        GetOrderInfoResponseUnmarshaler
 	GetPendingOrdersResponseUnmarshaler    GetPendingOrdersResponseUnmarshaler
 	GetHistoryOrdersResponseUnmarshaler    GetHistoryOrdersResponseUnmarshaler

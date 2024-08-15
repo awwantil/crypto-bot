@@ -129,6 +129,7 @@ POST: http://{{ServerHost}}:{{ServerPort}}/api/user/new
 
 ### ===============================================================
 http://185.240.103.204/api/signal/receive
+https://www.okx.com/ru/trade-market/info/swap 
 {
 "id": "{{strategy.order.id}}",
 "action": "{{strategy.order.action}}",

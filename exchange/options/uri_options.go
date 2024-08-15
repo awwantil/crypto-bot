@@ -11,6 +11,7 @@ type UriOptions struct {
 	CancelOrderUri            string
 	ClosePositionsUri         string
 	NewOrderUri               string
+	SetLeverageUri            string
 	AmendOrderUri             string
 	GetAccountUri             string
 	GetPositionsUri           string

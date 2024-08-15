@@ -37,6 +37,17 @@ func (f *IsolatedPrvApi) PlaceOrder(order model.PlaceOrderRequest, opts ...model
 	return f.Prv.PlaceOrder(order, opts...)
 }
 
+func (f *IsolatedPrvApi) SetLeverage(order model.SetLeverageRequest, opts ...model.OptionParameter) (*model.SetLeverageResponse, []byte, error) {
+
+	opts = append(opts,
+		model.OptionParameter{
+			Key:   "tdMode",
+			Value: "isolated",
+		})
+
+	return f.Prv.SetLeverage(order, opts...)
+}
+
 func (f *IsolatedPrvApi) CancelOrder(req *model.BaseOrderRequest, opts ...model.OptionParameter) (model.CancelOrderResponse, []byte, error) {
 
 	opts = append(opts,
