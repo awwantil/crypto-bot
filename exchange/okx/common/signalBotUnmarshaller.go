@@ -27,3 +27,30 @@ func (un *RespUnmarshaler) UnmarshalCreateSignal(data []byte) (*model.CreateSign
 
 	return details, err
 }
+
+func (un *RespUnmarshaler) UnmarshalCreateSignalBot(data []byte) (*model.CreateSignalBotResponse, error) {
+	var details = new(model.CreateSignalBotResponse)
+
+	_, err := jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {
+			detailsStr := string(respData)
+			switch string(key) {
+			case "algoId":
+				details.AlgoId = detailsStr
+			case "algoClOrdId":
+				details.AlgoClOrdId = detailsStr
+			case "sCode":
+				details.SCode = detailsStr
+			case "sMsg":
+				details.SMsg = detailsStr
+			}
+			return err
+		})
+
+		if err != nil {
+			return
+		}
+	})
+
+	return details, err
+}

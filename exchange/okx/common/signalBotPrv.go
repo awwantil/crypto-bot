@@ -31,3 +31,28 @@ func (prv *Prv) CreateSignal(req model.CreateSignalRequest, opt ...model.OptionP
 
 	return details, responseBody, err
 }
+
+func (prv *Prv) CreateSignalBot(req model.CreateSignalBotRequest, opt ...model.OptionParameter) (*model.CreateSignalBotResponse, []byte, error) {
+	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.PostCreateSignalBotUri)
+
+	params := url.Values{}
+	params.Set("signalChanId", req.SignalChanId)
+	params.Set("lever", req.Lever)
+	params.Set("investAmt", req.InvestAmt)
+	params.Set("subOrdType", req.SubOrdType)
+
+	util.MergeOptionParams(&params, opt...)
+
+	data, responseBody, err := prv.DoAuthRequest(http.MethodPost, reqUrl, &params, nil)
+	if err != nil {
+		logger.Errorf("[CreateSignalBot] err=%s, response=%s", err.Error(), string(data))
+		return &model.CreateSignalBotResponse{}, responseBody, err
+	}
+
+	logger.Info("responseBody", string(responseBody))
+	logger.Info("data", string(data))
+
+	details, err := prv.UnmarshalOpts.PostCreateSignalBotUnmarshaler(data)
+
+	return details, responseBody, err
+}

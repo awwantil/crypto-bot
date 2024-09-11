@@ -27,6 +27,7 @@ type PlaceOrderResponseUnmarshaler func([]byte) (model.PlaceOrderResponse, error
 type AmendOrderResponseUnmarshaler func([]byte) (model.AmendOrderResponse, error)
 
 type PostCreateSignalUnmarshaler func([]byte) (*model.CreateSignalResponse, error)
+type PostCreateSignalBotUnmarshaler func([]byte) (*model.CreateSignalBotResponse, error)
 
 type UnmarshalerOptions struct {
 	ResponseUnmarshaler                    ResponseUnmarshaler
@@ -52,7 +53,9 @@ type UnmarshalerOptions struct {
 	PlaceGridAlgoOrderResponseUnmarshaler  PlaceGridAlgoOrderResponseUnmarshaler
 	StopGridAlgoOrderResponseUnmarshaler   StopGridAlgoOrderResponseUnmarshaler
 	PlaceOrderResponseUnmarshaler          PlaceOrderResponseUnmarshaler
-	PostCreateSignalUnmarshaler            PostCreateSignalUnmarshaler
+
+	PostCreateSignalUnmarshaler    PostCreateSignalUnmarshaler
+	PostCreateSignalBotUnmarshaler PostCreateSignalBotUnmarshaler
 }
 
 type UnmarshalerOption func(options *UnmarshalerOptions)

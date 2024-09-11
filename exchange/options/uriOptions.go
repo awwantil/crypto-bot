@@ -22,7 +22,9 @@ type UriOptions struct {
 	PostStopGridAlgoOrderUri  string
 	PostComputeMinInvestment  string
 	GetAlgoOrderDetails       string
-	PostCreateSignalUri       string
+
+	PostCreateSignalUri    string
+	PostCreateSignalBotUri string
 }
 
 type UriOption func(*UriOptions)
