@@ -42,8 +42,12 @@ func New() *OKxV5 {
 			PostStopGridAlgoOrderUri:  "/api/v5/tradingBot/grid/stop-order-algo",
 			PostComputeMinInvestment:  "/api/v5/tradingBot/grid/min-investment",
 			GetAlgoOrderDetails:       "/api/v5/tradingBot/grid/orders-algo-details",
-			PostCreateSignalUri:       "/api/v5/tradingBot/signal/create-signal",
-			PostCreateSignalBotUri:    "/api/v5/tradingBot/signal/order-algo",
+
+			PostCreateSignalUri:            "/api/v5/tradingBot/signal/create-signal",
+			PostCreateSignalBotUri:         "/api/v5/tradingBot/signal/order-algo",
+			PostCancelSignalBotUri:         "/api/v5/tradingBot/signal/stop-order-algo",
+			PostPlaceSubOrderSignalBotUri:  "/api/v5/tradingBot/signal/sub-order",
+			PostCancelSubOrderSignalBotUri: "/api/v5/tradingBot/signal/cancel-sub-order",
 		},
 		UnmarshalOpts: options.UnmarshalerOptions{
 			ResponseUnmarshaler:                    unmarshaler.UnmarshalResponse,
@@ -69,8 +73,12 @@ func New() *OKxV5 {
 			PlaceGridAlgoOrderResponseUnmarshaler:  unmarshaler.UnmarshalPostPlaceGridAlgoOrder,
 			StopGridAlgoOrderResponseUnmarshaler:   unmarshaler.UnmarshalPostStopGridAlgoOrder,
 			PlaceOrderResponseUnmarshaler:          unmarshaler.UnmarshalPlaceOrder,
+
 			PostCreateSignalUnmarshaler:            unmarshaler.UnmarshalCreateSignal,
 			PostCreateSignalBotUnmarshaler:         unmarshaler.UnmarshalCreateSignalBot,
+			PostCancelSignalBotUnmarshaler:         unmarshaler.UnmarshalCancelSignalBot,
+			PostPlaceSubOrderSignalBotUnmarshaler:  unmarshaler.UnmarshalPlaceSubOrderSignalBot,
+			PostCancelSubOrderSignalBotUnmarshaler: unmarshaler.UnmarshalCancelSubOrderSignalBot,
 		},
 	}
 

@@ -23,8 +23,11 @@ type UriOptions struct {
 	PostComputeMinInvestment  string
 	GetAlgoOrderDetails       string
 
-	PostCreateSignalUri    string
-	PostCreateSignalBotUri string
+	PostCreateSignalUri            string
+	PostCreateSignalBotUri         string
+	PostCancelSignalBotUri         string
+	PostPlaceSubOrderSignalBotUri  string
+	PostCancelSubOrderSignalBotUri string
 }
 
 type UriOption func(*UriOptions)

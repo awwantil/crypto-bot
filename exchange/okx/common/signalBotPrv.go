@@ -56,3 +56,75 @@ func (prv *Prv) CreateSignalBot(req model.CreateSignalBotRequest, opt ...model.O
 
 	return details, responseBody, err
 }
+
+func (prv *Prv) CancelSignalBot(req model.CancelSignalBotRequest, opt ...model.OptionParameter) (*model.CancelSignalBotResponse, []byte, error) {
+	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.PostCancelSignalBotUri)
+
+	params := url.Values{}
+	params.Set("algoId", req.AlgoId)
+
+	util.MergeOptionParams(&params, opt...)
+
+	data, responseBody, err := prv.DoAuthRequest(http.MethodPost, reqUrl, &params, nil)
+	if err != nil {
+		logger.Errorf("[PostCancelSignalBotUri] err=%s, response=%s", err.Error(), string(data))
+		return &model.CancelSignalBotResponse{}, responseBody, err
+	}
+
+	logger.Info("responseBody", string(responseBody))
+	logger.Info("data", string(data))
+
+	details, err := prv.UnmarshalOpts.PostCancelSignalBotUnmarshaler(data)
+
+	return details, responseBody, err
+}
+
+func (prv *Prv) PlaceSubOrderSignalBot(req model.PlaceSubOrderSignalBotRequest, opt ...model.OptionParameter) (*model.PlaceSubOrderSignalBotResponse, []byte, error) {
+	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.PostPlaceSubOrderSignalBotUri)
+
+	params := url.Values{}
+	params.Set("instId", req.InstId)
+	params.Set("algoId", req.AlgoId)
+	params.Set("side", req.Side)
+	params.Set("ordType", req.OrdType)
+	params.Set("sz", req.Sz)
+
+	util.MergeOptionParams(&params, opt...)
+
+	data, responseBody, err := prv.DoAuthRequest(http.MethodPost, reqUrl, &params, nil)
+	if err != nil {
+		logger.Errorf("[PostPlaceSubOrderSignalBotUri] err=%s, response=%s", err.Error(), string(data))
+		return &model.PlaceSubOrderSignalBotResponse{}, responseBody, err
+	}
+
+	logger.Info("responseBody", string(responseBody))
+	logger.Info("data", string(data))
+
+	details, err := prv.UnmarshalOpts.PostPlaceSubOrderSignalBotUnmarshaler(data)
+
+	return details, responseBody, err
+}
+
+func (prv *Prv) CancelSubOrderSignalBot(req model.CancelSubOrderSignalBotRequest, opt ...model.OptionParameter) (*model.CancelSubOrderSignalBotResponse, []byte, error) {
+	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.PostCancelSubOrderSignalBotUri)
+
+	params := url.Values{}
+	params.Set("instId", req.InstId)
+	params.Set("algoId", req.AlgoId)
+	params.Set("signalOrdId", req.SignalOrdId)
+
+	util.MergeOptionParams(&params, opt...)
+
+	data, responseBody, err := prv.DoAuthRequest(http.MethodPost, reqUrl, &params, nil)
+	if err != nil {
+		logger.Errorf("[PostCancelSubOrderSignalBotUri] err=%s, response=%s", err.Error(), string(data))
+		return &model.CancelSubOrderSignalBotResponse{}, responseBody, err
+	}
+
+	logger.Info("responseBody", string(responseBody))
+	logger.Info("data", string(data))
+
+	details, err := prv.UnmarshalOpts.PostCancelSubOrderSignalBotUnmarshaler(data)
+
+	return details, responseBody, err
+}
