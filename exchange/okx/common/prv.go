@@ -411,6 +411,53 @@ func (prv *Prv) DoAuthRequest(httpMethod, reqUrl string, params *url.Values, hea
 	return baseResp.Data, respBody, nil
 }
 
+func (prv *Prv) DoAuthPostRequestWithParam(httpMethod, reqUrl string, byteParams []byte, headers map[string]string) ([]byte, []byte, error) {
+	var (
+		reqBodyStr string
+		reqUri     string
+	)
+
+	if http.MethodGet == httpMethod {
+		return nil, nil, errors.New("it is not GET request")
+	}
+
+	if http.MethodPost == httpMethod {
+		reqBodyStr = string(byteParams)
+	}
+
+	_url, _ := url.Parse(reqUrl)
+	reqUri = _url.RequestURI()
+	signStr, timestamp := prv.DoSignParam(httpMethod, reqUri, prv.apiOpts.Secret, reqBodyStr)
+	logger.Debugf("[DoAuthRequest] sign base64: %s, timestamp: %s", signStr, timestamp)
+
+	headers = map[string]string{
+		"Content-Type": "application/json; charset=UTF-8",
+		//"Accept":               "application/json",
+		"x-simulated-trading":  "1",
+		"OK-ACCESS-KEY":        prv.apiOpts.Key,
+		"OK-ACCESS-PASSPHRASE": prv.apiOpts.Passphrase,
+		"OK-ACCESS-SIGN":       signStr,
+		"OK-ACCESS-TIMESTAMP":  timestamp}
+
+	respBody, err := httpcli.Cli.DoRequest(httpMethod, reqUrl, reqBodyStr, headers)
+	if err != nil {
+		return nil, respBody, err
+	}
+	logger.Debugf("[DoAuthRequest] response body: %s", string(respBody))
+
+	var baseResp BaseResp
+	err = prv.OKxV5.UnmarshalOpts.ResponseUnmarshaler(respBody, &baseResp)
+	if err != nil {
+		return nil, respBody, err
+	}
+
+	if baseResp.Code != 0 {
+		return nil, respBody, errors.New(baseResp.Msg)
+	}
+
+	return baseResp.Data, respBody, nil
+}
+
 func NewPrvApi(opts ...options.ApiOption) *Prv {
 	var api = new(Prv)
 	for _, opt := range opts {

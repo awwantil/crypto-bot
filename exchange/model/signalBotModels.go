@@ -15,10 +15,26 @@ type CreateSignalResponse struct {
 // https://www.okx.com/docs-v5/en/#order-book-trading-signal-bot-trading-post-create-signal-bot
 // POST /api/v5/tradingBot/signal/order-algo
 type CreateSignalBotRequest struct {
-	SignalChanId string `json:"signalChanId,omitempty"`
-	Lever        string `json:"lever,omitempty"`
-	InvestAmt    string `json:"investAmt,omitempty"`
-	SubOrdType   string `json:"subOrdType,omitempty"`
+	SignalChanId      string                `json:"signalChanId,omitempty"`
+	Lever             string                `json:"lever,omitempty"`
+	InvestAmt         string                `json:"investAmt,omitempty"`
+	SubOrdType        string                `json:"subOrdType,omitempty"`
+	InstIds           []string              `json:"instIds,omitempty"`
+	EntrySettingParam EntrySettingParamData `json:"entrySettingParam,omitempty"`
+	ExitSettingParam  ExitSettingParamData  `json:"exitSettingParam,omitempty"`
+}
+
+type EntrySettingParamData struct {
+	AllowMultipleEntry string `json:"allowMultipleEntry,omitempty"`
+	EntryType          string `json:"entryType,omitempty"`
+	Amt                string `json:"amt,omitempty"`
+	Ratio              string `json:"ratio,omitempty"`
+}
+
+type ExitSettingParamData struct {
+	TpSlType string `json:"tpSlType,omitempty"`
+	TpPct    string `json:"tpPct,omitempty"`
+	SlPct    string `json:"slPct,omitempty"`
 }
 
 type CreateSignalBotResponse struct {

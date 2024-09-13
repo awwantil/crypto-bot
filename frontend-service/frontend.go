@@ -86,12 +86,23 @@ func main() {
 		//logger.Info("resp3: ", resp3)
 		//logger.Info("resp4: ", string(resp4))
 
-		newSignal, err := app.CreateSignal(api, "SSS", "Asdsdsds")
+		//newSignal, err := app.CreateSignal(api, "SOL_15m_TestStrategy", "Test strategy")
+		//if err != nil {
+		//	return
+		//}
+		//logger.Infoln(newSignal.SignalChanToken)
+		//data[{"signalChanId":"1799976084486750208","signalChanToken":"ThclzGQB2McTgH3bPwORvcZcB0aU/KVJ5dbcI7OjfGvGD9jpd46aUBJLt2ZwVvMlQQGIpKcCakUdgMaKlPKqtg=="}]
+
+		newSignalBot, err := app.CreateSignalBot(api, "1799976084486750208", "SOL-USDT-SWAP", "3", "60")
 		if err != nil {
 			return
 		}
-		logger.Infoln(newSignal.SignalChanToken)
-		//data[{"signalChanId":"1719165859173761024","signalChanToken":"H850fL7RrR5EuG/uh2hxIbK3ZRbfXkro5b1zCJvN3sGWxD0PjQwLtGlTbI8JSTm9+noATYdHhvo8CF0fXVNwQg=="}]
+		logger.Infoln(newSignalBot.AlgoClOrdId)
+		//1802967454516252672
+		//1802979171992338432
+		//1803009789270687744
+		//1803013743727607808
+
 	}()
 
 	go func() {

@@ -22,3 +22,34 @@ func CreateSignal(api *futures.PrvApi, signalName string, signalDesc string) (si
 
 	return newSignal, nil
 }
+
+func CreateSignalBot(api *futures.PrvApi, signalChanId string, instIds string, lever string, investAmt string) (signal *model.CreateSignalBotResponse, err error) {
+	createSignalBotRequest := new(model.CreateSignalBotRequest)
+	createSignalBotRequest.SignalChanId = signalChanId
+	createSignalBotRequest.Lever = lever
+	createSignalBotRequest.InvestAmt = investAmt
+	createSignalBotRequest.InstIds = append(createSignalBotRequest.InstIds, instIds)
+	createSignalBotRequest.SubOrdType = "9" //Sub order type 1：limit order 2：market order 9：tradingView signal
+
+	entrySettingParamData := new(model.EntrySettingParamData)
+	entrySettingParamData.EntryType = "1"
+	entrySettingParamData.AllowMultipleEntry = "true"
+	createSignalBotRequest.EntrySettingParam = *entrySettingParamData
+
+	exitSettingParamData := new(model.ExitSettingParamData)
+	createSignalBotRequest.ExitSettingParam = *exitSettingParamData
+
+	newSignalBot, data, err := api.Isolated.CreateSignalBot(*createSignalBotRequest)
+	if err != nil {
+		logger.Errorf("Error creating signal bot: %v, data: %v", err, string(data))
+		return nil, err
+	}
+	algoId := newSignalBot.AlgoId
+	sCode := newSignalBot.SCode
+	sMsg := newSignalBot.SMsg
+	logger.Info("algoId = ", algoId)
+	logger.Info("sCode = ", sCode)
+	logger.Info("sMsg = ", sMsg)
+
+	return newSignalBot, nil
+}

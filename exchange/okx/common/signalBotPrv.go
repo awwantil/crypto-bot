@@ -1,6 +1,7 @@
 package common
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -35,15 +36,9 @@ func (prv *Prv) CreateSignal(req model.CreateSignalRequest, opt ...model.OptionP
 func (prv *Prv) CreateSignalBot(req model.CreateSignalBotRequest, opt ...model.OptionParameter) (*model.CreateSignalBotResponse, []byte, error) {
 	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.PostCreateSignalBotUri)
 
-	params := url.Values{}
-	params.Set("signalChanId", req.SignalChanId)
-	params.Set("lever", req.Lever)
-	params.Set("investAmt", req.InvestAmt)
-	params.Set("subOrdType", req.SubOrdType)
+	jsonStr, _ := json.Marshal(req)
 
-	util.MergeOptionParams(&params, opt...)
-
-	data, responseBody, err := prv.DoAuthRequest(http.MethodPost, reqUrl, &params, nil)
+	data, responseBody, err := prv.DoAuthPostRequestWithParam(http.MethodPost, reqUrl, jsonStr, nil)
 	if err != nil {
 		logger.Errorf("[CreateSignalBot] err=%s, response=%s", err.Error(), string(data))
 		return &model.CreateSignalBotResponse{}, responseBody, err
