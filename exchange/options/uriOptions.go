@@ -28,6 +28,7 @@ type UriOptions struct {
 	PostCancelSignalBotUri         string
 	PostPlaceSubOrderSignalBotUri  string
 	PostCancelSubOrderSignalBotUri string
+	PostClosePositionSignalBotUri  string
 }
 
 type UriOption func(*UriOptions)

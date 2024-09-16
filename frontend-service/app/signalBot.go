@@ -95,3 +95,16 @@ func CancelSubOrderSignalBot(api *futures.PrvApi, cancelSubOrderSignalBot *model
 
 	return response, nil
 }
+
+func ClosePositionSignalBot(api *futures.PrvApi, request *model.ClosePositionSignalBotRequest) (signal *model.ClosePositionSignalBotResponse, err error) {
+
+	response, data, err := api.Isolated.ClosePositionSignalBot(*request)
+	if err != nil {
+		logger.Errorf("Error ClosePositionSignalBot: %v, data: %v", err, string(data))
+		return nil, err
+	}
+	logger.Info("responseData = ", string(data))
+	logger.Info("responseData = ", response)
+
+	return response, nil
+}

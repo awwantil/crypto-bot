@@ -100,31 +100,43 @@ func main() {
 		//}
 		//logger.Infoln(newSignalBot.AlgoClOrdId)
 		//1811656338578079744
+		//1811814804349255680
 
 		//_, err = app.CancelSignalBot(api, "1811656338578079744")
 		//if err != nil {
 		//	return
 		//}
 
-		//placeSubOrderSignalBotRequest := new(model.PlaceSubOrderSignalBotRequest)
-		//placeSubOrderSignalBotRequest.InstId = "SOL-USDT-SWAP"
+		placeSubOrderSignalBotRequest := new(model.PlaceSubOrderSignalBotRequest)
+		placeSubOrderSignalBotRequest.InstId = "SOL-USDT-SWAP"
 		//placeSubOrderSignalBotRequest.AlgoId = "1811656338578079744"
-		//placeSubOrderSignalBotRequest.Side = "buy"
-		//placeSubOrderSignalBotRequest.OrdType = "market"
-		//placeSubOrderSignalBotRequest.Sz = "2.00"
-		//placeSubOrderSignalBotRequest.Px = "3"
-		//
+		placeSubOrderSignalBotRequest.AlgoId = "1811814804349255680"
+		placeSubOrderSignalBotRequest.Side = "buy"
+		placeSubOrderSignalBotRequest.OrdType = "market"
+		placeSubOrderSignalBotRequest.Sz = "3.00"
+		//		//placeSubOrderSignalBotRequest.Px = "3"
+
 		//_, err = app.PlaceSubOrderSignalBot(api, placeSubOrderSignalBotRequest)
+		if err != nil {
+			return
+		}
+
+		//cancelSubOrderSignalBotRequest := new(model.CancelSubOrderSignalBotRequest)
+		//cancelSubOrderSignalBotRequest.InstId = "SOL-USDT-SWAP"
+		//cancelSubOrderSignalBotRequest.AlgoId = "1811656338578079744"
+		//cancelSubOrderSignalBotRequest.SignalOrdId = "1799976084486750208"
+		//
+		//_, err = app.CancelSubOrderSignalBot(api, cancelSubOrderSignalBotRequest)
 		//if err != nil {
 		//	return
 		//}
 
-		cancelSubOrderSignalBotRequest := new(model.CancelSubOrderSignalBotRequest)
-		cancelSubOrderSignalBotRequest.InstId = "SOL-USDT-SWAP"
-		cancelSubOrderSignalBotRequest.AlgoId = "1811656338578079744"
-		cancelSubOrderSignalBotRequest.SignalOrdId = "1799976084486750208"
+		closePositionSignalBotRequest := new(model.ClosePositionSignalBotRequest)
+		closePositionSignalBotRequest.InstId = "SOL-USDT-SWAP"
+		//closePositionSignalBotRequest.AlgoId = "1811656338578079744"
+		closePositionSignalBotRequest.AlgoId = "1811814804349255680"
 
-		_, err = app.CancelSubOrderSignalBot(api, cancelSubOrderSignalBotRequest)
+		_, err = app.ClosePositionSignalBot(api, closePositionSignalBotRequest)
 		if err != nil {
 			return
 		}

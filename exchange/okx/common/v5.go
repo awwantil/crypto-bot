@@ -49,6 +49,7 @@ func New() *OKxV5 {
 			PostCancelSignalBotUri:         "/api/v5/tradingBot/signal/stop-order-algo",
 			PostPlaceSubOrderSignalBotUri:  "/api/v5/tradingBot/signal/sub-order",
 			PostCancelSubOrderSignalBotUri: "/api/v5/tradingBot/signal/cancel-sub-order",
+			PostClosePositionSignalBotUri:  "/api/v5/tradingBot/signal/close-position",
 		},
 		UnmarshalOpts: options.UnmarshalerOptions{
 			ResponseUnmarshaler:                    unmarshaler.UnmarshalResponse,
@@ -80,6 +81,7 @@ func New() *OKxV5 {
 			PostCancelSignalBotUnmarshaler:         unmarshaler.UnmarshalCancelSignalBot,
 			PostPlaceSubOrderSignalBotUnmarshaler:  unmarshaler.UnmarshalPlaceSubOrderSignalBot,
 			PostCancelSubOrderSignalBotUnmarshaler: unmarshaler.UnmarshalCancelSubOrderSignalBot,
+			PostClosePositionSignalBotUnmarshaler:  unmarshaler.UnmarshalClosePositionSignalBot,
 		},
 	}
 

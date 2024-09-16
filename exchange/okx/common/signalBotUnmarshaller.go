@@ -147,3 +147,24 @@ func (un *RespUnmarshaler) UnmarshalCancelSubOrderSignalBot(data []byte) (*model
 
 	return details, err
 }
+
+func (un *RespUnmarshaler) UnmarshalClosePositionSignalBot(data []byte) (*model.ClosePositionSignalBotResponse, error) {
+	var details = new(model.ClosePositionSignalBotResponse)
+
+	_, err := jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {
+			detailsStr := string(respData)
+			switch string(key) {
+			case "algoId":
+				details.AlgoId = detailsStr
+			}
+			return err
+		})
+
+		if err != nil {
+			return
+		}
+	})
+
+	return details, err
+}

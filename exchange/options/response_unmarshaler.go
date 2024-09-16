@@ -31,6 +31,7 @@ type PostCreateSignalBotUnmarshaler func([]byte) (*model.CreateSignalBotResponse
 type PostCancelSignalBotUnmarshaler func([]byte) (*model.CancelSignalBotResponse, error)
 type PostPlaceSubOrderSignalBotUnmarshaler func([]byte) (*model.PlaceSubOrderSignalBotResponse, error)
 type PostCancelSubOrderSignalBotUnmarshaler func([]byte) (*model.CancelSubOrderSignalBotResponse, error)
+type PostClosePositionSignalBotUnmarshaler func([]byte) (*model.ClosePositionSignalBotResponse, error)
 
 type UnmarshalerOptions struct {
 	ResponseUnmarshaler                    ResponseUnmarshaler
@@ -62,6 +63,7 @@ type UnmarshalerOptions struct {
 	PostCancelSignalBotUnmarshaler         PostCancelSignalBotUnmarshaler
 	PostPlaceSubOrderSignalBotUnmarshaler  PostPlaceSubOrderSignalBotUnmarshaler
 	PostCancelSubOrderSignalBotUnmarshaler PostCancelSubOrderSignalBotUnmarshaler
+	PostClosePositionSignalBotUnmarshaler  PostClosePositionSignalBotUnmarshaler
 }
 
 type UnmarshalerOption func(options *UnmarshalerOptions)

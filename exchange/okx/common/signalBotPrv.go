@@ -119,3 +119,26 @@ func (prv *Prv) CancelSubOrderSignalBot(req model.CancelSubOrderSignalBotRequest
 
 	return details, responseBody, err
 }
+
+func (prv *Prv) ClosePositionSignalBot(req model.ClosePositionSignalBotRequest, opt ...model.OptionParameter) (*model.ClosePositionSignalBotResponse, []byte, error) {
+	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.PostClosePositionSignalBotUri)
+
+	params := url.Values{}
+	params.Set("instId", req.InstId)
+	params.Set("algoId", req.AlgoId)
+
+	util.MergeOptionParams(&params, opt...)
+
+	data, responseBody, err := prv.DoAuthRequest(http.MethodPost, reqUrl, &params, nil)
+	if err != nil {
+		logger.Errorf("[ClosePositionSignalBotRequest] err=%s, response=%s", err.Error(), string(data))
+		return &model.ClosePositionSignalBotResponse{}, responseBody, err
+	}
+
+	logger.Info("responseBody", string(responseBody))
+	logger.Info("data", string(data))
+
+	details, err := prv.UnmarshalOpts.PostClosePositionSignalBotUnmarshaler(data)
+
+	return details, responseBody, err
+}
