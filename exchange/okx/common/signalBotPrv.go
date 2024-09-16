@@ -55,12 +55,8 @@ func (prv *Prv) CreateSignalBot(req model.CreateSignalBotRequest, opt ...model.O
 func (prv *Prv) CancelSignalBot(req model.CancelSignalBotRequest, opt ...model.OptionParameter) (*model.CancelSignalBotResponse, []byte, error) {
 	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.PostCancelSignalBotUri)
 
-	params := url.Values{}
-	params.Set("algoId", req.AlgoId)
-
-	util.MergeOptionParams(&params, opt...)
-
-	data, responseBody, err := prv.DoAuthRequest(http.MethodPost, reqUrl, &params, nil)
+	jsonStr, _ := json.Marshal(req)
+	data, responseBody, err := prv.DoAuthPostRequestWithParam(http.MethodPost, reqUrl, jsonStr, nil)
 	if err != nil {
 		logger.Errorf("[PostCancelSignalBotUri] err=%s, response=%s", err.Error(), string(data))
 		return &model.CancelSignalBotResponse{}, responseBody, err

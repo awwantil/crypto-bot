@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"okx-bot/exchange/model"
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/controllers"
 	"okx-bot/frontend-service/models"
@@ -93,15 +94,40 @@ func main() {
 		//logger.Infoln(newSignal.SignalChanToken)
 		//data[{"signalChanId":"1799976084486750208","signalChanToken":"ThclzGQB2McTgH3bPwORvcZcB0aU/KVJ5dbcI7OjfGvGD9jpd46aUBJLt2ZwVvMlQQGIpKcCakUdgMaKlPKqtg=="}]
 
-		newSignalBot, err := app.CreateSignalBot(api, "1799976084486750208", "SOL-USDT-SWAP", "3", "60")
+		//newSignalBot, err := app.CreateSignalBot(api, "1799976084486750208", "SOL-USDT-SWAP", "3", "60")
+		//if err != nil {
+		//	return
+		//}
+		//logger.Infoln(newSignalBot.AlgoClOrdId)
+		//1811656338578079744
+
+		//_, err = app.CancelSignalBot(api, "1811656338578079744")
+		//if err != nil {
+		//	return
+		//}
+
+		//placeSubOrderSignalBotRequest := new(model.PlaceSubOrderSignalBotRequest)
+		//placeSubOrderSignalBotRequest.InstId = "SOL-USDT-SWAP"
+		//placeSubOrderSignalBotRequest.AlgoId = "1811656338578079744"
+		//placeSubOrderSignalBotRequest.Side = "buy"
+		//placeSubOrderSignalBotRequest.OrdType = "market"
+		//placeSubOrderSignalBotRequest.Sz = "2.00"
+		//placeSubOrderSignalBotRequest.Px = "3"
+		//
+		//_, err = app.PlaceSubOrderSignalBot(api, placeSubOrderSignalBotRequest)
+		//if err != nil {
+		//	return
+		//}
+
+		cancelSubOrderSignalBotRequest := new(model.CancelSubOrderSignalBotRequest)
+		cancelSubOrderSignalBotRequest.InstId = "SOL-USDT-SWAP"
+		cancelSubOrderSignalBotRequest.AlgoId = "1811656338578079744"
+		cancelSubOrderSignalBotRequest.SignalOrdId = "1799976084486750208"
+
+		_, err = app.CancelSubOrderSignalBot(api, cancelSubOrderSignalBotRequest)
 		if err != nil {
 			return
 		}
-		logger.Infoln(newSignalBot.AlgoClOrdId)
-		//1802967454516252672
-		//1802979171992338432
-		//1803009789270687744
-		//1803013743727607808
 
 	}()
 

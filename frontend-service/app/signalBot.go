@@ -29,7 +29,7 @@ func CreateSignalBot(api *futures.PrvApi, signalChanId string, instIds string, l
 	createSignalBotRequest.Lever = lever
 	createSignalBotRequest.InvestAmt = investAmt
 	createSignalBotRequest.InstIds = append(createSignalBotRequest.InstIds, instIds)
-	createSignalBotRequest.SubOrdType = "9" //Sub order type 1：limit order 2：market order 9：tradingView signal
+	createSignalBotRequest.SubOrdType = "2" //Sub order type 1：limit order 2：market order 9：tradingView signal
 
 	entrySettingParamData := new(model.EntrySettingParamData)
 	entrySettingParamData.EntryType = "1"
@@ -52,4 +52,46 @@ func CreateSignalBot(api *futures.PrvApi, signalChanId string, instIds string, l
 	logger.Info("sMsg = ", sMsg)
 
 	return newSignalBot, nil
+}
+
+func CancelSignalBot(api *futures.PrvApi, algoId string) (signal *model.CancelSignalBotResponse, err error) {
+	cancelSignalBotRequest := new(model.CancelSignalBotRequest)
+	cancelSignalBotRequest.AlgoId = algoId
+
+	stopSignalBot, data, err := api.Isolated.CancelSignalBot(*cancelSignalBotRequest)
+	if err != nil {
+		logger.Errorf("Error CancelSignalBot: %v, data: %v", err, string(data))
+		return nil, err
+	}
+	signalId := stopSignalBot.AlgoId
+	logger.Info("signalId = ", signalId)
+
+	return stopSignalBot, nil
+}
+
+func PlaceSubOrderSignalBot(api *futures.PrvApi, placeSubOrderSignalBotRequest *model.PlaceSubOrderSignalBotRequest) (signal *model.PlaceSubOrderSignalBotResponse, err error) {
+
+	response, data, err := api.Isolated.PlaceSubOrderSignalBot(*placeSubOrderSignalBotRequest)
+	if err != nil {
+		logger.Errorf("Error PlaceSubOrderSignalBot: %v, data: %v", err, string(data))
+		return nil, err
+	}
+	logger.Info("response = ", response)
+	logger.Info("string(data) = ", string(data))
+	logger.Info("response = ", response.Data)
+
+	return response, nil
+}
+
+func CancelSubOrderSignalBot(api *futures.PrvApi, cancelSubOrderSignalBot *model.CancelSubOrderSignalBotRequest) (signal *model.CancelSubOrderSignalBotResponse, err error) {
+
+	response, data, err := api.Isolated.CancelSubOrderSignalBot(*cancelSubOrderSignalBot)
+	if err != nil {
+		logger.Errorf("Error CancelSubOrderSignalBotRequest: %v, data: %v", err, string(data))
+		return nil, err
+	}
+	responseData := response.Data
+	logger.Info("responseData = ", responseData)
+
+	return response, nil
 }

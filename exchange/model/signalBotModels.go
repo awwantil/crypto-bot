@@ -92,3 +92,14 @@ type CancelSubOrderData struct {
 	SCode       string `json:"sCode,omitempty"`
 	SMsg        string `json:"sMsg,omitempty"`
 }
+
+// https://www.okx.com/docs-v5/en/#order-book-trading-signal-bot-trading-post-close-position
+// POST /api/v5/tradingBot/signal/close-position
+type ClosePositionSignalBotRequest struct {
+	InstId string `json:"instId,omitempty"`
+	AlgoId string `json:"algoId,omitempty"`
+}
+
+type ClosePositionSignalBotResponse struct {
+	AlgoId string `json:"algoId,omitempty"`
+}
