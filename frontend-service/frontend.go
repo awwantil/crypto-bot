@@ -150,7 +150,7 @@ func main() {
 			return
 		}
 		logger.Infof("details OrdId: %v", details.OrdId)
-		logger.Infof("details AvgPx: %v", details.AvgPx)
+		//logger.Infof("details AvgPx: %v", details.AvgPx)
 		//{"code":"0","data":[{"accFillSz":"2","algoClOrdId":"","algoId":"1817262238944722944","algoOrdType":"contract","avgPx":"129.19","cTime":"17266
 		//61399705","ccy":"","clOrdId":"O1817274472657346561","ctVal":"0.1","fee":"-0.012919","feeCcy":"USDT","instId":"SOL-USDT-SWAP","instType":"SWAP","lever":"3.0","ordId":"18172744728153
 		//78432","ordType":"market","pnl":"0","posSide":"net","px":"136.95","side":"buy","signalOrdId":"O1817274472657346561","state":"filled","sz":"2","tag":"","tdMode":"cross","uTime":"1726661399707"}],"msg":""}

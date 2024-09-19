@@ -38,7 +38,7 @@ type BotCreateRequest struct {
 }
 
 type BotWithIdRequest struct {
-	Id string `json:"id"`
+	Id uint `json:"id"`
 }
 
 var (
