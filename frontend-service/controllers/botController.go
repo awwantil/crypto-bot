@@ -37,6 +37,12 @@ var DeleteBot = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	foundBot := models.Find(*botDeleteRequest)
+	deal := models.FindByStatus(foundBot.ID, models.DealStarted)
+	signalId := foundBot.SignalRefer
+	signal, err := models.FindSignalById(signalId)
+	if deal.ID > 0 {
+		closeDeal(&deal, &foundBot, signal.NameToken)
+	}
 	foundBot.Delete()
 
 	u.Respond(w, u.Message(true, "Success delete bot"))

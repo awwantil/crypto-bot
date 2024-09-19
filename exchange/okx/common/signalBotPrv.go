@@ -151,6 +151,7 @@ func (prv *Prv) GetSubOrdersSignalBot(req model.GetSubOrdersSignalBotRequest, op
 	params.Set("algoId", req.AlgoId)
 	params.Set("algoOrdType", req.AlgoOrdType)
 	params.Set("signalOrdId", req.SignalOrdId)
+	params.Set("state", req.State)
 
 	util.MergeOptionParams(&params, opt...)
 

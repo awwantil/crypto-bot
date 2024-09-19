@@ -185,6 +185,12 @@ func (un *RespUnmarshaler) UnmarshalGetSubOrdersSignalBot(data []byte) (*model.G
 				details.InstId = detailsStr
 			case "instType":
 				details.InstType = detailsStr
+			case "px":
+				details.Px = detailsStr
+			case "avgPx":
+				details.AvgPx = detailsStr
+			case "ordId":
+				details.OrdId = detailsStr
 			case "uTime":
 				details.UTime = detailsStr
 			case "cTime":

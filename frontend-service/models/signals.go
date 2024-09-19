@@ -88,3 +88,14 @@ func FindSignalByCode(signalCodeId string) (*Signal, error) {
 
 	return findSignal, nil
 }
+
+func FindSignalById(signalId uint) (*Signal, error) {
+	findSignal := &Signal{}
+	err := GetDB().Table("signals").Where("id = ?", signalId).Find(&findSignal).Error
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	return findSignal, nil
+}

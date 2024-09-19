@@ -101,16 +101,9 @@ func main() {
 		////data[{"algoClOrdId":"","algoId":"1816982685798109184","sCode":"0","sMsg":""}]
 		////responseBody{"code":"0","data":[{"algoClOrdId":"","algoId":"1817009927903252480","sCode":"0","sMsg":""}],"msg":""}
 		//logger.Infof("newSignalBot.AlgoId = %s", newSignalBot.AlgoId)
-		//1816982685798109184
-		//1817009927903252480
-		//1817229891331424256
-		//1817234945836847104
-		//1817240302030159872
-		//1817256141265571840
 		//1817262238944722944
-		//1817274404305371136
 
-		//_, err = app.CancelSignalBot(api, "1811814804349255680")
+		//_, err = app.CancelSignalBot(api, "1817262238944722944")
 		////{"code":"0","data":[{"algoClOrdId":"","algoId":"1811814804349255680","sCode":"0","sMsg":""}],"msg":""}
 		//if err != nil {
 		//	return
@@ -140,8 +133,7 @@ func main() {
 
 		closePositionSignalBotRequest := new(model.ClosePositionSignalBotRequest)
 		closePositionSignalBotRequest.InstId = "SOL-USDT-SWAP"
-		//closePositionSignalBotRequest.AlgoId = "1811656338578079744"
-		//closePositionSignalBotRequest.AlgoId = "1811814804349255680"
+		closePositionSignalBotRequest.AlgoId = "1817262238944722944"
 
 		//_, err = app.ClosePositionSignalBot(api, closePositionSignalBotRequest)
 		if err != nil {
@@ -151,14 +143,17 @@ func main() {
 		getSubOrdersSignalBotRequest := new(model.GetSubOrdersSignalBotRequest)
 		getSubOrdersSignalBotRequest.AlgoId = "1817262238944722944"
 		getSubOrdersSignalBotRequest.AlgoOrdType = "contract"
-		getSubOrdersSignalBotRequest.SignalOrdId = "1799976084486750208"
-		//getSubOrdersSignalBotRequest.AlgoId = "1811814804349255680"
+		getSubOrdersSignalBotRequest.State = "filled"
 
 		details, err := app.GetSubOrderSignalBot(api, getSubOrdersSignalBotRequest)
 		if err != nil {
 			return
 		}
-		logger.Infof("details Data: %v", details)
+		logger.Infof("details OrdId: %v", details.OrdId)
+		logger.Infof("details AvgPx: %v", details.AvgPx)
+		//{"code":"0","data":[{"accFillSz":"2","algoClOrdId":"","algoId":"1817262238944722944","algoOrdType":"contract","avgPx":"129.19","cTime":"17266
+		//61399705","ccy":"","clOrdId":"O1817274472657346561","ctVal":"0.1","fee":"-0.012919","feeCcy":"USDT","instId":"SOL-USDT-SWAP","instType":"SWAP","lever":"3.0","ordId":"18172744728153
+		//78432","ordType":"market","pnl":"0","posSide":"net","px":"136.95","side":"buy","signalOrdId":"O1817274472657346561","state":"filled","sz":"2","tag":"","tdMode":"cross","uTime":"1726661399707"}],"msg":""}
 
 	}()
 
