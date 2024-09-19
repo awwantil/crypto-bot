@@ -98,23 +98,30 @@ func main() {
 		//if err != nil {
 		//	return
 		//}
-		//logger.Infoln(newSignalBot.AlgoClOrdId)
-		//1811656338578079744
-		//1811814804349255680
+		////data[{"algoClOrdId":"","algoId":"1816982685798109184","sCode":"0","sMsg":""}]
+		////responseBody{"code":"0","data":[{"algoClOrdId":"","algoId":"1817009927903252480","sCode":"0","sMsg":""}],"msg":""}
+		//logger.Infof("newSignalBot.AlgoId = %s", newSignalBot.AlgoId)
+		//1816982685798109184
+		//1817009927903252480
+		//1817229891331424256
+		//1817234945836847104
+		//1817240302030159872
+		//1817256141265571840
+		//1817262238944722944
+		//1817274404305371136
 
-		//_, err = app.CancelSignalBot(api, "1811656338578079744")
+		//_, err = app.CancelSignalBot(api, "1811814804349255680")
+		////{"code":"0","data":[{"algoClOrdId":"","algoId":"1811814804349255680","sCode":"0","sMsg":""}],"msg":""}
 		//if err != nil {
 		//	return
 		//}
 
 		placeSubOrderSignalBotRequest := new(model.PlaceSubOrderSignalBotRequest)
 		placeSubOrderSignalBotRequest.InstId = "SOL-USDT-SWAP"
-		//placeSubOrderSignalBotRequest.AlgoId = "1811656338578079744"
-		placeSubOrderSignalBotRequest.AlgoId = "1811814804349255680"
+		placeSubOrderSignalBotRequest.AlgoId = "1817262238944722944"
 		placeSubOrderSignalBotRequest.Side = "buy"
 		placeSubOrderSignalBotRequest.OrdType = "market"
-		placeSubOrderSignalBotRequest.Sz = "3.00"
-		//		//placeSubOrderSignalBotRequest.Px = "3"
+		placeSubOrderSignalBotRequest.Sz = "2.00"
 
 		//_, err = app.PlaceSubOrderSignalBot(api, placeSubOrderSignalBotRequest)
 		if err != nil {
@@ -134,12 +141,24 @@ func main() {
 		closePositionSignalBotRequest := new(model.ClosePositionSignalBotRequest)
 		closePositionSignalBotRequest.InstId = "SOL-USDT-SWAP"
 		//closePositionSignalBotRequest.AlgoId = "1811656338578079744"
-		closePositionSignalBotRequest.AlgoId = "1811814804349255680"
+		//closePositionSignalBotRequest.AlgoId = "1811814804349255680"
 
-		_, err = app.ClosePositionSignalBot(api, closePositionSignalBotRequest)
+		//_, err = app.ClosePositionSignalBot(api, closePositionSignalBotRequest)
 		if err != nil {
 			return
 		}
+
+		getSubOrdersSignalBotRequest := new(model.GetSubOrdersSignalBotRequest)
+		getSubOrdersSignalBotRequest.AlgoId = "1817262238944722944"
+		getSubOrdersSignalBotRequest.AlgoOrdType = "contract"
+		getSubOrdersSignalBotRequest.SignalOrdId = "1799976084486750208"
+		//getSubOrdersSignalBotRequest.AlgoId = "1811814804349255680"
+
+		details, err := app.GetSubOrderSignalBot(api, getSubOrdersSignalBotRequest)
+		if err != nil {
+			return
+		}
+		logger.Infof("details Data: %v", details)
 
 	}()
 

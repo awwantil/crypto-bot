@@ -20,6 +20,7 @@ type CreateSignalBotRequest struct {
 	InvestAmt         string                `json:"investAmt,omitempty"`
 	SubOrdType        string                `json:"subOrdType,omitempty"`
 	InstIds           []string              `json:"instIds,omitempty"`
+	IncludeAll        string                `json:"includeAll,omitempty"`
 	EntrySettingParam EntrySettingParamData `json:"entrySettingParam,omitempty"`
 	ExitSettingParam  ExitSettingParamData  `json:"exitSettingParam,omitempty"`
 }
@@ -102,4 +103,63 @@ type ClosePositionSignalBotRequest struct {
 
 type ClosePositionSignalBotResponse struct {
 	AlgoId string `json:"algoId,omitempty"`
+}
+
+// https://www.okx.com/docs-v5/en/#order-book-trading-signal-bot-trading-get-signal-bot-sub-orders
+// GET /api/v5/tradingBot/signal/sub-orders
+type GetSubOrdersSignalBotRequest struct {
+	AlgoId      string `json:"algoId,omitempty"`
+	AlgoOrdType string `json:"algoOrdType,omitempty"`
+	SignalOrdId string `json:"signalOrdId,omitempty"`
+	State       string `json:"state,omitempty"`
+}
+
+type GetSubOrdersSignalBotResponse struct {
+	Adl         string `json:"adl,omitempty"`
+	AlgoClOrdId string `json:"algoClOrdId,omitempty"`
+	AlgoId      string `json:"algoId,omitempty"`
+	AvgPx       string `json:"avgPx,omitempty"`
+	CTime       string `json:"cTime,omitempty"`
+	Ccy         string `json:"ccy,omitempty"`
+	Imr         string `json:"imr,omitempty"`
+	InstId      string `json:"instId,omitempty"`
+	InstType    string `json:"instType,omitempty"`
+	Last        string `json:"last,omitempty"`
+	Lever       string `json:"lever,omitempty"`
+	LiqPx       string `json:"liqPx,omitempty"`
+	MarkPx      string `json:"markPx,omitempty"`
+	MgnMode     string `json:"mgnMode,omitempty"`
+	MgnRatio    string `json:"mgnRatio,omitempty"`
+	Mmr         string `json:"mmr,omitempty"`
+	NotionalUsd string `json:"notionalUsd,omitempty"`
+	Pos         string `json:"pos,omitempty"`
+	PosSide     string `json:"posSide,omitempty"`
+	UTime       string `json:"uTime,omitempty"`
+	Upl         string `json:"upl,omitempty"`
+	UplRatio    string `json:"uplRatio,omitempty"`
+}
+
+type GetSubOrdersSignalBotData struct {
+	Adl         string `json:"adl,omitempty"`
+	AlgoClOrdId string `json:"algoClOrdId,omitempty"`
+	AlgoId      string `json:"algoId,omitempty"`
+	AvgPx       string `json:"avgPx,omitempty"`
+	CTime       string `json:"cTime,omitempty"`
+	Ccy         string `json:"ccy,omitempty"`
+	Imr         string `json:"imr,omitempty"`
+	InstId      string `json:"instId,omitempty"`
+	InstType    string `json:"instType,omitempty"`
+	Last        string `json:"last,omitempty"`
+	Lever       string `json:"lever,omitempty"`
+	LiqPx       string `json:"liqPx,omitempty"`
+	MarkPx      string `json:"markPx,omitempty"`
+	MgnMode     string `json:"mgnMode,omitempty"`
+	MgnRatio    string `json:"mgnRatio,omitempty"`
+	Mmr         string `json:"mmr,omitempty"`
+	NotionalUsd string `json:"notionalUsd,omitempty"`
+	Pos         string `json:"pos,omitempty"`
+	PosSide     string `json:"posSide,omitempty"`
+	UTime       string `json:"uTime,omitempty"`
+	Upl         string `json:"upl,omitempty"`
+	UplRatio    string `json:"uplRatio,omitempty"`
 }

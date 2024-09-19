@@ -54,8 +54,9 @@ func (prv *Prv) CreateSignalBot(req model.CreateSignalBotRequest, opt ...model.O
 
 func (prv *Prv) CancelSignalBot(req model.CancelSignalBotRequest, opt ...model.OptionParameter) (*model.CancelSignalBotResponse, []byte, error) {
 	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.PostCancelSignalBotUri)
+	var reqArray = []model.CancelSignalBotRequest{req}
 
-	jsonStr, _ := json.Marshal(req)
+	jsonStr, _ := json.Marshal(reqArray)
 	data, responseBody, err := prv.DoAuthPostRequestWithParam(http.MethodPost, reqUrl, jsonStr, nil)
 	if err != nil {
 		logger.Errorf("[PostCancelSignalBotUri] err=%s, response=%s", err.Error(), string(data))
@@ -113,7 +114,7 @@ func (prv *Prv) CancelSubOrderSignalBot(req model.CancelSubOrderSignalBotRequest
 	}
 
 	logger.Info("responseBody", string(responseBody))
-	logger.Info("data", string(data))
+	logger.Info("data: ", string(data))
 
 	details, err := prv.UnmarshalOpts.PostCancelSubOrderSignalBotUnmarshaler(data)
 
@@ -139,6 +140,29 @@ func (prv *Prv) ClosePositionSignalBot(req model.ClosePositionSignalBotRequest, 
 	logger.Info("data", string(data))
 
 	details, err := prv.UnmarshalOpts.PostClosePositionSignalBotUnmarshaler(data)
+
+	return details, responseBody, err
+}
+
+func (prv *Prv) GetSubOrdersSignalBot(req model.GetSubOrdersSignalBotRequest, opt ...model.OptionParameter) (*model.GetSubOrdersSignalBotResponse, []byte, error) {
+	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.GetSubOrdersSignalBotUri)
+
+	params := url.Values{}
+	params.Set("algoId", req.AlgoId)
+	params.Set("algoOrdType", req.AlgoOrdType)
+	params.Set("signalOrdId", req.SignalOrdId)
+
+	util.MergeOptionParams(&params, opt...)
+
+	data, responseBody, err := prv.DoAuthRequest(http.MethodGet, reqUrl, &params, nil)
+	logger.Info("data for GetSubOrdersSignalBot: ", string(data))
+	logger.Info("responseBody for GetSubOrdersSignalBot: ", string(responseBody))
+	if err != nil {
+		logger.Errorf("[GetSubOrdersSignalBotRequest] err=%s, response=%s", err.Error(), string(data))
+		return &model.GetSubOrdersSignalBotResponse{}, responseBody, err
+	}
+
+	details, err := prv.UnmarshalOpts.GetSubOrdersSignalBotUnmarshaler(data)
 
 	return details, responseBody, err
 }

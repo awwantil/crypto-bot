@@ -2,6 +2,7 @@ package common
 
 import (
 	"github.com/buger/jsonparser"
+	"okx-bot/exchange/logger"
 	"okx-bot/exchange/model"
 )
 
@@ -118,9 +119,11 @@ func (un *RespUnmarshaler) UnmarshalCancelSubOrderSignalBot(data []byte) (*model
 			case "msg":
 				details.Msg = detailsStr
 			case "data":
+				logger.Infof("data 1 - !!!!!!!!!!!! %v", detailsStr)
 				_, _ = jsonparser.ArrayEach(respData, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 					err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {
 						detailsStr := string(respData)
+						logger.Infof("data 2 - !!!!!!!!!!!! %v", detailsStr)
 						switch string(key) {
 						case "signalOrdId":
 							detailsData.SignalOrdId = detailsStr
@@ -157,6 +160,35 @@ func (un *RespUnmarshaler) UnmarshalClosePositionSignalBot(data []byte) (*model.
 			switch string(key) {
 			case "algoId":
 				details.AlgoId = detailsStr
+			}
+			return err
+		})
+
+		if err != nil {
+			return
+		}
+	})
+
+	return details, err
+}
+
+func (un *RespUnmarshaler) UnmarshalGetSubOrdersSignalBot(data []byte) (*model.GetSubOrdersSignalBotResponse, error) {
+	var details = new(model.GetSubOrdersSignalBotResponse)
+
+	_, err := jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {
+			detailsStr := string(respData)
+			switch string(key) {
+			case "algoId":
+				details.AlgoId = detailsStr
+			case "instId":
+				details.InstId = detailsStr
+			case "instType":
+				details.InstType = detailsStr
+			case "uTime":
+				details.UTime = detailsStr
+			case "cTime":
+				details.CTime = detailsStr
 			}
 			return err
 		})

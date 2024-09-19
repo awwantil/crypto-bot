@@ -28,6 +28,7 @@ func CreateSignalBot(api *futures.PrvApi, signalChanId string, instIds string, l
 	createSignalBotRequest.SignalChanId = signalChanId
 	createSignalBotRequest.Lever = lever
 	createSignalBotRequest.InvestAmt = investAmt
+	//createSignalBotRequest.IncludeAll = "true"
 	createSignalBotRequest.InstIds = append(createSignalBotRequest.InstIds, instIds)
 	createSignalBotRequest.SubOrdType = "2" //Sub order type 1：limit order 2：market order 9：tradingView signal
 
@@ -44,12 +45,6 @@ func CreateSignalBot(api *futures.PrvApi, signalChanId string, instIds string, l
 		logger.Errorf("Error creating signal bot: %v, data: %v", err, string(data))
 		return nil, err
 	}
-	algoId := newSignalBot.AlgoId
-	sCode := newSignalBot.SCode
-	sMsg := newSignalBot.SMsg
-	logger.Info("algoId = ", algoId)
-	logger.Info("sCode = ", sCode)
-	logger.Info("sMsg = ", sMsg)
 
 	return newSignalBot, nil
 }
@@ -90,9 +85,6 @@ func CancelSubOrderSignalBot(api *futures.PrvApi, cancelSubOrderSignalBot *model
 		logger.Errorf("Error CancelSubOrderSignalBotRequest: %v, data: %v", err, string(data))
 		return nil, err
 	}
-	responseData := response.Data
-	logger.Info("responseData = ", responseData)
-
 	return response, nil
 }
 
@@ -105,6 +97,18 @@ func ClosePositionSignalBot(api *futures.PrvApi, request *model.ClosePositionSig
 	}
 	logger.Info("responseData = ", string(data))
 	logger.Info("responseData = ", response)
+
+	return response, nil
+}
+
+func GetSubOrderSignalBot(api *futures.PrvApi, request *model.GetSubOrdersSignalBotRequest) (signal *model.GetSubOrdersSignalBotResponse, err error) {
+
+	response, data, err := api.Isolated.GetSubOrdersSignalBot(*request)
+	if err != nil {
+		logger.Errorf("Error GetSubOrderSignalBot: %v, data: %v", err, string(data))
+		return nil, err
+	}
+	logger.Info("data = ", string(data))
 
 	return response, nil
 }
