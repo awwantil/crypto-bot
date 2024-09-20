@@ -28,6 +28,8 @@ type Bot struct {
 	PosSide       uint      `json:"posSide"`
 	SignalRefer   uint      `json:"signalRefer"`
 	UserId        uint      `json:"userId"`
+	OkxSignalId   string    `json:"okxSignalId"`
+	OkxBotId      string    `json:"okxBotId"`
 	Deals         []Deal    `json:"deals" gorm:"foreignKey:BotRefer"`
 }
 
@@ -56,17 +58,7 @@ func (index BotStatus) EnumIndex() int {
 	return int(index)
 }
 
-func (bot *Bot) Create(codeId string, initialAmount float64, posSide uint) map[string]interface{} {
-	var signal = Signal{Code: codeId}
-	db.Where("code = ?", codeId).First(&signal)
-
-	logger.Infoln("signal", signal)
-
-	bot.Status = Created
-	bot.InitialAmount = initialAmount
-	bot.CurrentAmount = initialAmount
-	bot.PosSide = posSide
-	bot.StartTime = time.Now()
+func (bot *Bot) Create(signal *Signal) map[string]interface{} {
 
 	signal.Bots = append(signal.Bots, *bot)
 	db.Save(&signal)

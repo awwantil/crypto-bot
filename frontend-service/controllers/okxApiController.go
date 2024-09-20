@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
 )
@@ -33,4 +34,30 @@ var GetOkxApiFor = func(w http.ResponseWriter, r *http.Request) {
 		resp = u.Message(false, "error")
 	}
 	u.Respond(w, resp)
+}
+
+func OkxCreateSignal(userId uint, signalName string, signalDesc string) string {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return ""
+	}
+	newSignal, err := app.CreateSignal(api, signalName, signalDesc)
+	if err != nil {
+		return ""
+	}
+	return newSignal.SignalChanId
+}
+
+func OkxCreateSignalBot(userId uint, signalChanId string, instIds string, lever string, investAmt string) string {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return ""
+	}
+	newSignalBot, err := app.CreateSignalBot(api, signalChanId, instIds, lever, investAmt)
+	if err != nil {
+		return ""
+	}
+	return newSignalBot.AlgoId
 }
