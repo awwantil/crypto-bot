@@ -61,3 +61,16 @@ func OkxCreateSignalBot(userId uint, signalChanId string, instIds string, lever 
 	}
 	return newSignalBot.AlgoId
 }
+
+func OkxDeleteSignalBot(userId uint, signalChanId string) string {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return ""
+	}
+	cancelSignalBot, err := app.CancelSignalBot(api, signalChanId)
+	if err != nil {
+		return ""
+	}
+	return cancelSignalBot.AlgoId
+}

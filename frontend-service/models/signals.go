@@ -26,6 +26,7 @@ type Signal struct {
 	gorm.Model
 	ID           uint   `gorm:"primary_key"`
 	StrategyName string `gorm:"strategyName"`
+	StrategyDesc string `gorm:"strategyDesc"`
 	Code         string `gorm:"uniqueIndex"`
 	NameToken    string `json:"nameToken"`
 	TimeInterval string `json:"timeInterval"`
@@ -41,12 +42,8 @@ func (tradingViewSignal *TradingViewSignalReceive) Save() map[string]interface{}
 	return response
 }
 
-func (signal *Signal) Create(strategyName string, nameToken string, interval string) map[string]interface{} {
+func (signal *Signal) Create() map[string]interface{} {
 	signal.Code = nanoid.New()
-	signal.StrategyName = strategyName
-	signal.NameToken = nameToken
-	signal.TimeInterval = interval
-
 	GetDB().Create(signal)
 
 	response := u.Message(true, "Signal has been created")
