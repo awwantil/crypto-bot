@@ -177,8 +177,6 @@ func (prv *Prv) GetSignals(req model.GetSignalsRequest, opt ...model.OptionParam
 	util.MergeOptionParams(&params, opt...)
 
 	data, responseBody, err := prv.DoAuthRequest(http.MethodGet, reqUrl, &params, nil)
-	logger.Info("data for GetSignalsRequest: ", string(data))
-	logger.Info("responseBody for GetSignalsRequest: ", string(responseBody))
 	if err != nil {
 		logger.Errorf("[GetSignalsRequest] err=%s, response=%s", err.Error(), string(data))
 		return &model.GetSignalsResponse{}, responseBody, err

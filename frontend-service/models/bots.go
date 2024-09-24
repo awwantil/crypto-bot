@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	u "okx-bot/frontend-service/utils"
@@ -82,6 +83,17 @@ func Find(botIdRequest BotWithIdRequest) Bot {
 	logger.Infoln("Found bot: %v", foundBot)
 
 	return foundBot
+}
+
+func FindBotByByOkxSignalId(signalId string) (*Bot, error) {
+	findBot := &Bot{}
+	err := GetDB().Table("bots").Where("okx_signal_id = ?", signalId).Find(&findBot).Error
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	return findBot, nil
 }
 
 func (bot *Bot) Update() bool {

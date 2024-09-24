@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aidarkhanov/nanoid"
 	"net/http"
+	"okx-bot/exchange/model"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
 	"time"
@@ -35,8 +36,7 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 
 	logger.Infoln("signal", signal)
 
-	nanoId := nanoid.New()[:4]
-	okxSignalId := OkxCreateSignal(user, signal.StrategyName+"("+nanoId+")", signal.NameToken)
+	okxSignalId := getOkxSignalId(user, signal.StrategyName, signal.NameToken)
 	if len(okxSignalId) == 0 {
 		logger.Errorf("Error in creating a signal on the OKX exchange")
 		u.Respond(w, u.Message(false, "Error in creating a signal on the OKX exchange"))
@@ -55,6 +55,28 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 
 	resp := bot.Create(&signal)
 	u.Respond(w, resp)
+}
+
+func getOkxSignalId(userId uint, strategyName string, tokenName string) string {
+	getSignalsRequest := new(model.GetSignalsRequest)
+	getSignalsRequest.SignalSourceType = "1"
+	signals := OkxGetSignals(userId)
+	logger.Info("signals", signals.Data[0].SignalChanId)
+
+	for _, v := range signals.Data {
+		signalChanId := v.SignalChanId
+		bot, err := models.FindBotByByOkxSignalId(signalChanId)
+		if err != nil {
+			return ""
+		}
+		if bot.ID == 0 {
+			logger.Info("getOkxSignalId: ", signalChanId)
+			return signalChanId
+		}
+	}
+	nanoId := nanoid.New()[:4]
+	okxSignalId := OkxCreateSignal(userId, strategyName+"("+nanoId+")", tokenName)
+	return okxSignalId
 }
 
 var DeleteBot = func(w http.ResponseWriter, r *http.Request) {
