@@ -155,6 +155,10 @@ func main() {
 		//61399705","ccy":"","clOrdId":"O1817274472657346561","ctVal":"0.1","fee":"-0.012919","feeCcy":"USDT","instId":"SOL-USDT-SWAP","instType":"SWAP","lever":"3.0","ordId":"18172744728153
 		//78432","ordType":"market","pnl":"0","posSide":"net","px":"136.95","side":"buy","signalOrdId":"O1817274472657346561","state":"filled","sz":"2","tag":"","tdMode":"cross","uTime":"1726661399707"}],"msg":""}
 
+		getSignalsRequest := new(model.GetSignalsRequest)
+		getSignalsRequest.SignalSourceType = "1"
+		signals, err := app.GetSignals(api, getSignalsRequest)
+		logger.Info("signals", signals.Data[0].SignalChanId)
 	}()
 
 	go func() {

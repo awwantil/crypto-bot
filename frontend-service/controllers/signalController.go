@@ -7,7 +7,6 @@ import (
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
-	"strconv"
 	"time"
 )
 
@@ -112,11 +111,7 @@ func openDeal(bot *models.Bot, currencyName string) {
 	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, BASE_CURRENCY)
 	logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
 
-	posSide := "2"
-	if bot.PosSide > 0 {
-		posSide = strconv.FormatUint(uint64(bot.PosSide), 10)
-	}
-	deal.OrderId = openOrder(bot.UserId, currencyName, posSide)
+	deal.OrderId = openOrder(bot.UserId, currencyName, bot.OkxBotId)
 
 	if deal.OrderId != "" {
 		afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, BASE_CURRENCY)
@@ -125,6 +120,7 @@ func openDeal(bot *models.Bot, currencyName string) {
 		deal.StartAmount = diffAmount
 		deal.StartDbSave(bot.ID, diffAmount)
 		bot.CurrentAmount = diffAmount
+		bot.Status = models.MakingDeal
 		bot.Update()
 	} else {
 		logger.Errorf("An order cannot be created for a bot=%v on a crypto exchange", bot.ID)
@@ -140,6 +136,7 @@ func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
 		logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
 		diffAmount := afterAvailAmount - beforeAvailAmount
 		bot.CurrentAmount = diffAmount
+		bot.Status = models.Waiting
 		bot.Update()
 		deal.FinishDbSave(diffAmount)
 	} else {
@@ -147,19 +144,12 @@ func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
 	}
 }
 
-func openOrder(userId uint, currencyName string, posSide string) (orderId string) {
-	api, err := app.GetOkxApi(userId)
-	if err != nil {
-		logger.Errorf("Error in GetOkxApi: %v", err)
-		return ""
-	}
+func openOrder(userId uint, currencyName string, algoId string) (orderId string) {
+	operationCode := OkxPlaceSubOrder(userId, currencyName+"-"+BASE_CURRENCY+"-SWAP", algoId)
+	time.Sleep(2 * time.Second)
+	logger.Infof("Code for OkxPlaceSubOrder is %s", operationCode)
 
-	orderId, err = app.CreateOrder(api, currencyName+"-"+BASE_CURRENCY, posSide)
-	if err != nil {
-		return ""
-	}
-
-	return orderId
+	return OkxGetSubOrderSignalBot(userId)
 }
 
 func closeOrder(userId uint, currencyName string, orderId string) bool {

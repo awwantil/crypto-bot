@@ -71,9 +71,7 @@ func PlaceSubOrderSignalBot(api *futures.PrvApi, placeSubOrderSignalBotRequest *
 		logger.Errorf("Error PlaceSubOrderSignalBot: %v, data: %v", err, string(data))
 		return nil, err
 	}
-	logger.Info("response = ", response)
 	logger.Info("string(data) = ", string(data))
-	logger.Info("response = ", response.Data)
 
 	return response, nil
 }
@@ -104,6 +102,18 @@ func ClosePositionSignalBot(api *futures.PrvApi, request *model.ClosePositionSig
 func GetSubOrderSignalBot(api *futures.PrvApi, request *model.GetSubOrdersSignalBotRequest) (signal *model.GetSubOrdersSignalBotResponse, err error) {
 
 	response, data, err := api.Isolated.GetSubOrdersSignalBot(*request)
+	if err != nil {
+		logger.Errorf("Error GetSubOrderSignalBot: %v, data: %v", err, string(data))
+		return nil, err
+	}
+	logger.Info("data = ", string(data))
+
+	return response, nil
+}
+
+func GetSignals(api *futures.PrvApi, request *model.GetSignalsRequest) (signal *model.GetSignalsResponse, err error) {
+
+	response, data, err := api.Isolated.GetSignals(*request)
 	if err != nil {
 		logger.Errorf("Error GetSubOrderSignalBot: %v, data: %v", err, string(data))
 		return nil, err

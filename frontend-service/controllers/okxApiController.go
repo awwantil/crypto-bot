@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"okx-bot/exchange/model"
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
@@ -73,4 +74,60 @@ func OkxDeleteSignalBot(userId uint, signalChanId string) string {
 		return ""
 	}
 	return cancelSignalBot.AlgoId
+}
+
+func OkxPlaceSubOrder(userId uint, instId string, algoId string) string {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return ""
+	}
+	placeSubOrderSignalBotRequest := new(model.PlaceSubOrderSignalBotRequest)
+	placeSubOrderSignalBotRequest.InstId = instId
+	placeSubOrderSignalBotRequest.AlgoId = algoId
+	placeSubOrderSignalBotRequest.Side = "buy"
+	placeSubOrderSignalBotRequest.OrdType = "market"
+	placeSubOrderSignalBotRequest.Sz = "2.00"
+
+	response, err := app.PlaceSubOrderSignalBot(api, placeSubOrderSignalBotRequest)
+	if err != nil {
+		return ""
+	}
+	return response.Code
+}
+
+func OkxGetSubOrderSignalBot(userId uint) string {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return ""
+	}
+	getSubOrdersSignalBotRequest := new(model.GetSubOrdersSignalBotRequest)
+	getSubOrdersSignalBotRequest.AlgoId = "1817262238944722944"
+	getSubOrdersSignalBotRequest.AlgoOrdType = "contract"
+	getSubOrdersSignalBotRequest.State = "filled"
+
+	details, err := app.GetSubOrderSignalBot(api, getSubOrdersSignalBotRequest)
+	if err != nil {
+		return ""
+	}
+	logger.Infof("details OrdId: %v", details.OrdId)
+	return details.OrdId
+}
+
+func OkxGetSignals(userId uint) *model.GetSignalsResponse {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return nil
+	}
+	getSignalsRequest := new(model.GetSignalsRequest)
+	getSignalsRequest.SignalSourceType = "1"
+
+	details, err := app.GetSignals(api, getSignalsRequest)
+	if err != nil {
+		return nil
+	}
+	logger.Infof("details OrdId: %v", details.Data)
+	return details
 }

@@ -167,3 +167,24 @@ func (prv *Prv) GetSubOrdersSignalBot(req model.GetSubOrdersSignalBotRequest, op
 
 	return details, responseBody, err
 }
+
+func (prv *Prv) GetSignals(req model.GetSignalsRequest, opt ...model.OptionParameter) (*model.GetSignalsResponse, []byte, error) {
+	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.GetSignalsUri)
+
+	params := url.Values{}
+	params.Set("signalSourceType", req.SignalSourceType)
+
+	util.MergeOptionParams(&params, opt...)
+
+	data, responseBody, err := prv.DoAuthRequest(http.MethodGet, reqUrl, &params, nil)
+	logger.Info("data for GetSignalsRequest: ", string(data))
+	logger.Info("responseBody for GetSignalsRequest: ", string(responseBody))
+	if err != nil {
+		logger.Errorf("[GetSignalsRequest] err=%s, response=%s", err.Error(), string(data))
+		return &model.GetSignalsResponse{}, responseBody, err
+	}
+
+	details, err := prv.UnmarshalOpts.GetSignalsUnmarshaler(data)
+
+	return details, responseBody, err
+}

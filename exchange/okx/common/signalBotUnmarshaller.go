@@ -206,3 +206,33 @@ func (un *RespUnmarshaler) UnmarshalGetSubOrdersSignalBot(data []byte) (*model.G
 
 	return details, err
 }
+
+func (un *RespUnmarshaler) UnmarshalGetSignals(data []byte) (*model.GetSignalsResponse, error) {
+	var details = new(model.GetSignalsResponse)
+	var detailsData = new(model.GetSignalsResponseData)
+
+	_, _ = jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {
+			detailsStr := string(respData)
+			switch string(key) {
+			case "signalChanId":
+				detailsData.SignalChanId = detailsStr
+			case "signalChanName":
+				detailsData.SignalChanName = detailsStr
+			case "signalChanDesc":
+				detailsData.SignalChanDesc = detailsStr
+			case "signalChanToken":
+				detailsData.SignalChanToken = detailsStr
+			case "signalSourceType":
+				detailsData.SignalSourceType = detailsStr
+			}
+			return err
+		})
+		if err != nil {
+			return
+		}
+		details.Data = append(details.Data, *detailsData)
+	})
+
+	return details, nil
+}

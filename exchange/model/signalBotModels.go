@@ -140,3 +140,23 @@ type GetSubOrdersSignalBotResponse struct {
 	Upl         string `json:"upl,omitempty"`
 	UplRatio    string `json:"uplRatio,omitempty"`
 }
+
+// https://www.okx.com/docs-v5/en/#order-book-trading-signal-bot-trading-get-signals
+// GET /api/v5/tradingBot/signal/signals
+type GetSignalsRequest struct {
+	SignalSourceType string `json:"signalSourceType,omitempty"`
+}
+
+type GetSignalsResponse struct {
+	Code string                   `json:"code,omitempty"`
+	Msg  string                   `json:"msg,omitempty"`
+	Data []GetSignalsResponseData `json:"data,omitempty"`
+}
+
+type GetSignalsResponseData struct {
+	SignalChanId     string `json:"signalChanId,omitempty"`
+	SignalChanName   string `json:"signalChanName,omitempty"`
+	SignalChanDesc   string `json:"signalChanDesc,omitempty"`
+	SignalChanToken  string `json:"signalChanToken,omitempty"`
+	SignalSourceType string `json:"signalSourceType,omitempty"`
+}
