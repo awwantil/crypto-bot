@@ -36,21 +36,21 @@ func (okx *OKxV5) GetDepth(pair model.CurrencyPair, size int, opt ...model.Optio
 	return dep, responseBody, err
 }
 
-func (okx *OKxV5) GetTicker(pair model.CurrencyPair, opt ...model.OptionParameter) (*model.Ticker, []byte, error) {
+func (okx *OKxV5) GetTicker(symbol string, opt ...model.OptionParameter) (*model.Ticker, []byte, error) {
 	params := url.Values{}
-	params.Set("instId", pair.Symbol)
+	params.Set("instId", symbol+"-USD-SWAP")
 
 	data, responseBody, err := okx.DoNoAuthRequest("GET", okx.UriOpts.Endpoint+okx.UriOpts.TickerUri, &params)
 	if err != nil {
 		return nil, data, err
 	}
+	logger.Info("data", string(data))
+	logger.Info("responseBody", string(responseBody))
 
 	tk, err := okx.UnmarshalOpts.TickerUnmarshaler(data)
 	if err != nil {
 		return nil, nil, err
 	}
-
-	tk.Pair = pair
 
 	return tk, responseBody, err
 }

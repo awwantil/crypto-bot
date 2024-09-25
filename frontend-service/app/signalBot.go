@@ -122,3 +122,15 @@ func GetSignals(api *futures.PrvApi, request *model.GetSignalsRequest) (signal *
 
 	return response, nil
 }
+
+func GetTicker(api *futures.PrvApi, symbol string) (signal *model.Ticker, err error) {
+
+	response, data, err := api.Isolated.GetTicker(symbol)
+	if err != nil {
+		logger.Errorf("Error GetTicker: %v, data: %v", err, string(data))
+		return nil, err
+	}
+	logger.Info("data = ", string(data))
+
+	return response, nil
+}

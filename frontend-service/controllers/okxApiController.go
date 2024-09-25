@@ -131,3 +131,17 @@ func OkxGetSignals(userId uint) *model.GetSignalsResponse {
 	logger.Infof("details OrdId: %v", details.Data)
 	return details
 }
+
+func OkxGetTicker(userId uint, symbol string) *model.Ticker {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return nil
+	}
+	details, err := app.GetTicker(api, symbol)
+	if err != nil {
+		return nil
+	}
+	logger.Infof("details OrdId: %v", details.Last)
+	return details
+}

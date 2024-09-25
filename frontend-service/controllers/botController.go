@@ -115,7 +115,9 @@ var DeleteBot = func(w http.ResponseWriter, r *http.Request) {
 }
 
 var GetBots = func(w http.ResponseWriter, r *http.Request) {
-
+	user := r.Context().Value("user").(uint)
+	ticker := OkxGetTicker(user, "SOL")
+	logger.Info("ticker", ticker)
 	signalCode := r.URL.Query().Get("code")
 
 	bots := models.GetBots(signalCode)
