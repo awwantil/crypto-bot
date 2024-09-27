@@ -186,3 +186,25 @@ func (prv *Prv) GetSignals(req model.GetSignalsRequest, opt ...model.OptionParam
 
 	return details, responseBody, err
 }
+
+func (prv *Prv) GetActiveSignalBot(req model.GetActiveSignalBotRequest, opt ...model.OptionParameter) (*model.GetActiveSignalBotResponse, []byte, error) {
+	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.GetActiveSignalBotUri)
+
+	params := url.Values{}
+	params.Set("algoId", req.AlgoId)
+	params.Set("algoOrdType", req.AlgoOrdType)
+	params.Set("before", req.Before)
+	params.Set("after", req.After)
+
+	util.MergeOptionParams(&params, opt...)
+
+	data, responseBody, err := prv.DoAuthRequest(http.MethodGet, reqUrl, &params, nil)
+	if err != nil {
+		logger.Errorf("[GetActiveSignalBotRequest] err=%s, response=%s", err.Error(), string(data))
+		return &model.GetActiveSignalBotResponse{}, responseBody, err
+	}
+
+	details, err := prv.UnmarshalOpts.GetActiveSignalBotUnmarshaler(data)
+
+	return details, responseBody, err
+}

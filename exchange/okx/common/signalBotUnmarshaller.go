@@ -236,3 +236,43 @@ func (un *RespUnmarshaler) UnmarshalGetSignals(data []byte) (*model.GetSignalsRe
 
 	return details, nil
 }
+
+func (un *RespUnmarshaler) UnmarshalGetActiveSignalBot(data []byte) (*model.GetActiveSignalBotResponse, error) {
+	var details = new(model.GetActiveSignalBotResponse)
+
+	_, _ = jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {
+			detailsStr := string(respData)
+			switch string(key) {
+			case "availBal":
+				details.AvailBal = detailsStr
+			case "frozenBal":
+				details.FrozenBal = detailsStr
+			case "signalChanId":
+				details.SignalChanId = detailsStr
+			case "investAmt":
+				details.InvestAmt = detailsStr
+			case "lever":
+				details.Lever = detailsStr
+			case "floatPnl":
+				details.FloatPnl = detailsStr
+			case "realizedPnl":
+				details.RealizedPnl = detailsStr
+			case "totalPnl":
+				details.TotalPnl = detailsStr
+			case "totalEq":
+				details.TotalEq = detailsStr
+			case "cTime":
+				details.CTime = detailsStr
+			case "uTime":
+				details.UTime = detailsStr
+			}
+			return err
+		})
+		if err != nil {
+			return
+		}
+	})
+
+	return details, nil
+}

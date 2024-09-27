@@ -134,3 +134,19 @@ func GetTicker(api *futures.PrvApi, symbol string) (signal *model.Ticker, err er
 
 	return response, nil
 }
+
+func GetActiveSignalBot(api *futures.PrvApi, algoId string) (signal *model.GetActiveSignalBotResponse, err error) {
+
+	request := new(model.GetActiveSignalBotRequest)
+	request.AlgoId = algoId
+	request.After = "1727440707000"
+	request.AlgoOrdType = "contract"
+	response, data, err := api.Isolated.GetActiveSignalBot(*request)
+	if err != nil {
+		logger.Errorf("Error GetTicker: %v, data: %v", err, string(data))
+		return nil, err
+	}
+	logger.Info("data = ", string(data))
+
+	return response, nil
+}

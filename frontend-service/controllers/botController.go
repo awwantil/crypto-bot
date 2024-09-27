@@ -46,7 +46,14 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 	bot.OkxSignalId = okxSignalId
 	instId := signal.NameToken + "-USDT-SWAP"
 	strAmount := fmt.Sprintf("%2f", botRequest.InitialAmount)
-	bot.OkxBotId = OkxCreateSignalBot(user, okxSignalId, instId, "3", strAmount)
+
+	bot.OkxBotId, err = OkxCreateSignalBot(user, okxSignalId, instId, "3", strAmount)
+	if err != nil {
+		logger.Errorf("Error in OkxCreateSignalBot")
+		u.Respond(w, u.Message(false, "Error in OkxCreateSignalBot"))
+		return
+	}
+
 	bot.Status = models.Created
 	bot.InitialAmount = botRequest.InitialAmount
 	bot.CurrentAmount = botRequest.InitialAmount

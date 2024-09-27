@@ -50,17 +50,18 @@ func OkxCreateSignal(userId uint, signalName string, signalDesc string) string {
 	return newSignal.SignalChanId
 }
 
-func OkxCreateSignalBot(userId uint, signalChanId string, instIds string, lever string, investAmt string) string {
+func OkxCreateSignalBot(userId uint, signalChanId string, instIds string, lever string, investAmt string) (string, error) {
 	api, err := app.GetOkxApi(userId)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
-		return ""
+		return "", err
 	}
 	newSignalBot, err := app.CreateSignalBot(api, signalChanId, instIds, lever, investAmt)
 	if err != nil {
-		return ""
+		logger.Errorf("Error in OkxCreateSignalBot: %v", err)
+		return "", err
 	}
-	return newSignalBot.AlgoId
+	return newSignalBot.AlgoId, nil
 }
 
 func OkxDeleteSignalBot(userId uint, signalChanId string) string {
@@ -76,7 +77,7 @@ func OkxDeleteSignalBot(userId uint, signalChanId string) string {
 	return cancelSignalBot.AlgoId
 }
 
-func OkxPlaceSubOrder(userId uint, instId string, algoId string) string {
+func OkxPlaceSubOrder(userId uint, instId string, algoId string, sz string) string {
 	api, err := app.GetOkxApi(userId)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
@@ -87,7 +88,7 @@ func OkxPlaceSubOrder(userId uint, instId string, algoId string) string {
 	placeSubOrderSignalBotRequest.AlgoId = algoId
 	placeSubOrderSignalBotRequest.Side = "buy"
 	placeSubOrderSignalBotRequest.OrdType = "market"
-	placeSubOrderSignalBotRequest.Sz = "2.00"
+	placeSubOrderSignalBotRequest.Sz = sz
 
 	response, err := app.PlaceSubOrderSignalBot(api, placeSubOrderSignalBotRequest)
 	if err != nil {
@@ -143,5 +144,19 @@ func OkxGetTicker(userId uint, symbol string) *model.Ticker {
 		return nil
 	}
 	logger.Infof("details OrdId: %v", details.Last)
+	return details
+}
+
+func OkxGetActiveSignalBot(userId uint, algoId string) *model.GetActiveSignalBotResponse {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return nil
+	}
+	details, err := app.GetActiveSignalBot(api, algoId)
+	if err != nil {
+		return nil
+	}
+	logger.Infof("details OrdId: %v", details.AvailBal)
 	return details
 }
