@@ -35,6 +35,7 @@ type PostClosePositionSignalBotUnmarshaler func([]byte) (*model.ClosePositionSig
 type GetSubOrdersSignalBotUnmarshaler func([]byte) (*model.GetSubOrdersSignalBotResponse, error)
 type GetSignalsUnmarshaler func([]byte) (*model.GetSignalsResponse, error)
 type GetActiveSignalBotUnmarshaler func([]byte) (*model.GetActiveSignalBotResponse, error)
+type GetSignalBotUnmarshaler func([]byte) (*model.GetSignalBotResponse, error)
 
 type UnmarshalerOptions struct {
 	ResponseUnmarshaler                    ResponseUnmarshaler
@@ -70,6 +71,7 @@ type UnmarshalerOptions struct {
 	GetSubOrdersSignalBotUnmarshaler       GetSubOrdersSignalBotUnmarshaler
 	GetSignalsUnmarshaler                  GetSignalsUnmarshaler
 	GetActiveSignalBotUnmarshaler          GetActiveSignalBotUnmarshaler
+	GetSignalBotUnmarshaler                GetSignalBotUnmarshaler
 }
 
 type UnmarshalerOption func(options *UnmarshalerOptions)

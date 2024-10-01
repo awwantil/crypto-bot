@@ -53,6 +53,7 @@ func New() *OKxV5 {
 			GetSubOrdersSignalBotUri:       "/api/v5/tradingBot/signal/sub-orders",
 			GetSignalsUri:                  "/api/v5/tradingBot/signal/signals",
 			GetActiveSignalBotUri:          "/api/v5/tradingBot/signal/orders-algo-pending",
+			GetSignalBotUri:                "/api/v5/tradingBot/signal/orders-algo-details",
 		},
 		UnmarshalOpts: options.UnmarshalerOptions{
 			ResponseUnmarshaler:                    unmarshaler.UnmarshalResponse,
@@ -88,6 +89,7 @@ func New() *OKxV5 {
 			GetSubOrdersSignalBotUnmarshaler:       unmarshaler.UnmarshalGetSubOrdersSignalBot,
 			GetSignalsUnmarshaler:                  unmarshaler.UnmarshalGetSignals,
 			GetActiveSignalBotUnmarshaler:          unmarshaler.UnmarshalGetActiveSignalBot,
+			GetSignalBotUnmarshaler:                unmarshaler.UnmarshalGetSignalBot,
 		},
 	}
 

@@ -171,6 +171,37 @@ type GetActiveSignalBotRequest struct {
 }
 
 type GetActiveSignalBotResponse struct {
+	Bots []GetActiveSignalBotResponseData `json:"bots,omitempty"`
+}
+
+type GetActiveSignalBotResponseData struct {
+	AlgoId       string `json:"algoId,omitempty"`
+	AvailBal     string `json:"availBal,omitempty"`
+	FrozenBal    string `json:"frozenBal,omitempty"`
+	SignalChanId string `json:"signalChanId,omitempty"`
+	InvestAmt    string `json:"investAmt,omitempty"`
+	Lever        string `json:"lever,omitempty"`
+	FloatPnl     string `json:"floatPnl,omitempty"`
+	RealizedPnl  string `json:"realizedPnl,omitempty"`
+	TotalPnl     string `json:"totalPnl,omitempty"`
+	TotalEq      string `json:"totalEq,omitempty"`
+	CTime        string `json:"cTime,omitempty"`
+	UTime        string `json:"uTime,omitempty"`
+}
+
+// https://www.okx.com/docs-v5/en/#order-book-trading-signal-bot-trading-get-signal-bot-order-details
+// GET /api/v5/tradingBot/signal/orders-algo-details
+type GetSignalBotRequest struct {
+	AlgoOrdType string `json:"algoOrdType,omitempty"`
+	AlgoId      string `json:"algoId,omitempty"`
+}
+
+type GetSignalBotResponse struct {
+	Bots []GetSignalBotResponseData `json:"bots,omitempty"`
+}
+
+type GetSignalBotResponseData struct {
+	AlgoId       string `json:"algoId,omitempty"`
 	AvailBal     string `json:"availBal,omitempty"`
 	FrozenBal    string `json:"frozenBal,omitempty"`
 	SignalChanId string `json:"signalChanId,omitempty"`

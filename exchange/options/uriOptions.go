@@ -32,6 +32,7 @@ type UriOptions struct {
 	GetSubOrdersSignalBotUri       string
 	GetSignalsUri                  string
 	GetActiveSignalBotUri          string
+	GetSignalBotUri                string
 }
 
 type UriOption func(*UriOptions)

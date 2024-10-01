@@ -114,19 +114,23 @@ func openDeal(bot *models.Bot, currencyName string) {
 	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, bot.OkxBotId)
 	logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
 
-	deal.OrderId = openOrder(bot.UserId, currencyName, bot.OkxBotId)
+	if beforeAvailAmount > 0 {
+		deal.OrderId = openOrder(bot.UserId, currencyName, bot.OkxBotId)
 
-	if deal.OrderId != "" {
-		afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId)
-		logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
-		diffAmount := beforeAvailAmount - afterAvailAmount
-		deal.StartAmount = diffAmount
-		deal.StartDbSave(bot.ID, diffAmount)
-		bot.CurrentAmount = diffAmount
-		bot.Status = models.MakingDeal
-		bot.Update()
+		if deal.OrderId != "" {
+			afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId)
+			logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
+			diffAmount := beforeAvailAmount - afterAvailAmount
+			deal.StartAmount = diffAmount
+			deal.StartDbSave(bot.ID, diffAmount)
+			bot.CurrentAmount = diffAmount
+			bot.Status = models.MakingDeal
+			bot.Update()
+		} else {
+			logger.Errorf("An order cannot be created for a bot=%v on a crypto exchange", bot.ID)
+		}
 	} else {
-		logger.Errorf("An order cannot be created for a bot=%v on a crypto exchange", bot.ID)
+		logger.Errorf("For openDeal beforeAvailAmount equals zero")
 	}
 }
 
@@ -177,12 +181,15 @@ func closeOrder(userId uint, currencyName string, algoId string) bool {
 }
 
 func getAmount(userId uint, algoId string) (float64, float64) {
-	api, err := app.GetOkxApi(userId)
-	if err != nil {
-		logger.Errorf("Error in GetOkxApi: %v", err)
+	signalBotData := OkxGetSignalBot(userId, algoId)
+	if signalBotData == nil {
+		logger.Errorf("Error in request signal bot")
 		return 0, 0
 	}
-	signalBotData, err := app.GetActiveSignalBot(api, algoId)
+	if signalBotData.AvailBal == "" {
+		logger.Errorf("Error in request to amounts")
+		return 0, 0
+	}
 	availBal, err := strconv.ParseFloat(signalBotData.AvailBal, 64)
 	frozenBal, err := strconv.ParseFloat(signalBotData.FrozenBal, 64)
 	if err != nil {
@@ -225,8 +232,19 @@ var CheckOkx = func(w http.ResponseWriter, r *http.Request) {
 
 	user := r.Context().Value("user").(uint)
 
-	px := calcPx(user, "SOL", 50.0, 90)
-	logger.Infof("px: %v", px)
+	activeSignalBot := OkxGetActiveSignalBot(user, "1843697369594986496")
+	if activeSignalBot != nil {
+		logger.Info("signalBot: ", activeSignalBot)
+		logger.Info("AvailBal: ", activeSignalBot.AvailBal)
+		logger.Info("FrozenBal: ", activeSignalBot.FrozenBal)
+	}
+
+	signalBot := OkxGetSignalBot(user, "1843697369594986496")
+	if signalBot != nil {
+		logger.Info("signalBot: ", signalBot)
+		logger.Info("AvailBal: ", signalBot.AvailBal)
+		logger.Info("FrozenBal: ", signalBot.FrozenBal)
+	}
 
 	u.Respond(w, u.Message(true, "The checking was finished"))
 }

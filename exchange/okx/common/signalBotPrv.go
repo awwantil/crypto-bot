@@ -191,10 +191,7 @@ func (prv *Prv) GetActiveSignalBot(req model.GetActiveSignalBotRequest, opt ...m
 	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.GetActiveSignalBotUri)
 
 	params := url.Values{}
-	params.Set("algoId", req.AlgoId)
 	params.Set("algoOrdType", req.AlgoOrdType)
-	params.Set("before", req.Before)
-	params.Set("after", req.After)
 
 	util.MergeOptionParams(&params, opt...)
 
@@ -203,8 +200,32 @@ func (prv *Prv) GetActiveSignalBot(req model.GetActiveSignalBotRequest, opt ...m
 		logger.Errorf("[GetActiveSignalBotRequest] err=%s, response=%s", err.Error(), string(data))
 		return &model.GetActiveSignalBotResponse{}, responseBody, err
 	}
+	logger.Info("GetActiveSignalBotRequest data", string(data))
+	logger.Info("GetActiveSignalBotRequest responseBody", string(responseBody))
 
 	details, err := prv.UnmarshalOpts.GetActiveSignalBotUnmarshaler(data)
+
+	return details, responseBody, err
+}
+
+func (prv *Prv) GetSignalBot(req model.GetSignalBotRequest, opt ...model.OptionParameter) (*model.GetSignalBotResponse, []byte, error) {
+	reqUrl := fmt.Sprintf("%s%s", prv.UriOpts.Endpoint, prv.UriOpts.GetSignalBotUri)
+
+	params := url.Values{}
+	params.Set("algoOrdType", req.AlgoOrdType)
+	params.Set("algoId", req.AlgoId)
+
+	util.MergeOptionParams(&params, opt...)
+
+	data, responseBody, err := prv.DoAuthRequest(http.MethodGet, reqUrl, &params, nil)
+	if err != nil {
+		logger.Errorf("[GetSignalBot] err=%s, response=%s", err.Error(), string(data))
+		return &model.GetSignalBotResponse{}, responseBody, err
+	}
+	logger.Info("GetSignalBot data", string(data))
+	logger.Info("GetSignalBot responseBody", string(responseBody))
+
+	details, err := prv.UnmarshalOpts.GetSignalBotUnmarshaler(data)
 
 	return details, responseBody, err
 }

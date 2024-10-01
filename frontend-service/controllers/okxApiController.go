@@ -147,7 +147,7 @@ func OkxGetTicker(userId uint, symbol string) *model.Ticker {
 	return details
 }
 
-func OkxGetActiveSignalBot(userId uint, algoId string) *model.GetActiveSignalBotResponse {
+func OkxGetActiveSignalBot(userId uint, algoId string) *model.GetActiveSignalBotResponseData {
 	api, err := app.GetOkxApi(userId)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
@@ -157,6 +157,32 @@ func OkxGetActiveSignalBot(userId uint, algoId string) *model.GetActiveSignalBot
 	if err != nil {
 		return nil
 	}
-	logger.Infof("details OrdId: %v", details.AvailBal)
-	return details
+	var result = new(model.GetActiveSignalBotResponseData)
+	for _, v := range details.Bots {
+		if v.AlgoId == algoId {
+			logger.Info("found bot with algoId: ", algoId)
+			result = &v
+		}
+	}
+	return result
+}
+
+func OkxGetSignalBot(userId uint, algoId string) *model.GetSignalBotResponseData {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return nil
+	}
+	details, err := app.GetSignalBot(api, algoId)
+	if err != nil {
+		return nil
+	}
+	var result = new(model.GetSignalBotResponseData)
+	for _, v := range details.Bots {
+		if v.AlgoId == algoId {
+			logger.Info("found bot with algoId: ", algoId)
+			result = &v
+		}
+	}
+	return result
 }

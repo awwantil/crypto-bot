@@ -239,39 +239,87 @@ func (un *RespUnmarshaler) UnmarshalGetSignals(data []byte) (*model.GetSignalsRe
 
 func (un *RespUnmarshaler) UnmarshalGetActiveSignalBot(data []byte) (*model.GetActiveSignalBotResponse, error) {
 	var details = new(model.GetActiveSignalBotResponse)
+	var detailsData = new(model.GetActiveSignalBotResponseData)
 
 	_, _ = jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
 		err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {
 			detailsStr := string(respData)
 			switch string(key) {
+			case "algoId":
+				detailsData.AlgoId = detailsStr
 			case "availBal":
-				details.AvailBal = detailsStr
+				detailsData.AvailBal = detailsStr
 			case "frozenBal":
-				details.FrozenBal = detailsStr
+				detailsData.FrozenBal = detailsStr
 			case "signalChanId":
-				details.SignalChanId = detailsStr
+				detailsData.SignalChanId = detailsStr
 			case "investAmt":
-				details.InvestAmt = detailsStr
+				detailsData.InvestAmt = detailsStr
 			case "lever":
-				details.Lever = detailsStr
+				detailsData.Lever = detailsStr
 			case "floatPnl":
-				details.FloatPnl = detailsStr
+				detailsData.FloatPnl = detailsStr
 			case "realizedPnl":
-				details.RealizedPnl = detailsStr
+				detailsData.RealizedPnl = detailsStr
 			case "totalPnl":
-				details.TotalPnl = detailsStr
+				detailsData.TotalPnl = detailsStr
 			case "totalEq":
-				details.TotalEq = detailsStr
+				detailsData.TotalEq = detailsStr
 			case "cTime":
-				details.CTime = detailsStr
+				detailsData.CTime = detailsStr
 			case "uTime":
-				details.UTime = detailsStr
+				detailsData.UTime = detailsStr
 			}
 			return err
 		})
 		if err != nil {
 			return
 		}
+		details.Bots = append(details.Bots, *detailsData)
+	})
+
+	return details, nil
+}
+
+func (un *RespUnmarshaler) UnmarshalGetSignalBot(data []byte) (*model.GetSignalBotResponse, error) {
+	var details = new(model.GetSignalBotResponse)
+	var detailsData = new(model.GetSignalBotResponseData)
+
+	_, _ = jsonparser.ArrayEach(data, func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+		err = jsonparser.ObjectEach(value, func(key []byte, respData []byte, dataType jsonparser.ValueType, offset int) error {
+			detailsStr := string(respData)
+			switch string(key) {
+			case "algoId":
+				detailsData.AlgoId = detailsStr
+			case "availBal":
+				detailsData.AvailBal = detailsStr
+			case "frozenBal":
+				detailsData.FrozenBal = detailsStr
+			case "signalChanId":
+				detailsData.SignalChanId = detailsStr
+			case "investAmt":
+				detailsData.InvestAmt = detailsStr
+			case "lever":
+				detailsData.Lever = detailsStr
+			case "floatPnl":
+				detailsData.FloatPnl = detailsStr
+			case "realizedPnl":
+				detailsData.RealizedPnl = detailsStr
+			case "totalPnl":
+				detailsData.TotalPnl = detailsStr
+			case "totalEq":
+				detailsData.TotalEq = detailsStr
+			case "cTime":
+				detailsData.CTime = detailsStr
+			case "uTime":
+				detailsData.UTime = detailsStr
+			}
+			return err
+		})
+		if err != nil {
+			return
+		}
+		details.Bots = append(details.Bots, *detailsData)
 	})
 
 	return details, nil

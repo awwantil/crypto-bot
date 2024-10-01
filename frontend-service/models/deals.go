@@ -52,7 +52,11 @@ func (deal *Deal) FinishDbSave(endAmount float64) bool {
 
 func FindByStatus(botId uint, status DealStatus) Deal {
 	var foundDeal = Deal{}
-	db.Where("bot_refer = ? and status = ?", botId, status).First(&foundDeal)
+	tx := db.Where("bot_refer = ? and status = ?", botId, status).First(&foundDeal)
+	if tx.Error != nil {
+		logger.Errorf("Found deal error: %v", tx.Error)
+		return foundDeal
+	}
 	logger.Infoln("Found bot: %v", foundDeal)
 
 	return foundDeal

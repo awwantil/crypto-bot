@@ -66,6 +66,7 @@ func main() {
 		if err != nil {
 			logger.Errorf("Error in GetOkxApi: %v", err)
 		}
+		logger.Info("api", api)
 		//
 		//id := "1695898177540702208"
 		//req := new(model.BaseOrderRequest)
@@ -140,16 +141,16 @@ func main() {
 			return
 		}
 
-		getSubOrdersSignalBotRequest := new(model.GetSubOrdersSignalBotRequest)
-		getSubOrdersSignalBotRequest.AlgoId = "1817262238944722944"
-		getSubOrdersSignalBotRequest.AlgoOrdType = "contract"
-		getSubOrdersSignalBotRequest.State = "filled"
-
-		details, err := app.GetSubOrderSignalBot(api, getSubOrdersSignalBotRequest)
-		if err != nil {
-			return
-		}
-		logger.Infof("details OrdId: %v", details.OrdId)
+		//getSubOrdersSignalBotRequest := new(model.GetSubOrdersSignalBotRequest)
+		//getSubOrdersSignalBotRequest.AlgoId = "1817262238944722944"
+		//getSubOrdersSignalBotRequest.AlgoOrdType = "contract"
+		//getSubOrdersSignalBotRequest.State = "filled"
+		//
+		//details, err := app.GetSubOrderSignalBot(api, getSubOrdersSignalBotRequest)
+		//if err != nil {
+		//	return
+		//}
+		//logger.Infof("details OrdId: %v", details.OrdId)
 		//logger.Infof("details AvgPx: %v", details.AvgPx)
 		//{"code":"0","data":[{"accFillSz":"2","algoClOrdId":"","algoId":"1817262238944722944","algoOrdType":"contract","avgPx":"129.19","cTime":"17266
 		//61399705","ccy":"","clOrdId":"O1817274472657346561","ctVal":"0.1","fee":"-0.012919","feeCcy":"USDT","instId":"SOL-USDT-SWAP","instType":"SWAP","lever":"3.0","ordId":"18172744728153
