@@ -42,6 +42,7 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 	bot := new(models.Bot)
 	bot.UserId = user
 	bot.Lever = botRequest.Lever
+	bot.DealsPercent = botRequest.DealsPercent
 
 	var signal = models.Signal{Code: botRequest.CodeSignalId}
 	models.GetDB().Where("code = ?", botRequest.CodeSignalId).First(&signal)

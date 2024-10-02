@@ -23,9 +23,11 @@ var (
 )
 
 const (
-	SELL          string = "sell"
-	BUY           string = "buy"
-	BASE_CURRENCY        = "USDT"
+	SELL            string  = "sell"
+	BUY             string  = "buy"
+	BASE_CURRENCY           = "USDT"
+	DEFAULT_PERCENT float64 = 60
+	DEFAULT_LEVER   float64 = 3
 )
 
 var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
@@ -173,6 +175,12 @@ func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
 }
 
 func openOrder(userId uint, currencyName string, algoId string, beforeAvailAmount float64, lever float64, percent float64) (string, error) {
+	if percent == 0 {
+		percent = DEFAULT_PERCENT
+	}
+	if lever == 0 {
+		percent = DEFAULT_LEVER
+	}
 	float64Sz := calcPx(userId, currencyName, beforeAvailAmount*lever, percent)
 	stringSz := strconv.FormatFloat(float64Sz, 'f', 2, 64)
 	operationCode, err := OkxPlaceSubOrder(userId, currencyName+"-"+BASE_CURRENCY+"-SWAP", algoId, stringSz)
