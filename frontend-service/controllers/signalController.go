@@ -127,7 +127,7 @@ func openDeal(bot *models.Bot, currencyName string) error {
 	}
 
 	if beforeAvailAmount > 0 {
-		order, err := openOrder(bot.UserId, currencyName, bot.OkxBotId, beforeAvailAmount, bot.Lever, bot.DealsPercent)
+		order, px, err := openOrder(bot.UserId, currencyName, bot.OkxBotId, beforeAvailAmount, bot.Lever, bot.DealsPercent)
 		if err != nil {
 			return err
 		}
@@ -142,6 +142,7 @@ func openDeal(bot *models.Bot, currencyName string) error {
 			deal.StartDbSave(bot.ID, diffAmount)
 			bot.CurrentAmount = diffAmount
 			bot.Status = models.MakingDeal
+			bot.PosSide = px
 			bot.Update()
 		} else {
 			strErr := fmt.Sprintf("An order cannot be created for a bot=%v on a crypto exchange", bot.ID)
@@ -174,7 +175,7 @@ func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
 	}
 }
 
-func openOrder(userId uint, currencyName string, algoId string, beforeAvailAmount float64, lever float64, percent float64) (string, error) {
+func openOrder(userId uint, currencyName string, algoId string, beforeAvailAmount float64, lever float64, percent float64) (string, uint, error) {
 	if percent == 0 {
 		percent = DEFAULT_PERCENT
 	}
@@ -185,12 +186,12 @@ func openOrder(userId uint, currencyName string, algoId string, beforeAvailAmoun
 	stringSz := strconv.FormatFloat(float64Sz, 'f', 2, 64)
 	operationCode, err := OkxPlaceSubOrder(userId, currencyName+"-"+BASE_CURRENCY+"-SWAP", algoId, stringSz)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 	time.Sleep(2 * time.Second)
 	logger.Infof("Code for OkxPlaceSubOrder is %s", operationCode)
 
-	return OkxGetSubOrderSignalBot(userId, algoId), nil
+	return OkxGetSubOrderSignalBot(userId, algoId), uint(float64Sz), nil
 }
 
 func closeOrder(userId uint, currencyName string, algoId string) bool {
