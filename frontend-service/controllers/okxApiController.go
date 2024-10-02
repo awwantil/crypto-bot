@@ -77,11 +77,11 @@ func OkxDeleteSignalBot(userId uint, signalChanId string) string {
 	return cancelSignalBot.AlgoId
 }
 
-func OkxPlaceSubOrder(userId uint, instId string, algoId string, sz string) string {
+func OkxPlaceSubOrder(userId uint, instId string, algoId string, sz string) (string, error) {
 	api, err := app.GetOkxApi(userId)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
-		return ""
+		return "", err
 	}
 	placeSubOrderSignalBotRequest := new(model.PlaceSubOrderSignalBotRequest)
 	placeSubOrderSignalBotRequest.InstId = instId
@@ -92,19 +92,19 @@ func OkxPlaceSubOrder(userId uint, instId string, algoId string, sz string) stri
 
 	response, err := app.PlaceSubOrderSignalBot(api, placeSubOrderSignalBotRequest)
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return response.Code
+	return response.Code, nil
 }
 
-func OkxGetSubOrderSignalBot(userId uint) string {
+func OkxGetSubOrderSignalBot(userId uint, algoId string) string {
 	api, err := app.GetOkxApi(userId)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return ""
 	}
 	getSubOrdersSignalBotRequest := new(model.GetSubOrdersSignalBotRequest)
-	getSubOrdersSignalBotRequest.AlgoId = "1817262238944722944"
+	getSubOrdersSignalBotRequest.AlgoId = algoId
 	getSubOrdersSignalBotRequest.AlgoOrdType = "contract"
 	getSubOrdersSignalBotRequest.State = "filled"
 

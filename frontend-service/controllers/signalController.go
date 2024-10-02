@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"math"
 	"net/http"
@@ -39,7 +41,11 @@ var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 	signal.Save()
 
 	if signal.Action == BUY {
-		startDeal(signal.SignalToken)
+		err := startDeal(signal.SignalToken)
+		if err != nil {
+			u.Respond(w, u.Message(false, err.Error()))
+			return
+		}
 	}
 	if signal.Action == SELL {
 		endDeal(signal.SignalToken)
@@ -72,22 +78,24 @@ var GetAllSignals = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
-func startDeal(signalCode string) {
+func startDeal(signalCode string) error {
 	signal, err := models.FindSignalByCode(signalCode)
 	if err != nil {
 		logger.Errorf("Error in startDeal: %v", err)
-		return
+		return err
 	}
 	bots := models.GetBots(signalCode)
 	for _, bot := range bots {
 		logger.Infof("start bot's deal with id %d", bot.ID)
 		deal := models.FindByStatus(bot.ID, models.DealStarted)
 		if deal.ID == 0 {
-			openDeal(&bot, signal.NameToken)
+			err := openDeal(&bot, signal.NameToken)
+			logger.Errorf("StartDeal error: %v", err)
 		} else {
 			logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, bot.ID)
 		}
 	}
+	return nil
 }
 
 func endDeal(signalCode string) {
@@ -98,7 +106,6 @@ func endDeal(signalCode string) {
 	}
 	bots := models.GetBots(signalCode)
 	for _, bot := range bots {
-		logger.Infof("end bot's deal with id %d", bot.ID)
 		deal := models.FindByStatus(bot.ID, models.DealStarted)
 		if deal.ID > 0 {
 			closeDeal(&deal, &bot, signal.NameToken)
@@ -108,58 +115,74 @@ func endDeal(signalCode string) {
 	}
 }
 
-func openDeal(bot *models.Bot, currencyName string) {
+func openDeal(bot *models.Bot, currencyName string) error {
 	deal := new(models.Deal)
 	deal.StartTime = time.Now()
 	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, bot.OkxBotId)
-	logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
+	logger.Infof("OpenDeal before available amount: %v, frozen amount: %v", beforeAvailAmount, beforeFrozenAmount)
+	if beforeFrozenAmount > 0 {
+		return errors.New("The deal is already exist")
+	}
 
 	if beforeAvailAmount > 0 {
-		deal.OrderId = openOrder(bot.UserId, currencyName, bot.OkxBotId)
+		order, err := openOrder(bot.UserId, currencyName, bot.OkxBotId, beforeAvailAmount, bot.Lever, bot.DealsPercent)
+		if err != nil {
+			return err
+		}
+		deal.OrderId = order
 
 		if deal.OrderId != "" {
 			afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId)
 			logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
 			diffAmount := beforeAvailAmount - afterAvailAmount
 			deal.StartAmount = diffAmount
+			deal.Status = models.DealStarted
 			deal.StartDbSave(bot.ID, diffAmount)
 			bot.CurrentAmount = diffAmount
 			bot.Status = models.MakingDeal
 			bot.Update()
 		} else {
-			logger.Errorf("An order cannot be created for a bot=%v on a crypto exchange", bot.ID)
+			strErr := fmt.Sprintf("An order cannot be created for a bot=%v on a crypto exchange", bot.ID)
+			return errors.New(strErr)
 		}
 	} else {
+		strErr := fmt.Sprintf("For openDeal beforeAvailAmount equals zero")
 		logger.Errorf("For openDeal beforeAvailAmount equals zero")
+		return errors.New(strErr)
 	}
+	return nil
 }
 
 func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
 	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, bot.OkxBotId)
-	logger.Infof("Before available amount: %d, frozen amount: %d", beforeAvailAmount, beforeFrozenAmount)
-	result := closeOrder(bot.UserId, currencyName, bot.OkxBotId)
-	if result {
-		afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId)
-		logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
-		diffAmount := afterAvailAmount - beforeAvailAmount
-		bot.CurrentAmount = diffAmount
-		bot.Status = models.Waiting
-		bot.Update()
-		deal.FinishDbSave(diffAmount)
-	} else {
-		logger.Errorf("An order on a crypto exchange cannot be closed for a bot=%v and a deal=%v", bot.ID, deal.ID)
+	if beforeFrozenAmount > 0 {
+		result := closeOrder(bot.UserId, currencyName, bot.OkxBotId)
+		if result {
+			afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId)
+			if afterFrozenAmount == 0 {
+				diffAmount := afterAvailAmount - beforeAvailAmount
+				bot.CurrentAmount = diffAmount
+				bot.Status = models.Waiting
+				bot.Update()
+				deal.FinishDbSave(diffAmount)
+			}
+		} else {
+			logger.Errorf("An order on a crypto exchange cannot be closed for a bot=%v and a deal=%v", bot.ID, deal.ID)
+		}
 	}
 }
 
-func openOrder(userId uint, currencyName string, algoId string) (orderId string) {
-	amount := 50.0
-	float64Sz := calcPx(userId, currencyName, amount, 90)
-	stringSz := strconv.FormatFloat(float64Sz, 'g', 1, 64)
-	operationCode := OkxPlaceSubOrder(userId, currencyName+"-"+BASE_CURRENCY+"-SWAP", algoId, stringSz)
+func openOrder(userId uint, currencyName string, algoId string, beforeAvailAmount float64, lever float64, percent float64) (string, error) {
+	float64Sz := calcPx(userId, currencyName, beforeAvailAmount*lever, percent)
+	stringSz := strconv.FormatFloat(float64Sz, 'f', 2, 64)
+	operationCode, err := OkxPlaceSubOrder(userId, currencyName+"-"+BASE_CURRENCY+"-SWAP", algoId, stringSz)
+	if err != nil {
+		return "", err
+	}
 	time.Sleep(2 * time.Second)
 	logger.Infof("Code for OkxPlaceSubOrder is %s", operationCode)
 
-	return OkxGetSubOrderSignalBot(userId)
+	return OkxGetSubOrderSignalBot(userId, algoId), nil
 }
 
 func closeOrder(userId uint, currencyName string, algoId string) bool {
@@ -234,9 +257,9 @@ var CheckOkx = func(w http.ResponseWriter, r *http.Request) {
 
 	activeSignalBot := OkxGetActiveSignalBot(user, "1843697369594986496")
 	if activeSignalBot != nil {
-		logger.Info("signalBot: ", activeSignalBot)
-		logger.Info("AvailBal: ", activeSignalBot.AvailBal)
-		logger.Info("FrozenBal: ", activeSignalBot.FrozenBal)
+		logger.Info("Active signalBot: ", activeSignalBot)
+		logger.Info("Active AvailBal: ", activeSignalBot.AvailBal)
+		logger.Info("Active FrozenBal: ", activeSignalBot.FrozenBal)
 	}
 
 	signalBot := OkxGetSignalBot(user, "1843697369594986496")

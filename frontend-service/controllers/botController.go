@@ -8,6 +8,7 @@ import (
 	"okx-bot/exchange/model"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
+	"strconv"
 	"time"
 )
 
@@ -27,12 +28,29 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 		u.Respond(w, u.Message(false, "The order amount must be greater than 50"))
 		return
 	}
+	if botRequest.Lever < 0 || botRequest.Lever > 50.0 {
+		logger.Errorf("The lever is wrong")
+		u.Respond(w, u.Message(false, "The lever is wrong"))
+		return
+	}
+	if botRequest.DealsPercent < 0 || botRequest.DealsPercent > 100.0 {
+		logger.Errorf("The dealsPercent is wrong")
+		u.Respond(w, u.Message(false, "The dealsPercent is wrong"))
+		return
+	}
 
 	bot := new(models.Bot)
 	bot.UserId = user
+	bot.Lever = botRequest.Lever
 
 	var signal = models.Signal{Code: botRequest.CodeSignalId}
 	models.GetDB().Where("code = ?", botRequest.CodeSignalId).First(&signal)
+
+	if signal.NameToken == "" {
+		logger.Errorf("The signal is wrong")
+		u.Respond(w, u.Message(false, "The signal is wrong"))
+		return
+	}
 
 	logger.Infoln("signal", signal)
 
@@ -47,7 +65,8 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 	instId := signal.NameToken + "-USDT-SWAP"
 	strAmount := fmt.Sprintf("%2f", botRequest.InitialAmount)
 
-	bot.OkxBotId, err = OkxCreateSignalBot(user, okxSignalId, instId, "3", strAmount)
+	lever := strconv.FormatFloat(bot.Lever, 'f', 2, 64)
+	bot.OkxBotId, err = OkxCreateSignalBot(user, okxSignalId, instId, lever, strAmount)
 	if err != nil {
 		logger.Errorf("Error in OkxCreateSignalBot")
 		u.Respond(w, u.Message(false, "Error in OkxCreateSignalBot"))
@@ -57,7 +76,6 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 	bot.Status = models.Created
 	bot.InitialAmount = botRequest.InitialAmount
 	bot.CurrentAmount = botRequest.InitialAmount
-	bot.PosSide = botRequest.PosSide
 	bot.StartTime = time.Now()
 
 	resp := bot.Create(&signal)

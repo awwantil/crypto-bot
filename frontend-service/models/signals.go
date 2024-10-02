@@ -9,6 +9,7 @@ import (
 
 type TradingViewSignalReceive struct {
 	gorm.Model
+	IdSignal               uint   `gorm:"primary_key"`
 	Id                     string `json:"id"`
 	Action                 string `json:"action"`
 	MarketPosition         string `json:"marketPosition"`

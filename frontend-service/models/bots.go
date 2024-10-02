@@ -26,18 +26,21 @@ type Bot struct {
 	Status        BotStatus `json:"status"`
 	InitialAmount float64   `json:"initialAmount"`
 	CurrentAmount float64   `json:"currentAmount"`
+	Lever         float64   `json:"lever"`
 	PosSide       uint      `json:"posSide"`
 	SignalRefer   uint      `json:"signalRefer"`
 	UserId        uint      `json:"userId"`
 	OkxSignalId   string    `json:"okxSignalId"`
 	OkxBotId      string    `json:"okxBotId"`
+	DealsPercent  float64   `json:"dealsPercent"`
 	Deals         []Deal    `json:"deals" gorm:"foreignKey:BotRefer"`
 }
 
 type BotCreateRequest struct {
 	InitialAmount float64 `json:"initialAmount"`
 	CodeSignalId  string  `json:"codeSignalId"`
-	PosSide       uint    `json:"posSide"`
+	Lever         float64 `json:"lever"`
+	DealsPercent  float64 `json:"dealsPercent"`
 }
 
 type BotWithIdRequest struct {
