@@ -141,14 +141,33 @@ var DeleteBot = func(w http.ResponseWriter, r *http.Request) {
 }
 
 var GetBots = func(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value("user").(uint)
-	ticker := OkxGetTicker(user, "SOL")
-	logger.Info("ticker", ticker)
 	signalCode := r.URL.Query().Get("code")
 
 	bots := models.GetBots(signalCode)
 	resp := u.Message(true, "success")
 	resp["bots"] = bots
+
+	logger.Infoln("resp", resp)
+	u.Respond(w, resp)
+}
+
+var GetAllOkxBots = func(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(uint)
+	bots := OkxGetAllActiveSignalBots(user)
+
+	resp := u.Message(true, "success")
+	resp["OKX bots"] = bots
+
+	logger.Infoln("resp", resp)
+	u.Respond(w, resp)
+}
+
+var GetAllOkxSignals = func(w http.ResponseWriter, r *http.Request) {
+	user := r.Context().Value("user").(uint)
+	bots := OkxGetSignals(user)
+
+	resp := u.Message(true, "success")
+	resp["OKX signals"] = bots
 
 	logger.Infoln("resp", resp)
 	u.Respond(w, resp)

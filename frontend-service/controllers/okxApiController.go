@@ -186,3 +186,16 @@ func OkxGetSignalBot(userId uint, algoId string) *model.GetSignalBotResponseData
 	}
 	return result
 }
+
+func OkxGetAllActiveSignalBots(userId uint) *model.GetActiveSignalBotResponse {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return nil
+	}
+	details, err := app.GetAllActiveSignalBots(api)
+	if err != nil {
+		return nil
+	}
+	return details
+}

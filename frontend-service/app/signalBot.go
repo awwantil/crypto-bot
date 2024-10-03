@@ -167,3 +167,19 @@ func GetSignalBot(api *futures.PrvApi, algoId string) (signal *model.GetSignalBo
 
 	return response, nil
 }
+
+func GetAllActiveSignalBots(api *futures.PrvApi) (signal *model.GetActiveSignalBotResponse, err error) {
+
+	request := new(model.GetActiveSignalBotRequest)
+	request.AlgoOrdType = "contract"
+	logger.Info("request", request)
+	response, data, err := api.Isolated.GetActiveSignalBot(*request)
+	if err != nil {
+		logger.Errorf("Error GetActiveSignalBot: %v, data: %v", err, string(data))
+		return nil, err
+	}
+	logger.Info("data = ", string(data))
+	logger.Info("response = ", response)
+
+	return response, nil
+}
