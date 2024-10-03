@@ -166,8 +166,8 @@ https://www.okx.com/ru/trade-market/info/swap
 "marketPositionSize": "{{strategy.market_position_size}}",
 "prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
 "instrument": "{{ticker}}",
-"signalToken": "cqwJU6hqLjsDk8Kkv2_RG",
+"signalToken": "qfKrjx-4NoUPfwohSoSpu",
 "timestamp": "{{timenow}}",
-"investmentType": "Crypto Scalper - [100,зкр,14,25,45,EMA,EMA,0.02,0.02,0.22,0.225,1.04,0.055,0.03]",
+"investmentType": "Price action and breakout Channel Forexrn [1H,, 48, 14, 2, 3.25, 18, 5]",
 "amount": "{{strategy.order.contracts}}"
 }

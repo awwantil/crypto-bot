@@ -15,6 +15,8 @@ import (
 	"time"
 )
 
+//https://www.okx.com/ru/trade-market/info/swap
+
 var (
 	logger = logrus.WithFields(logrus.Fields{
 		"app":       "okx-bot",
@@ -42,14 +44,14 @@ var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 
 	signal.Save()
 
-	if signal.Action == BUY {
+	if signal.Action == BUY && isLongPosition(signal.Id) {
 		err := startDeal(signal.SignalToken)
 		if err != nil {
 			u.Respond(w, u.Message(false, err.Error()))
 			return
 		}
 	}
-	if signal.Action == SELL {
+	if signal.Action == SELL && isLongPosition(signal.Id) {
 		endDeal(signal.SignalToken)
 	}
 
@@ -258,6 +260,29 @@ func Round(x float64, prec int) float64 {
 	}
 
 	return rounder / pow
+}
+
+func isLongPosition(checkString string) bool {
+	if findSubstring(checkString, "Long") {
+		return true
+	}
+	if findSubstring(checkString, "long") {
+		return true
+	}
+	return false
+}
+
+func findSubstring(str string, match string) bool {
+	if len(str) < len(match) {
+		return false
+	}
+	for i := 0; i <= len(str)-len(match); i++ {
+		subStr := str[i : i+len(match)]
+		if subStr == match {
+			return true
+		}
+	}
+	return false
 }
 
 var CheckOkx = func(w http.ResponseWriter, r *http.Request) {
