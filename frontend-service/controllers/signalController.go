@@ -188,8 +188,10 @@ func openOrder(userId uint, currencyName string, algoId string, beforeAvailAmoun
 	if lever == 0 {
 		percent = DEFAULT_LEVER
 	}
+	logger.Infof("amount: %v", beforeAvailAmount*lever)
 	float64Sz := calcPx(userId, currencyName, beforeAvailAmount*lever, percent)
 	stringSz := strconv.FormatFloat(float64Sz, 'f', 2, 64)
+	logger.Infof("calcPx: %v", stringSz)
 	operationCode, err := OkxPlaceSubOrder(userId, currencyName+"-"+BASE_CURRENCY+"-SWAP", algoId, stringSz)
 	if err != nil {
 		return "", 0, err
@@ -240,6 +242,9 @@ func getBaseAmount(userId uint, currencyName string) (float64, float64) {
 func calcPx(userId uint, symbol string, amount float64, percent float64) float64 {
 	ticker := OkxGetTicker(userId, symbol)
 	price := ticker.Last
+	if symbol == "ETH" {
+		return Round(percent*amount/(price*100/100), 1)
+	}
 	return Round(percent*amount/(price*100/10), 2)
 }
 

@@ -186,4 +186,19 @@ https://www.okx.com/ru/trade-market/info/swap
 "amount": "{{strategy.order.contracts}}"
 }
 
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "OtrPAwuozHsuCCC_JkF6q",
+"timestamp": "{{timenow}}",
+"investmentType": "Fractal Macro Trend ETH(2H) [612%-9,22,32,41,52,60]",
+"amount": "{{strategy.order.contracts}}"
+}
+
+
 https://cryptet.com/ru/ [BTC, ETH, XRP, ADA, SOL, DOGE, LTC, MATIC, LINK]
