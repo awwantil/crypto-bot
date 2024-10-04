@@ -22,6 +22,8 @@ var (
 		"app":       "okx-bot",
 		"component": "app.signal-controllers",
 	})
+	longNamesArray  = []string{"Long", "long"}
+	shortNamesArray = []string{"Short", "short"}
 )
 
 const (
@@ -44,15 +46,17 @@ var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 
 	signal.Save()
 
-	if signal.Action == BUY && isLongPosition(signal.Id) {
-		err := startDeal(signal.SignalToken)
-		if err != nil {
-			u.Respond(w, u.Message(false, err.Error()))
-			return
+	if isLongPosition(signal.Id) {
+		if signal.Action == BUY {
+			err := startLongDeal(signal.SignalToken)
+			if err != nil {
+				u.Respond(w, u.Message(false, err.Error()))
+				return
+			}
 		}
-	}
-	if signal.Action == SELL && isLongPosition(signal.Id) {
-		endDeal(signal.SignalToken)
+		if signal.Action == SELL {
+			endLongDeal(signal.SignalToken)
+		}
 	}
 
 	u.Respond(w, u.Message(true, "The signal was received"))
@@ -82,10 +86,10 @@ var GetAllSignals = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
-func startDeal(signalCode string) error {
+func startLongDeal(signalCode string) error {
 	signal, err := models.FindSignalByCode(signalCode)
 	if err != nil {
-		logger.Errorf("Error in startDeal: %v", err)
+		logger.Errorf("Error in startLongDeal: %v", err)
 		return err
 	}
 	bots := models.GetBots(signalCode)
@@ -93,8 +97,8 @@ func startDeal(signalCode string) error {
 		logger.Infof("start bot's deal with id %d", bot.ID)
 		deal := models.FindByStatus(bot.ID, models.DealStarted)
 		if deal.ID == 0 {
-			err := openDeal(&bot, signal.NameToken)
-			logger.Errorf("StartDeal error: %v", err)
+			err := openDeal(&bot, signal.NameToken, models.Long)
+			logger.Errorf("startLongDeal error: %v", err)
 		} else {
 			logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, bot.ID)
 		}
@@ -102,10 +106,10 @@ func startDeal(signalCode string) error {
 	return nil
 }
 
-func endDeal(signalCode string) {
+func endLongDeal(signalCode string) {
 	signal, err := models.FindSignalByCode(signalCode)
 	if err != nil {
-		logger.Errorf("Error in startDeal: %v", err)
+		logger.Errorf("Error in endLongDeal: %v", err)
 		return
 	}
 	bots := models.GetBots(signalCode)
@@ -119,9 +123,10 @@ func endDeal(signalCode string) {
 	}
 }
 
-func openDeal(bot *models.Bot, currencyName string) error {
+func openDeal(bot *models.Bot, currencyName string, direction models.DealDirection) error {
 	deal := new(models.Deal)
 	deal.StartTime = time.Now()
+	deal.Direction = direction
 	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, bot.OkxBotId)
 	logger.Infof("OpenDeal before available amount: %v, frozen amount: %v", beforeAvailAmount, beforeFrozenAmount)
 	if beforeFrozenAmount > 0 {
@@ -263,11 +268,19 @@ func Round(x float64, prec int) float64 {
 }
 
 func isLongPosition(checkString string) bool {
-	if findSubstring(checkString, "Long") {
-		return true
+	for _, currentName := range longNamesArray {
+		if findSubstring(checkString, currentName) {
+			return true
+		}
 	}
-	if findSubstring(checkString, "long") {
-		return true
+	return false
+}
+
+func isShortPosition(checkString string) bool {
+	for _, currentName := range shortNamesArray {
+		if findSubstring(checkString, currentName) {
+			return true
+		}
 	}
 	return false
 }

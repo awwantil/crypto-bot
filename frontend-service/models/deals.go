@@ -13,16 +13,24 @@ const (
 	DealFailure
 )
 
+type DealDirection int
+
+const (
+	Long DealDirection = iota + 1
+	Short
+)
+
 type Deal struct {
 	gorm.Model
-	StartTime   time.Time   `json:"startTime"`
-	EndTime     time.Time   `json:"endTime"`
-	StartAmount float64     `json:"startAmount"`
-	EndAmount   float64     `json:"endAmount"`
-	Status      DealStatus  `json:"status"`
-	BotRefer    uint        `json:"botRefer"`
-	OrderId     string      `json:"orderId"`
-	Stats       []DealStats `json:"stats" gorm:"foreignKey:DealRefer"`
+	StartTime   time.Time     `json:"startTime"`
+	EndTime     time.Time     `json:"endTime"`
+	StartAmount float64       `json:"startAmount"`
+	EndAmount   float64       `json:"endAmount"`
+	Status      DealStatus    `json:"status"`
+	Direction   DealDirection `json:"direction"`
+	BotRefer    uint          `json:"botRefer"`
+	OrderId     string        `json:"orderId"`
+	Stats       []DealStats   `json:"stats" gorm:"foreignKey:DealRefer"`
 }
 
 func (deal *Deal) StartDbSave(botId uint, startAmount float64) bool {

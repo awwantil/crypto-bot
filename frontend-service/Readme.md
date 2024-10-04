@@ -185,3 +185,5 @@ https://www.okx.com/ru/trade-market/info/swap
 "investmentType": "Price action and breakout Channel Forexrn [2H, 46, 14, 1, 3.5, 18, 5]",
 "amount": "{{strategy.order.contracts}}"
 }
+
+https://cryptet.com/ru/ [BTC, ETH, XRP, ADA, SOL, DOGE, LTC, MATIC, LINK]
