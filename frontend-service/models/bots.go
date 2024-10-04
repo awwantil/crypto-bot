@@ -22,6 +22,7 @@ const (
 type Bot struct {
 	gorm.Model
 	ID            uint      `gorm:"primary_key"`
+	UserId        uint      `json:"userId"`
 	StartTime     time.Time `json:"startTime"`
 	Status        BotStatus `json:"status"`
 	InitialAmount float64   `json:"initialAmount"`
@@ -29,10 +30,10 @@ type Bot struct {
 	Lever         float64   `json:"lever"`
 	PosSide       uint      `json:"posSide"`
 	SignalRefer   uint      `json:"signalRefer"`
-	UserId        uint      `json:"userId"`
 	OkxSignalId   string    `json:"okxSignalId"`
 	OkxBotId      string    `json:"okxBotId"`
 	DealsPercent  float64   `json:"dealsPercent"`
+	IsProduction  bool      `json:"isProduction"`
 	Deals         []Deal    `json:"deals" gorm:"foreignKey:BotRefer"`
 }
 
@@ -41,6 +42,7 @@ type BotCreateRequest struct {
 	CodeSignalId  string  `json:"codeSignalId"`
 	Lever         float64 `json:"lever"`
 	DealsPercent  float64 `json:"dealsPercent"`
+	IsProduction  bool    `json:"isProduction"`
 }
 
 type BotWithIdRequest struct {

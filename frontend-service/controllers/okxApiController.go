@@ -116,6 +116,24 @@ func OkxGetSubOrderSignalBot(userId uint, algoId string) string {
 	return details.OrdId
 }
 
+func OkxClosePositionSignalBot(userId uint, currencyName string, algoId string) error {
+	api, err := app.GetOkxApi(userId)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return err
+	}
+	closePositionSignalBotRequest := new(model.ClosePositionSignalBotRequest)
+	closePositionSignalBotRequest.InstId = currencyName + "-USDT-SWAP"
+	closePositionSignalBotRequest.AlgoId = algoId
+
+	details, err := app.ClosePositionSignalBot(api, closePositionSignalBotRequest)
+	if err != nil {
+		return err
+	}
+	logger.Infof("details AlgoId: %v", details.AlgoId)
+	return nil
+}
+
 func OkxGetSignals(userId uint) *model.GetSignalsResponse {
 	api, err := app.GetOkxApi(userId)
 	if err != nil {

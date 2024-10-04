@@ -7,10 +7,13 @@ import (
 
 type OKxApi struct {
 	gorm.Model
-	MainKey    string `json:"mainKey"`
-	SpecialKey string `json:"specialKey"`
-	Phrase     string `json:"phrase"`
-	UserId     uint   `json:"userId"`
+	UserId         uint   `json:"userId"`
+	MainKey        string `json:"mainKey"`
+	SpecialKey     string `json:"specialKey"`
+	Phrase         string `json:"phrase"`
+	ProdMainKey    string `json:"prodMainKey"`
+	ProdSpecialKey string `json:"prodSpecialKey"`
+	ProdPhrase     string `json:"prodPhrase"`
 }
 
 const CREATED = "*** created ***"

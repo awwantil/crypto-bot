@@ -7,7 +7,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"math"
 	"net/http"
-	"okx-bot/exchange/model"
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
@@ -94,7 +93,7 @@ func startLongDeal(signalCode string) error {
 	}
 	bots := models.GetBots(signalCode)
 	for _, bot := range bots {
-		logger.Infof("start bot's deal with id %d", bot.ID)
+		logger.Infof("start bot's deal with bot id %d", bot.ID)
 		deal := models.FindByStatus(bot.ID, models.DealStarted)
 		if deal.ID == 0 {
 			err := openDeal(&bot, signal.NameToken, models.Long)
@@ -202,18 +201,9 @@ func openOrder(userId uint, currencyName string, algoId string, beforeAvailAmoun
 }
 
 func closeOrder(userId uint, currencyName string, algoId string) bool {
-	api, err := app.GetOkxApi(userId)
+	err := OkxClosePositionSignalBot(userId, currencyName, algoId)
 	if err != nil {
-		logger.Errorf("Error in GetOkxApi: %v", err)
-		return false
-	}
-	closePositionSignalBotRequest := new(model.ClosePositionSignalBotRequest)
-	closePositionSignalBotRequest.InstId = currencyName + "-USDT-SWAP"
-	closePositionSignalBotRequest.AlgoId = algoId
-
-	_, err = app.ClosePositionSignalBot(api, closePositionSignalBotRequest)
-	if err != nil {
-		logger.Errorf("Error in ClosePositionSignalBot: %v", err)
+		logger.Errorf("Error in OkxClosePositionSignalBot: %v", err)
 		return false
 	}
 	return true
