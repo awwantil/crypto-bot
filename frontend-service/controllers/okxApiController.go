@@ -77,7 +77,7 @@ func OkxDeleteSignalBot(userId uint, signalChanId string) string {
 	return cancelSignalBot.AlgoId
 }
 
-func OkxPlaceSubOrder(userId uint, instId string, algoId string, sz string) (string, error) {
+func OkxPlaceSubOrder(userId uint, instId string, algoId string, sz string, direction models.DealDirection) (string, error) {
 	api, err := app.GetOkxApi(userId)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
@@ -86,7 +86,10 @@ func OkxPlaceSubOrder(userId uint, instId string, algoId string, sz string) (str
 	placeSubOrderSignalBotRequest := new(model.PlaceSubOrderSignalBotRequest)
 	placeSubOrderSignalBotRequest.InstId = instId
 	placeSubOrderSignalBotRequest.AlgoId = algoId
-	placeSubOrderSignalBotRequest.Side = "buy"
+	placeSubOrderSignalBotRequest.Side = BUY
+	if direction == models.Short {
+		placeSubOrderSignalBotRequest.Side = SELL
+	}
 	placeSubOrderSignalBotRequest.OrdType = "market"
 	placeSubOrderSignalBotRequest.Sz = sz
 

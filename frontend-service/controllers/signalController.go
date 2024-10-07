@@ -47,14 +47,27 @@ var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 
 	if isLongPosition(signal.Id) {
 		if signal.Action == BUY {
-			err := startLongDeal(signal.SignalToken)
+			err := startDeal(signal.SignalToken, models.Long)
 			if err != nil {
 				u.Respond(w, u.Message(false, err.Error()))
 				return
 			}
 		}
 		if signal.Action == SELL {
-			endLongDeal(signal.SignalToken)
+			endDeal(signal.SignalToken)
+		}
+	}
+
+	if isShortPosition(signal.Id) {
+		if signal.Action == SELL {
+			err := startDeal(signal.SignalToken, models.Short)
+			if err != nil {
+				u.Respond(w, u.Message(false, err.Error()))
+				return
+			}
+		}
+		if signal.Action == BUY {
+			endDeal(signal.SignalToken)
 		}
 	}
 
@@ -85,19 +98,19 @@ var GetAllSignals = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
-func startLongDeal(signalCode string) error {
+func startDeal(signalCode string, direction models.DealDirection) error {
 	signal, err := models.FindSignalByCode(signalCode)
 	if err != nil {
-		logger.Errorf("Error in startLongDeal: %v", err)
+		logger.Errorf("Error in start deal: %v", err)
 		return err
 	}
 	bots := models.GetBots(signalCode)
 	for _, bot := range bots {
-		logger.Infof("start bot's deal with bot id %d", bot.ID)
 		deal := models.FindByStatus(bot.ID, models.DealStarted)
 		if deal.ID == 0 {
-			err := openDeal(&bot, signal.NameToken, models.Long)
-			logger.Errorf("startLongDeal error: %v", err)
+			logger.Infof("starting bot's deal with bot id %d and direction: %v", bot.ID, direction)
+			err := openDeal(&bot, signal.NameToken, direction)
+			logger.Errorf("start deal error: %v", err)
 		} else {
 			logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, bot.ID)
 		}
@@ -105,10 +118,10 @@ func startLongDeal(signalCode string) error {
 	return nil
 }
 
-func endLongDeal(signalCode string) {
+func endDeal(signalCode string) {
 	signal, err := models.FindSignalByCode(signalCode)
 	if err != nil {
-		logger.Errorf("Error in endLongDeal: %v", err)
+		logger.Errorf("Error in endDeal: %v", err)
 		return
 	}
 	bots := models.GetBots(signalCode)
@@ -133,7 +146,7 @@ func openDeal(bot *models.Bot, currencyName string, direction models.DealDirecti
 	}
 
 	if beforeAvailAmount > 0 {
-		order, px, err := openOrder(bot.UserId, currencyName, bot.OkxBotId, beforeAvailAmount, bot.Lever, bot.DealsPercent)
+		order, px, err := openOrder(bot, currencyName, beforeAvailAmount, direction)
 		if err != nil {
 			return err
 		}
@@ -141,7 +154,7 @@ func openDeal(bot *models.Bot, currencyName string, direction models.DealDirecti
 
 		if deal.OrderId != "" {
 			afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId)
-			logger.Infof("After available amount: %d, frozen amount: %d", afterAvailAmount, afterFrozenAmount)
+			logger.Infof("After available amount: %v, frozen amount: %v", afterAvailAmount, afterFrozenAmount)
 			diffAmount := beforeAvailAmount - afterAvailAmount
 			deal.StartAmount = diffAmount
 			deal.Status = models.DealStarted
@@ -172,6 +185,7 @@ func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
 				diffAmount := afterAvailAmount - beforeAvailAmount
 				bot.CurrentAmount = diffAmount
 				bot.Status = models.Waiting
+
 				bot.Update()
 				deal.FinishDbSave(diffAmount)
 			}
@@ -181,25 +195,28 @@ func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
 	}
 }
 
-func openOrder(userId uint, currencyName string, algoId string, beforeAvailAmount float64, lever float64, percent float64) (string, uint, error) {
+func openOrder(bot *models.Bot, currencyName string, beforeAvailAmount float64, direction models.DealDirection) (string, uint, error) {
+	percent := bot.DealsPercent
+	lever := bot.Lever
+
 	if percent == 0 {
 		percent = DEFAULT_PERCENT
 	}
 	if lever == 0 {
-		percent = DEFAULT_LEVER
+		lever = DEFAULT_LEVER
 	}
 	logger.Infof("amount: %v", beforeAvailAmount*lever)
-	float64Sz := calcPx(userId, currencyName, beforeAvailAmount*lever, percent)
+	float64Sz := calcPx(bot.UserId, currencyName, beforeAvailAmount*lever, percent)
 	stringSz := strconv.FormatFloat(float64Sz, 'f', 2, 64)
 	logger.Infof("calcPx: %v", stringSz)
-	operationCode, err := OkxPlaceSubOrder(userId, currencyName+"-"+BASE_CURRENCY+"-SWAP", algoId, stringSz)
+	operationCode, err := OkxPlaceSubOrder(bot.UserId, currencyName+"-"+BASE_CURRENCY+"-SWAP", bot.OkxBotId, stringSz, direction)
 	if err != nil {
 		return "", 0, err
 	}
 	time.Sleep(2 * time.Second)
 	logger.Infof("Code for OkxPlaceSubOrder is %s", operationCode)
 
-	return OkxGetSubOrderSignalBot(userId, algoId), uint(float64Sz), nil
+	return OkxGetSubOrderSignalBot(bot.UserId, bot.OkxBotId), uint(float64Sz), nil
 }
 
 func closeOrder(userId uint, currencyName string, algoId string) bool {
