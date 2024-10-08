@@ -194,9 +194,9 @@ https://www.okx.com/ru/trade-market/info/swap
 "marketPositionSize": "{{strategy.market_position_size}}",
 "prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
 "instrument": "{{ticker}}",
-"signalToken": "OtrPAwuozHsuCCC_JkF6q",
+"signalToken": "WkGP8xHYlR9ivp98MDFqL",
 "timestamp": "{{timenow}}",
-"investmentType": "Fractal Macro Trend ETH(2H) [612%-9,22,32,41,52,60]",
+"investmentType": "Joker TTP Bot SOL(2H) (4296.98%)-[FastSMA-22, SlowSMA-50, Long-0.6, Short-0.45, Enable, TP-0.12]",
 "amount": "{{strategy.order.contracts}}"
 }
 

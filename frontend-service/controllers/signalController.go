@@ -159,7 +159,7 @@ func openDeal(bot *models.Bot, currencyName string, direction models.DealDirecti
 			deal.StartAmount = diffAmount
 			deal.Status = models.DealStarted
 			deal.StartDbSave(bot.ID, diffAmount)
-			bot.CurrentAmount = diffAmount
+			bot.CurrentAmount = afterAvailAmount
 			bot.Status = models.MakingDeal
 			bot.PosSide = px
 			bot.Update()
@@ -183,7 +183,7 @@ func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
 			afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId)
 			if afterFrozenAmount == 0 {
 				diffAmount := afterAvailAmount - beforeAvailAmount
-				bot.CurrentAmount = diffAmount
+				bot.CurrentAmount = afterAvailAmount
 				bot.Status = models.Waiting
 
 				bot.Update()
