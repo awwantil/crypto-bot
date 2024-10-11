@@ -130,6 +130,9 @@ POST: http://{{ServerHost}}:{{ServerPort}}/api/user/new
 ### ===============================================================
 http://185.240.103.204/api/signal/receive
 https://www.okx.com/ru/trade-market/info/swap 
+
+https://ru.tradingview.com/support/solutions/43000481368/
+
 {
 "id": "{{strategy.order.id}}",
 "action": "{{strategy.order.action}}",
@@ -200,5 +203,18 @@ https://www.okx.com/ru/trade-market/info/swap
 "amount": "{{strategy.order.contracts}}"
 }
 
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "pcO6-oXZA_qmV45AfI86o",
+"timestamp": "{{timenow}}",
+"investmentType": "HARSI - The WHALE v2 ETH(2H) (12282.75%)-[buy2, exit6, TSL, 6, 0.5, 0.1, 5, enable, 12, ohlc4, Use struct, 8, 1, 15, `,  ohlc4, 7, Smoothed, show, 3,3,14,80]",
+"amount": "{{strategy.order.contracts}}"
+}
 
 https://cryptet.com/ru/ [BTC, ETH, XRP, ADA, SOL, DOGE, LTC, MATIC, LINK]

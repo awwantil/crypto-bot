@@ -21,8 +21,8 @@ var (
 		"app":       "okx-bot",
 		"component": "app.signal-controllers",
 	})
-	longNamesArray  = []string{"Long", "long"}
-	shortNamesArray = []string{"Short", "short"}
+	longNamesArray  = []string{"Long", "long", "buy"}
+	shortNamesArray = []string{"Short", "short", "sell"}
 )
 
 const (
