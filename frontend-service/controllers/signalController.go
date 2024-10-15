@@ -21,13 +21,17 @@ var (
 		"app":       "okx-bot",
 		"component": "app.signal-controllers",
 	})
-	longNamesArray  = []string{"Long", "long", "buy", "TP/SL/TSL"}
-	shortNamesArray = []string{"Short", "short", "sell"}
+	longNamesArray  = []string{"Long", "long"}
+	shortNamesArray = []string{"Short", "short"}
 )
 
 const (
 	SELL            string  = "sell"
 	BUY             string  = "buy"
+	LONG            string  = "long"
+	SHORT           string  = "short"
+	FLAT            string  = "flat"
+	ZERO_AMOUNT     string  = "0"
 	BASE_CURRENCY           = "USDT"
 	DEFAULT_PERCENT float64 = 60
 	DEFAULT_LEVER   float64 = 3
@@ -45,7 +49,7 @@ var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 
 	signal.Save()
 
-	if isLongPosition(signal.Id) {
+	if isLongPosition(signal) {
 		if signal.Action == BUY {
 			err := startDeal(signal.SignalToken, models.Long)
 			if err != nil {
@@ -58,7 +62,7 @@ var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if isShortPosition(signal.Id) {
+	if isShortPosition(signal) {
 		if signal.Action == SELL {
 			err := startDeal(signal.SignalToken, models.Short)
 			if err != nil {
@@ -260,9 +264,12 @@ func calcPx(userId uint, symbol string, amount float64, percent float64) float64
 	ticker := OkxGetTicker(userId, symbol)
 	price := ticker.Last
 	if symbol == "ETH" {
-		return Round(percent*amount/(price*100/100), 1)
+		return Round(percent*amount/(price), 1)
 	}
-	return Round(percent*amount/(price*100/10), 2)
+	if symbol == "XRP" {
+		return Round(percent*amount/(price*10000), 1)
+	}
+	return Round(percent*amount/(price*10), 2)
 }
 
 func Round(x float64, prec int) float64 {
@@ -279,20 +286,34 @@ func Round(x float64, prec int) float64 {
 	return rounder / pow
 }
 
-func isLongPosition(checkString string) bool {
+func isLongPosition(signal *models.TradingViewSignalReceive) bool {
+	signalId := signal.Id
 	for _, currentName := range longNamesArray {
-		if findSubstring(checkString, currentName) {
+		if findSubstring(signalId, currentName) {
 			return true
 		}
+	}
+	if signal.Action == BUY && signal.MarketPositionSize != ZERO_AMOUNT && signal.PrevMarketPositionSize == ZERO_AMOUNT {
+		return true
+	}
+	if signal.Action == SELL && signal.MarketPositionSize == ZERO_AMOUNT && signal.PrevMarketPositionSize != ZERO_AMOUNT {
+		return true
 	}
 	return false
 }
 
-func isShortPosition(checkString string) bool {
+func isShortPosition(signal *models.TradingViewSignalReceive) bool {
+	signalId := signal.Id
 	for _, currentName := range shortNamesArray {
-		if findSubstring(checkString, currentName) {
+		if findSubstring(signalId, currentName) {
 			return true
 		}
+	}
+	if signal.Action == SELL && signal.MarketPositionSize != ZERO_AMOUNT && signal.PrevMarketPositionSize == ZERO_AMOUNT {
+		return true
+	}
+	if signal.Action == BUY && signal.MarketPositionSize == ZERO_AMOUNT && signal.PrevMarketPositionSize != ZERO_AMOUNT {
+		return true
 	}
 	return false
 }

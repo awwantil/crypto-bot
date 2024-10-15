@@ -217,4 +217,17 @@ https://ru.tradingview.com/support/solutions/43000481368/
 "amount": "{{strategy.order.contracts}}"
 }
 
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "7EbJw5fqfo1moeryFH4LK",
+"timestamp": "{{timenow}}",
+"investmentType": "5 ema strategy XRP(4H) (2166.51%) - [Both-4, not Enable, TP-1.4]",
+"amount": "{{strategy.order.contracts}}"
+}
 https://cryptet.com/ru/ [BTC, ETH, XRP, ADA, SOL, DOGE, LTC, MATIC, LINK]
