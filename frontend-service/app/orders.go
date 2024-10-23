@@ -18,7 +18,7 @@ var (
 	})
 )
 
-func GetOkxApi(userId uint) (*futures.PrvApi, error) {
+func GetOkxApi(userId uint, isProduction bool) (*futures.PrvApi, error) {
 	userOkxApi, err := models.GetUserApi(userId)
 	if err != nil {
 		return nil, err
@@ -26,10 +26,20 @@ func GetOkxApi(userId uint) (*futures.PrvApi, error) {
 	OKx := okx.New()
 	okx.DefaultHttpCli.SetTimeout(5)
 
-	api := OKx.Futures.NewPrvApi(
-		options.WithApiKey(userOkxApi.MainKey),
-		options.WithApiSecretKey(userOkxApi.SpecialKey),
-		options.WithPassphrase(userOkxApi.Phrase))
+	var api *futures.PrvApi
+	if isProduction {
+		api = OKx.Futures.NewPrvApi(
+			options.WithApiKey(userOkxApi.ProdMainKey),
+			options.WithApiSecretKey(userOkxApi.ProdSpecialKey),
+			options.WithPassphrase(userOkxApi.ProdPhrase),
+			options.WithIsDemoTrade("0"))
+	} else {
+		api = OKx.Futures.NewPrvApi(
+			options.WithApiKey(userOkxApi.MainKey),
+			options.WithApiSecretKey(userOkxApi.SpecialKey),
+			options.WithPassphrase(userOkxApi.Phrase),
+			options.WithIsDemoTrade("1"))
+	}
 
 	return api, nil
 }

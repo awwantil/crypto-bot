@@ -65,11 +65,11 @@ func main() {
 		//	Key:   "contractAlias",
 		//	Value: "SWAP",
 		//}
-		api, err := app.GetOkxApi(1)
-		if err != nil {
-			logger.Errorf("Error in GetOkxApi: %v", err)
-		}
-		logger.Info("api", api)
+		//api, err := app.GetOkxApi(1)
+		//if err != nil {
+		//	logger.Errorf("Error in GetOkxApi: %v", err)
+		//}
+		//logger.Info("api", api)
 		//
 		//id := "1695898177540702208"
 		//req := new(model.BaseOrderRequest)
@@ -121,9 +121,9 @@ func main() {
 		placeSubOrderSignalBotRequest.Sz = "2.00"
 
 		//_, err = app.PlaceSubOrderSignalBot(api, placeSubOrderSignalBotRequest)
-		if err != nil {
-			return
-		}
+		//if err != nil {
+		//	return
+		//}
 
 		//cancelSubOrderSignalBotRequest := new(model.CancelSubOrderSignalBotRequest)
 		//cancelSubOrderSignalBotRequest.InstId = "SOL-USDT-SWAP"
@@ -140,9 +140,9 @@ func main() {
 		closePositionSignalBotRequest.AlgoId = "1817262238944722944"
 
 		//_, err = app.ClosePositionSignalBot(api, closePositionSignalBotRequest)
-		if err != nil {
-			return
-		}
+		//if err != nil {
+		//	return
+		//}
 
 		//getSubOrdersSignalBotRequest := new(model.GetSubOrdersSignalBotRequest)
 		//getSubOrdersSignalBotRequest.AlgoId = "1817262238944722944"

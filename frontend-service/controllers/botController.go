@@ -56,7 +56,7 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 
 	logger.Infoln("signal", signal)
 
-	okxSignalId := getOkxSignalId(user, signal.StrategyName, signal.NameToken)
+	okxSignalId := getOkxSignalId(user, signal.StrategyName, signal.NameToken, bot.IsProduction)
 	if len(okxSignalId) == 0 {
 		logger.Errorf("Error in creating a signal on the OKX exchange")
 		u.Respond(w, u.Message(false, "Error in creating a signal on the OKX exchange"))
@@ -68,7 +68,7 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 	strAmount := fmt.Sprintf("%2f", botRequest.InitialAmount)
 
 	lever := strconv.FormatFloat(bot.Lever, 'f', 2, 64)
-	bot.OkxBotId, err = OkxCreateSignalBot(user, okxSignalId, instId, lever, strAmount)
+	bot.OkxBotId, err = OkxCreateSignalBot(user, okxSignalId, instId, lever, strAmount, bot.IsProduction)
 	if err != nil {
 		logger.Errorf("Error in OkxCreateSignalBot")
 		u.Respond(w, u.Message(false, "Error in OkxCreateSignalBot"))
@@ -84,25 +84,26 @@ var CreateBot = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
-func getOkxSignalId(userId uint, strategyName string, tokenName string) string {
+func getOkxSignalId(userId uint, strategyName string, tokenName string, isProduction bool) string {
 	getSignalsRequest := new(model.GetSignalsRequest)
 	getSignalsRequest.SignalSourceType = "1"
-	signals := OkxGetSignals(userId)
-	logger.Info("signals", signals.Data[0].SignalChanId)
+	signals := OkxGetSignals(userId, isProduction)
 
-	for _, v := range signals.Data {
-		signalChanId := v.SignalChanId
-		bot, err := models.FindBotByByOkxSignalId(signalChanId)
-		if err != nil {
-			return ""
-		}
-		if bot.ID == 0 {
-			logger.Info("getOkxSignalId: ", signalChanId)
-			return signalChanId
+	if signals.Data != nil {
+		for _, v := range signals.Data {
+			signalChanId := v.SignalChanId
+			bot, err := models.FindBotByByOkxSignalId(signalChanId)
+			if err != nil {
+				return ""
+			}
+			if bot.ID == 0 {
+				logger.Info("getOkxSignalId: ", signalChanId)
+				return signalChanId
+			}
 		}
 	}
 	nanoId := nanoid.New()[:4]
-	okxSignalId := OkxCreateSignal(userId, strategyName+"("+nanoId+")", tokenName)
+	okxSignalId := OkxCreateSignal(userId, strategyName+"("+nanoId+")", tokenName, isProduction)
 	return okxSignalId
 }
 
@@ -127,7 +128,7 @@ var DeleteBot = func(w http.ResponseWriter, r *http.Request) {
 			if deal.ID > 0 {
 				closeDeal(&deal, &foundBot, signal.NameToken)
 			}
-			OkxDeleteSignalBot(user, foundBot.OkxBotId)
+			OkxDeleteSignalBot(user, foundBot.OkxBotId, foundBot.IsProduction)
 			foundBot.Status = models.Stopped
 			foundBot.Update()
 			foundBot.Delete()
@@ -154,7 +155,7 @@ var GetBots = func(w http.ResponseWriter, r *http.Request) {
 
 var GetAllOkxBots = func(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(uint)
-	bots := OkxGetAllActiveSignalBots(user)
+	bots := OkxGetAllActiveSignalBots(user, false)
 
 	resp := u.Message(true, "success")
 	resp["OKX bots"] = bots
@@ -165,7 +166,7 @@ var GetAllOkxBots = func(w http.ResponseWriter, r *http.Request) {
 
 var GetAllOkxSignals = func(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value("user").(uint)
-	bots := OkxGetSignals(user)
+	bots := OkxGetSignals(user, false)
 
 	resp := u.Message(true, "success")
 	resp["OKX signals"] = bots

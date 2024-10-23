@@ -225,9 +225,25 @@ https://ru.tradingview.com/support/solutions/43000481368/
 "marketPositionSize": "{{strategy.market_position_size}}",
 "prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
 "instrument": "{{ticker}}",
-"signalToken": "7EbJw5fqfo1moeryFH4LK",
+"signalToken": "hc2nWdD816d2CgMY2gO96",
 "timestamp": "{{timenow}}",
-"investmentType": "5 ema strategy XRP(4H) (2166.51%) - [Both-4, not Enable, TP-1.4]",
+"investmentType": "SuperTrend for BTCUSD 4H BTC(4H) (19162.69%) - [100, 2.5, 3, 70, 30, 5, 6, 2.5, 14, 0.7, 10, 10, - 2.9, 0.75, 0.75, 0.55, 0.75, 50]",
 "amount": "{{strategy.order.contracts}}"
 }
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "F7Rm0P4V4N_VJMXOI0m2B",
+"timestamp": "{{timenow}}",
+"investmentType": "Fukuiz Octa-EMA + Ichimoku SOL(4H) (5756.14%)-[5,11,15,18,21,24,28,34 - 4,22,41,24 ]",
+"amount": "{{strategy.order.contracts}}"
+}
+
+
 https://cryptet.com/ru/ [BTC, ETH, XRP, ADA, SOL, DOGE, LTC, MATIC, LINK]

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"okx-bot/exchange/model"
+	"okx-bot/exchange/okx/futures"
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
@@ -37,8 +38,8 @@ var GetOkxApiFor = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
-func OkxCreateSignal(userId uint, signalName string, signalDesc string) string {
-	api, err := app.GetOkxApi(userId)
+func OkxCreateSignal(userId uint, signalName string, signalDesc string, isProduction bool) string {
+	api, err := okxGetActualApi(userId, isProduction)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return ""
@@ -50,8 +51,8 @@ func OkxCreateSignal(userId uint, signalName string, signalDesc string) string {
 	return newSignal.SignalChanId
 }
 
-func OkxCreateSignalBot(userId uint, signalChanId string, instIds string, lever string, investAmt string) (string, error) {
-	api, err := app.GetOkxApi(userId)
+func OkxCreateSignalBot(userId uint, signalChanId string, instIds string, lever string, investAmt string, isProduction bool) (string, error) {
+	api, err := okxGetActualApi(userId, isProduction)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return "", err
@@ -64,8 +65,8 @@ func OkxCreateSignalBot(userId uint, signalChanId string, instIds string, lever 
 	return newSignalBot.AlgoId, nil
 }
 
-func OkxDeleteSignalBot(userId uint, signalChanId string) string {
-	api, err := app.GetOkxApi(userId)
+func OkxDeleteSignalBot(userId uint, signalChanId string, isProduction bool) string {
+	api, err := okxGetActualApi(userId, isProduction)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return ""
@@ -77,8 +78,8 @@ func OkxDeleteSignalBot(userId uint, signalChanId string) string {
 	return cancelSignalBot.AlgoId
 }
 
-func OkxPlaceSubOrder(userId uint, instId string, algoId string, sz string, direction models.DealDirection) (string, error) {
-	api, err := app.GetOkxApi(userId)
+func OkxPlaceSubOrder(userId uint, instId string, algoId string, sz string, direction models.DealDirection, isProduction bool) (string, error) {
+	api, err := okxGetActualApi(userId, isProduction)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return "", err
@@ -100,8 +101,8 @@ func OkxPlaceSubOrder(userId uint, instId string, algoId string, sz string, dire
 	return response.Code, nil
 }
 
-func OkxGetSubOrderSignalBot(userId uint, algoId string) string {
-	api, err := app.GetOkxApi(userId)
+func OkxGetSubOrderSignalBot(userId uint, algoId string, isProduction bool) string {
+	api, err := okxGetActualApi(userId, isProduction)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return ""
@@ -119,8 +120,8 @@ func OkxGetSubOrderSignalBot(userId uint, algoId string) string {
 	return details.OrdId
 }
 
-func OkxClosePositionSignalBot(userId uint, currencyName string, algoId string) error {
-	api, err := app.GetOkxApi(userId)
+func OkxClosePositionSignalBot(userId uint, currencyName string, algoId string, isProduction bool) error {
+	api, err := okxGetActualApi(userId, isProduction)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return err
@@ -137,8 +138,8 @@ func OkxClosePositionSignalBot(userId uint, currencyName string, algoId string) 
 	return nil
 }
 
-func OkxGetSignals(userId uint) *model.GetSignalsResponse {
-	api, err := app.GetOkxApi(userId)
+func OkxGetSignals(userId uint, isProduction bool) *model.GetSignalsResponse {
+	api, err := okxGetActualApi(userId, isProduction)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return nil
@@ -154,8 +155,8 @@ func OkxGetSignals(userId uint) *model.GetSignalsResponse {
 	return details
 }
 
-func OkxGetTicker(userId uint, symbol string) *model.Ticker {
-	api, err := app.GetOkxApi(userId)
+func OkxGetTicker(userId uint, symbol string, isProduction bool) *model.Ticker {
+	api, err := okxGetActualApi(userId, isProduction)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return nil
@@ -168,8 +169,8 @@ func OkxGetTicker(userId uint, symbol string) *model.Ticker {
 	return details
 }
 
-func OkxGetActiveSignalBot(userId uint, algoId string) *model.GetActiveSignalBotResponseData {
-	api, err := app.GetOkxApi(userId)
+func OkxGetActiveSignalBot(userId uint, algoId string, isProduction bool) *model.GetActiveSignalBotResponseData {
+	api, err := okxGetActualApi(userId, isProduction)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return nil
@@ -188,8 +189,8 @@ func OkxGetActiveSignalBot(userId uint, algoId string) *model.GetActiveSignalBot
 	return result
 }
 
-func OkxGetSignalBot(userId uint, algoId string) *model.GetSignalBotResponseData {
-	api, err := app.GetOkxApi(userId)
+func OkxGetSignalBot(userId uint, algoId string, isProduction bool) *model.GetSignalBotResponseData {
+	api, err := okxGetActualApi(userId, isProduction)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return nil
@@ -208,8 +209,8 @@ func OkxGetSignalBot(userId uint, algoId string) *model.GetSignalBotResponseData
 	return result
 }
 
-func OkxGetAllActiveSignalBots(userId uint) *model.GetActiveSignalBotResponse {
-	api, err := app.GetOkxApi(userId)
+func OkxGetAllActiveSignalBots(userId uint, isProduction bool) *model.GetActiveSignalBotResponse {
+	api, err := okxGetActualApi(userId, isProduction)
 	if err != nil {
 		logger.Errorf("Error in GetOkxApi: %v", err)
 		return nil
@@ -219,4 +220,13 @@ func OkxGetAllActiveSignalBots(userId uint) *model.GetActiveSignalBotResponse {
 		return nil
 	}
 	return details
+}
+
+func okxGetActualApi(userId uint, isProduction bool) (*futures.PrvApi, error) {
+	api, err := app.GetOkxApi(userId, isProduction)
+	if err != nil {
+		logger.Errorf("Error in GetOkxApi: %v", err)
+		return nil, err
+	}
+	return api, nil
 }

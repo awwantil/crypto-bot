@@ -386,7 +386,7 @@ func (prv *Prv) DoAuthRequest(httpMethod, reqUrl string, params *url.Values, hea
 	headers = map[string]string{
 		"Content-Type": "application/json; charset=UTF-8",
 		//"Accept":               "application/json",
-		"x-simulated-trading":  "1",
+		"x-simulated-trading":  prv.apiOpts.IsDemoTrading,
 		"OK-ACCESS-KEY":        prv.apiOpts.Key,
 		"OK-ACCESS-PASSPHRASE": prv.apiOpts.Passphrase,
 		"OK-ACCESS-SIGN":       signStr,
@@ -433,7 +433,7 @@ func (prv *Prv) DoAuthPostRequestWithParam(httpMethod, reqUrl string, byteParams
 	headers = map[string]string{
 		"Content-Type": "application/json; charset=UTF-8",
 		//"Accept":               "application/json",
-		"x-simulated-trading":  "1",
+		"x-simulated-trading":  prv.apiOpts.IsDemoTrading,
 		"OK-ACCESS-KEY":        prv.apiOpts.Key,
 		"OK-ACCESS-PASSPHRASE": prv.apiOpts.Passphrase,
 		"OK-ACCESS-SIGN":       signStr,
