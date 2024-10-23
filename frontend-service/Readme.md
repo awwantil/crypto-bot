@@ -245,5 +245,32 @@ https://ru.tradingview.com/support/solutions/43000481368/
 "amount": "{{strategy.order.contracts}}"
 }
 
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "nmdOChcofw_AllqkaIBKt",
+"timestamp": "{{timenow}}",
+"investmentType": "Automated Bitcoin (BTC) Investment SOL(2H) (2934.72%)-[LONG, TEMA, LSMA, 22, 98, 16.2, 10, 33, 90, 4, 3.5, 8, закр]",
+"amount": "{{strategy.order.contracts}}"
+}
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "1GQ3uDVa4r1G-NBYSOwX2",
+"timestamp": "{{timenow}}",
+"investmentType": "Hull Moving Average Swing Trader SOL(2H) (13097.72%)-[210, откр]",
+"amount": "{{strategy.order.contracts}}"
+}
 
 https://cryptet.com/ru/ [BTC, ETH, XRP, ADA, SOL, DOGE, LTC, MATIC, LINK]
