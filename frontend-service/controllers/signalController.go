@@ -210,6 +210,9 @@ func openOrder(bot *models.Bot, currencyName string, beforeAvailAmount float64, 
 	}
 	logger.Infof("amount: %v", beforeAvailAmount*lever)
 	float64Sz := calcPx(bot.UserId, currencyName, beforeAvailAmount*lever, percent, bot.IsProduction)
+	if bot.IsProduction {
+		float64Sz = Round(float64Sz/10, 1)
+	}
 	stringSz := strconv.FormatFloat(float64Sz, 'f', 2, 64)
 	logger.Infof("calcPx: %v", stringSz)
 	operationCode, err := OkxPlaceSubOrder(bot.UserId, currencyName+"-"+BASE_CURRENCY+"-SWAP", bot.OkxBotId, stringSz, direction, bot.IsProduction)
