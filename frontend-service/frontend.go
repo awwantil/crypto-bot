@@ -4,7 +4,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"okx-bot/exchange/model"
 	"okx-bot/frontend-service/app"
 	"okx-bot/frontend-service/controllers"
 	"okx-bot/frontend-service/models"
@@ -59,129 +58,6 @@ func main() {
 
 	go func() {
 		models.ConnectDB()
-
-		logger.Infoln("Execute GetOrderInfo")
-		//opts := model.OptionParameter{
-		//	Key:   "contractAlias",
-		//	Value: "SWAP",
-		//}
-		//api, err := app.GetOkxApi(1)
-		//if err != nil {
-		//	logger.Errorf("Error in GetOkxApi: %v", err)
-		//}
-		//logger.Info("api", api)
-		//
-		//id := "1695898177540702208"
-		//req := new(model.BaseOrderRequest)
-		//req.InstId = "SOL-USDT-SWAP"
-		//req.OrdId = id
-		//resp3, resp4, err := api.Isolated.GetOrderInfo(*req, opts)
-		//logger.Info("err: ", err)
-		//logger.Info("resp3: ", resp3)
-		//logger.Info("resp4: ", string(resp4))
-
-		//req := new(model.SetLeverageRequest)
-		//req.InstId = "SOL-USDT-SWAP"
-		//req.Lever = "3.02"
-		//req.MgnMode = model.ISOLATED
-		////req.Ccy = "USDT"
-		////req.PosSide = model.LONG
-		//resp3, resp4, err := api.Isolated.SetLeverage(*req, opts)
-		//logger.Info("err: ", err)
-		//logger.Info("resp3: ", resp3)
-		//logger.Info("resp4: ", string(resp4))
-
-		//newSignal, err := app.CreateSignal(api, "SOL_15m_TestStrategy", "Test strategy")
-		//if err != nil {
-		//	return
-		//}
-		//logger.Infoln(newSignal.SignalChanToken)
-		//data[{"signalChanId":"1799976084486750208","signalChanToken":"ThclzGQB2McTgH3bPwORvcZcB0aU/KVJ5dbcI7OjfGvGD9jpd46aUBJLt2ZwVvMlQQGIpKcCakUdgMaKlPKqtg=="}]
-
-		//newSignalBot, err := app.CreateSignalBot(api, "1799976084486750208", "SOL-USDT-SWAP", "3", "60")
-		//if err != nil {
-		//	return
-		//}
-		////data[{"algoClOrdId":"","algoId":"1816982685798109184","sCode":"0","sMsg":""}]
-		////responseBody{"code":"0","data":[{"algoClOrdId":"","algoId":"1817009927903252480","sCode":"0","sMsg":""}],"msg":""}
-		//logger.Infof("newSignalBot.AlgoId = %s", newSignalBot.AlgoId)
-		//1817262238944722944
-
-		//_, err = app.CancelSignalBot(api, "1817262238944722944")
-		////{"code":"0","data":[{"algoClOrdId":"","algoId":"1811814804349255680","sCode":"0","sMsg":""}],"msg":""}
-		//if err != nil {
-		//	return
-		//}
-
-		placeSubOrderSignalBotRequest := new(model.PlaceSubOrderSignalBotRequest)
-		placeSubOrderSignalBotRequest.InstId = "SOL-USDT-SWAP"
-		placeSubOrderSignalBotRequest.AlgoId = "1817262238944722944"
-		placeSubOrderSignalBotRequest.Side = "buy"
-		placeSubOrderSignalBotRequest.OrdType = "market"
-		placeSubOrderSignalBotRequest.Sz = "2.00"
-
-		//_, err = app.PlaceSubOrderSignalBot(api, placeSubOrderSignalBotRequest)
-		//if err != nil {
-		//	return
-		//}
-
-		//cancelSubOrderSignalBotRequest := new(model.CancelSubOrderSignalBotRequest)
-		//cancelSubOrderSignalBotRequest.InstId = "SOL-USDT-SWAP"
-		//cancelSubOrderSignalBotRequest.AlgoId = "1811656338578079744"
-		//cancelSubOrderSignalBotRequest.SignalOrdId = "1799976084486750208"
-		//
-		//_, err = app.CancelSubOrderSignalBot(api, cancelSubOrderSignalBotRequest)
-		//if err != nil {
-		//	return
-		//}
-
-		closePositionSignalBotRequest := new(model.ClosePositionSignalBotRequest)
-		closePositionSignalBotRequest.InstId = "SOL-USDT-SWAP"
-		closePositionSignalBotRequest.AlgoId = "1817262238944722944"
-
-		//_, err = app.ClosePositionSignalBot(api, closePositionSignalBotRequest)
-		//if err != nil {
-		//	return
-		//}
-
-		//getSubOrdersSignalBotRequest := new(model.GetSubOrdersSignalBotRequest)
-		//getSubOrdersSignalBotRequest.AlgoId = "1817262238944722944"
-		//getSubOrdersSignalBotRequest.AlgoOrdType = "contract"
-		//getSubOrdersSignalBotRequest.State = "filled"
-		//
-		//details, err := app.GetSubOrderSignalBot(api, getSubOrdersSignalBotRequest)
-		//if err != nil {
-		//	return
-		//}
-		//logger.Infof("details OrdId: %v", details.OrdId)
-		//logger.Infof("details AvgPx: %v", details.AvgPx)
-		//{"code":"0","data":[{"accFillSz":"2","algoClOrdId":"","algoId":"1817262238944722944","algoOrdType":"contract","avgPx":"129.19","cTime":"17266
-		//61399705","ccy":"","clOrdId":"O1817274472657346561","ctVal":"0.1","fee":"-0.012919","feeCcy":"USDT","instId":"SOL-USDT-SWAP","instType":"SWAP","lever":"3.0","ordId":"18172744728153
-		//78432","ordType":"market","pnl":"0","posSide":"net","px":"136.95","side":"buy","signalOrdId":"O1817274472657346561","state":"filled","sz":"2","tag":"","tdMode":"cross","uTime":"1726661399707"}],"msg":""}
-
-	}()
-
-	go func() {
-		//app.InitOkxApi()
-		//app.StartDeal("SOL-USDT", "short")
-		//resp1, resp2, err := app.GetApi().Isolated.GetAccount("SOL")
-		//logger.Info("err: ", err)
-		//logger.Info("resp1: ", resp1)
-		//logger.Info("resp2: ", string(resp2))
-		//1345253813988876288
-
-		//posHistoryRequest := new(model.FuturesPositionHistoryRequest)
-		//posHistoryRequest.InstId = "SOL-USDT-SWAP"
-		//posHistory, _, err := app.GetApi().GetPositionsHistory(*posHistoryRequest)
-		//if err != nil {
-		//	panic(err)
-		//}
-		//logger.Info("posHistory = ", posHistory)
-		//logger.Info("posHistory = ", posHistory[0].Pnl)
-		//logger.Info("posHistory = ", posHistory[0].RealizedPnl)
-		//logger.Info("posHistory = ", posHistory[0].Type)
-
-		//app.EndDeal("SOL-USDT", "1712585104400", "")
 	}()
 
 	port := os.Getenv("PORT")

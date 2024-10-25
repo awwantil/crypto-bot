@@ -15,9 +15,6 @@ services:
       DB_HOST: ${DB_HOST}
       TOKEN_PASSWORD: ${TOKEN_PASSWORD}
       NODE_ENV: ${NODE_ENV}
-      okx_api_passphrase: ${okx_api_passphrase}
-      OKX_API_KEY: ${OKX_API_KEY}
-      okx_api_secret_key: ${okx_api_secret_key}
     networks:
       - postgres
   backend:
