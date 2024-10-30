@@ -176,6 +176,7 @@ func startDeal(signalCode string, direction models.DealDirection) error {
 		} else {
 			logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, bot.ID)
 		}
+		time.Sleep(time.Second * 3)
 	}
 	return nil
 }
@@ -194,6 +195,7 @@ func endDeal(signalCode string) {
 		} else {
 			logger.Errorf("There is no deal for the bot=%v and it cannot be closed", bot.ID)
 		}
+		time.Sleep(time.Second * 3)
 	}
 }
 
@@ -242,6 +244,7 @@ func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
 	if beforeFrozenAmount > 0 {
 		result := closeOrder(bot.UserId, currencyName, bot.OkxBotId, bot.IsProduction)
 		if result {
+			time.Sleep(time.Second * 3)
 			afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
 			if afterFrozenAmount == 0 {
 				diffAmount := afterAvailAmount - beforeAvailAmount
