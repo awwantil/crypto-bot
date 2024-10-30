@@ -36,6 +36,65 @@ const (
 	DEFAULT_LEVER   float64 = 3
 )
 
+type CalcPriceData struct {
+	demoStep      float64
+	demoMinAmount float64
+	demoPrecision int
+	prodStep      float64
+	prodMinAmount float64
+	prodPrecision int
+}
+
+const (
+	ADA  = "ADA"
+	ATOM = "ATOM"
+	AVAX = "AVAX"
+	APT  = "APT"
+
+	BTC = "BTC"
+	BCH = "BCH"
+	BNB = "BNB"
+
+	CRO = "CRO"
+
+	ETH = "ETH"
+	ETC = "ETC"
+
+	DOGE = "DOGE"
+	DOT  = "DOT"
+
+	FIL = "FIL"
+
+	ICP = "ICP"
+	IMX = "IMX"
+
+	LTC  = "LTC"
+	NEAR = "NEAR"
+
+	SOL  = "SOL"
+	SHIB = "SHIB"
+
+	TON = "TON"
+
+	USD  = "USD"
+	USDT = "USDT"
+	UNI  = "UNI"
+
+	VET = "VET"
+
+	XRP = "XRP"
+	XLM = "XLM"
+)
+
+// for calcPx
+// https://www.okx.com/ru/trade-market/info/swap
+var calcPriceData = map[string]CalcPriceData{
+	ETH: {demoStep: 0.1, demoMinAmount: 0.001, demoPrecision: 1, prodStep: 0.1, prodMinAmount: 0.01, prodPrecision: 1},
+	XRP: {demoStep: 0.1, demoMinAmount: 10, demoPrecision: 1, prodStep: 0.1, prodMinAmount: 10, prodPrecision: 1},
+	SOL: {demoStep: 0.01, demoMinAmount: 0.001, demoPrecision: 2, prodStep: 0.01, prodMinAmount: 0.01, prodPrecision: 2},
+	ADA: {demoStep: 0.1, demoMinAmount: 0.1, demoPrecision: 1, prodStep: 0.1, prodMinAmount: 10, prodPrecision: 1},
+}
+
 var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 
 	signal := &models.TradingViewSignalReceive{}
@@ -155,7 +214,7 @@ func openDeal(bot *models.Bot, currencyName string, direction models.DealDirecti
 		}
 		deal.OrderId = order
 
-		if deal.OrderId != "" {
+		if px > 0 {
 			afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
 			logger.Infof("After available amount: %v, frozen amount: %v", afterAvailAmount, afterFrozenAmount)
 			diffAmount := beforeAvailAmount - afterAvailAmount
@@ -209,10 +268,8 @@ func openOrder(bot *models.Bot, currencyName string, beforeAvailAmount float64, 
 		lever = DEFAULT_LEVER
 	}
 	logger.Infof("amount: %v", beforeAvailAmount*lever)
+	logger.Info("calcPriceData[\"XRP\"].prodPrecision", calcPriceData["XRP"].prodPrecision)
 	float64Sz := calcPx(bot.UserId, currencyName, beforeAvailAmount*lever, percent, bot.IsProduction)
-	if bot.IsProduction {
-		float64Sz = Round(float64Sz/10, 1)
-	}
 	stringSz := strconv.FormatFloat(float64Sz, 'f', 2, 64)
 	logger.Infof("calcPx: %v", stringSz)
 	operationCode, err := OkxPlaceSubOrder(bot.UserId, currencyName+"-"+BASE_CURRENCY+"-SWAP", bot.OkxBotId, stringSz, direction, bot.IsProduction)
@@ -256,13 +313,11 @@ func getAmount(userId uint, algoId string, isProduction bool) (float64, float64)
 func calcPx(userId uint, symbol string, amount float64, percent float64, isProduction bool) float64 {
 	ticker := OkxGetTicker(userId, symbol, isProduction)
 	price := ticker.Last
-	if symbol == "ETH" {
-		return Round(percent*amount/(price), 1)
+	calcData := calcPriceData[symbol]
+	if isProduction {
+		return Round(calcData.prodStep*percent*amount/(calcData.prodMinAmount*price*100), calcData.prodPrecision)
 	}
-	if symbol == "XRP" {
-		return Round(percent*amount/(price*10000), 1)
-	}
-	return Round(percent*amount/(price*10), 2)
+	return Round(calcData.demoStep*percent*amount/(calcData.demoMinAmount*price*100), calcData.demoPrecision)
 }
 
 func Round(x float64, prec int) float64 {

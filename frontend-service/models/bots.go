@@ -49,6 +49,10 @@ type BotWithIdRequest struct {
 	Id uint `json:"id"`
 }
 
+type SignalWithCodeRequest struct {
+	Code uint `json:"code"`
+}
+
 var (
 	logger = logrus.WithFields(logrus.Fields{
 		"app":       "okx-bot",

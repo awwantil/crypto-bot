@@ -20,7 +20,10 @@ var (
 )
 
 func main() {
+	start()
+}
 
+func start() {
 	logger.Logger.SetFormatter(&logrus.TextFormatter{
 		ForceColors:   true,
 		FullTimestamp: true,
