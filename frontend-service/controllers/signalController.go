@@ -168,15 +168,17 @@ func startDeal(signalCode string, direction models.DealDirection) error {
 	}
 	bots := models.GetBots(signalCode)
 	for _, bot := range bots {
-		deal := models.FindByStatus(bot.ID, models.DealStarted)
-		if deal.ID == 0 {
-			logger.Infof("starting bot's deal with bot id %d and direction: %v", bot.ID, direction)
-			err := openDeal(&bot, signal.NameToken, direction)
-			logger.Errorf("start deal error: %v", err)
-		} else {
-			logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, bot.ID)
-		}
-		time.Sleep(time.Second * 3)
+		currBot := bot
+		go func(currentBot *models.Bot) {
+			deal := models.FindByStatus(currentBot.ID, models.DealStarted)
+			if deal.ID == 0 {
+				logger.Infof("starting bot's deal with bot id %d and direction: %v", currentBot.ID, direction)
+				err := openDeal(currentBot, signal.NameToken, direction)
+				logger.Errorf("start deal error: %v", err)
+			} else {
+				logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, currentBot.ID)
+			}
+		}(&currBot)
 	}
 	return nil
 }
@@ -189,13 +191,15 @@ func endDeal(signalCode string) {
 	}
 	bots := models.GetBots(signalCode)
 	for _, bot := range bots {
-		deal := models.FindByStatus(bot.ID, models.DealStarted)
-		if deal.ID > 0 {
-			closeDeal(&deal, &bot, signal.NameToken)
-		} else {
-			logger.Errorf("There is no deal for the bot=%v and it cannot be closed", bot.ID)
-		}
-		time.Sleep(time.Second * 3)
+		currBot := bot
+		go func(currentBot *models.Bot) {
+			deal := models.FindByStatus(currentBot.ID, models.DealStarted)
+			if deal.ID > 0 {
+				closeDeal(&deal, currentBot, signal.NameToken)
+			} else {
+				logger.Errorf("There is no deal for the bot=%v and it cannot be closed", currentBot.ID)
+			}
+		}(&currBot)
 	}
 }
 
@@ -217,6 +221,7 @@ func openDeal(bot *models.Bot, currencyName string, direction models.DealDirecti
 		deal.OrderId = order
 
 		if px > 0 {
+			time.Sleep(time.Second * 3)
 			afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
 			logger.Infof("After available amount: %v, frozen amount: %v", afterAvailAmount, afterFrozenAmount)
 			diffAmount := beforeAvailAmount - afterAvailAmount
@@ -291,6 +296,7 @@ func closeOrder(userId uint, currencyName string, algoId string, isProduction bo
 		logger.Errorf("Error in OkxClosePositionSignalBot: %v", err)
 		return false
 	}
+	time.Sleep(2 * time.Second)
 	return true
 }
 
