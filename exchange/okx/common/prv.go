@@ -156,9 +156,6 @@ func (prv *Prv) CancelOrder(req *model.BaseOrderRequest, opt ...model.OptionPara
 		return model.CancelOrderResponse{}, responseBody, err
 	}
 
-	logger.Info("responseBody", string(responseBody))
-	logger.Info("data", string(data))
-
 	details, err := prv.UnmarshalOpts.CancelOrderResponseUnmarshaler(data)
 	logger.Info("details", details)
 
@@ -183,9 +180,6 @@ func (prv *Prv) ClosePositions(req *model.ClosePositionsRequest, opt ...model.Op
 		return model.ClosePositionResponse{}, responseBody, err
 	}
 
-	logger.Info("responseBody", string(responseBody))
-	logger.Info("data", string(data))
-
 	details, err := prv.UnmarshalOpts.ClosePositionsResponseUnmarshaler(data)
 	logger.Info("details", details)
 
@@ -205,9 +199,6 @@ func (prv *Prv) GetGridAlgoOrderDetails(req model.GridAlgoOrderDetailsRequest, o
 	if err != nil {
 		return model.GridAlgoOrderDetailsResponse{}, responseBody, err
 	}
-
-	logger.Info("responseBody", string(responseBody))
-	logger.Info("data", string(data))
 
 	details, err := prv.UnmarshalOpts.GetAlgoOrderDetailsResponseUnmarshaler(data)
 
@@ -238,9 +229,6 @@ func (prv *Prv) PlaceGridAlgoOrder(req model.PlaceGridAlgoOrderRequest, opt ...m
 		return model.PlaceGridAlgoOrderResponse{}, responseBody, err
 	}
 
-	logger.Info("responseBody", string(responseBody))
-	logger.Info("data", string(data))
-
 	details, err := prv.UnmarshalOpts.PlaceGridAlgoOrderResponseUnmarshaler(data)
 
 	return details, responseBody, err
@@ -261,9 +249,6 @@ func (prv *Prv) StopGridAlgoOrder(req model.StopGridAlgoOrderRequest, opt ...mod
 	if err != nil {
 		return model.StopGridAlgoOrderResponse{}, responseBody, err
 	}
-
-	logger.Info("responseBody", string(responseBody))
-	logger.Info("data", string(data))
 
 	details, err := prv.UnmarshalOpts.StopGridAlgoOrderResponseUnmarshaler(data)
 

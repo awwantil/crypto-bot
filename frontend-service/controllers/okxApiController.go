@@ -116,7 +116,6 @@ func OkxGetSubOrderSignalBot(userId uint, algoId string, isProduction bool) stri
 	if err != nil {
 		return ""
 	}
-	logger.Infof("details OrdId: %v", details.OrdId)
 	return details.OrdId
 }
 
@@ -130,11 +129,10 @@ func OkxClosePositionSignalBot(userId uint, currencyName string, algoId string, 
 	closePositionSignalBotRequest.InstId = currencyName + "-USDT-SWAP"
 	closePositionSignalBotRequest.AlgoId = algoId
 
-	details, err := app.ClosePositionSignalBot(api, closePositionSignalBotRequest)
+	_, err = app.ClosePositionSignalBot(api, closePositionSignalBotRequest)
 	if err != nil {
 		return err
 	}
-	logger.Infof("details AlgoId: %v", details.AlgoId)
 	return nil
 }
 
@@ -151,7 +149,6 @@ func OkxGetSignals(userId uint, isProduction bool) *model.GetSignalsResponse {
 	if err != nil {
 		return nil
 	}
-	logger.Infof("details OrdId: %v", details.Data)
 	return details
 }
 
@@ -165,7 +162,6 @@ func OkxGetTicker(userId uint, symbol string, isProduction bool) *model.Ticker {
 	if err != nil {
 		return nil
 	}
-	logger.Infof("details OrdId: %v", details.Last)
 	return details
 }
 
@@ -202,7 +198,6 @@ func OkxGetSignalBot(userId uint, algoId string, isProduction bool) *model.GetSi
 	var result = new(model.GetSignalBotResponseData)
 	for _, v := range details.Bots {
 		if v.AlgoId == algoId {
-			logger.Info("found bot with algoId: ", algoId)
 			result = &v
 		}
 	}

@@ -95,6 +95,12 @@ var calcPriceData = map[string]CalcPriceData{
 	ADA: {demoStep: 0.1, demoMinAmount: 0.1, demoPrecision: 1, prodStep: 0.1, prodMinAmount: 10, prodPrecision: 1},
 }
 
+type DealStart struct {
+	DealSignal    models.Signal
+	DealBot       models.Bot
+	DealDirection models.DealDirection
+}
+
 var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 
 	signal := &models.TradingViewSignalReceive{}
@@ -167,19 +173,18 @@ func startDeal(signalCode string, direction models.DealDirection) error {
 		return err
 	}
 	bots := models.GetBots(signalCode)
+
 	for _, bot := range bots {
-		currBot := bot
-		go func(currentBot *models.Bot) {
-			deal := models.FindByStatus(currentBot.ID, models.DealStarted)
-			if deal.ID == 0 {
-				logger.Infof("starting bot's deal with bot id %d and direction: %v", currentBot.ID, direction)
-				err := openDeal(currentBot, signal.NameToken, direction)
-				logger.Errorf("start deal error: %v", err)
-			} else {
-				logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, currentBot.ID)
-			}
-		}(&currBot)
+		deal := models.FindByStatus(bot.ID, models.DealStarted)
+		if deal.ID == 0 {
+			logger.Infof("starting bot's deal with bot id %d and direction: %v", bot.ID, direction)
+			err := openDeal(&bot, signal.NameToken, direction)
+			logger.Errorf("start deal error: %v", err)
+		} else {
+			logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, bot.ID)
+		}
 	}
+
 	return nil
 }
 
@@ -190,16 +195,18 @@ func endDeal(signalCode string) {
 		return
 	}
 	bots := models.GetBots(signalCode)
+
 	for _, bot := range bots {
-		currBot := bot
-		go func(currentBot *models.Bot) {
-			deal := models.FindByStatus(currentBot.ID, models.DealStarted)
-			if deal.ID > 0 {
-				closeDeal(&deal, currentBot, signal.NameToken)
-			} else {
-				logger.Errorf("There is no deal for the bot=%v and it cannot be closed", currentBot.ID)
+		deal := models.FindByStatus(bot.ID, models.DealStarted)
+		if deal.ID > 0 {
+			err := closeDeal(&deal, &bot, signal.NameToken)
+			if err != nil {
+				logger.Errorf("Clode deal error: %v", err)
 			}
-		}(&currBot)
+		} else {
+			logger.Errorf("There is no deal for the bot=%v and it cannot be closed", bot.ID)
+		}
+		time.Sleep(time.Second * 1)
 	}
 }
 
@@ -207,7 +214,10 @@ func openDeal(bot *models.Bot, currencyName string, direction models.DealDirecti
 	deal := new(models.Deal)
 	deal.StartTime = time.Now()
 	deal.Direction = direction
-	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
+	beforeAvailAmount, beforeFrozenAmount, err := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
+	if err != nil {
+		return err
+	}
 	logger.Infof("OpenDeal before available amount: %v, frozen amount: %v", beforeAvailAmount, beforeFrozenAmount)
 	if beforeFrozenAmount > 0 {
 		return errors.New("The deal is already exist")
@@ -222,7 +232,10 @@ func openDeal(bot *models.Bot, currencyName string, direction models.DealDirecti
 
 		if px > 0 {
 			time.Sleep(time.Second * 3)
-			afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
+			afterAvailAmount, afterFrozenAmount, err := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
+			if err != nil {
+				return err
+			}
 			logger.Infof("After available amount: %v, frozen amount: %v", afterAvailAmount, afterFrozenAmount)
 			diffAmount := beforeAvailAmount - afterAvailAmount
 			deal.StartAmount = diffAmount
@@ -244,13 +257,28 @@ func openDeal(bot *models.Bot, currencyName string, direction models.DealDirecti
 	return nil
 }
 
-func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
-	beforeAvailAmount, beforeFrozenAmount := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
+func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) error {
+	beforeAvailAmount, beforeFrozenAmount, err := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
+	if err != nil {
+		return err
+	}
 	if beforeFrozenAmount > 0 {
 		result := closeOrder(bot.UserId, currencyName, bot.OkxBotId, bot.IsProduction)
 		if result {
-			time.Sleep(time.Second * 3)
-			afterAvailAmount, afterFrozenAmount := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
+			time.Sleep(time.Second * 4)
+			afterAvailAmount, afterFrozenAmount, err := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
+			if err != nil {
+				return err
+			}
+			var times int = 10
+			for afterFrozenAmount > 0 {
+				time.Sleep(time.Second * 4)
+				afterAvailAmount, afterFrozenAmount, err = getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
+				times--
+				if times == 0 {
+					break
+				}
+			}
 			if afterFrozenAmount == 0 {
 				diffAmount := afterAvailAmount - beforeAvailAmount
 				bot.CurrentAmount = afterAvailAmount
@@ -258,11 +286,14 @@ func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) {
 
 				bot.Update()
 				deal.FinishDbSave(diffAmount)
+			} else {
+				return errors.New("Error: afterFrozenAmount not zero")
 			}
 		} else {
 			logger.Errorf("An order on a crypto exchange cannot be closed for a bot=%v and a deal=%v", bot.ID, deal.ID)
 		}
 	}
+	return nil
 }
 
 func openOrder(bot *models.Bot, currencyName string, beforeAvailAmount float64, direction models.DealDirection) (string, uint, error) {
@@ -276,10 +307,9 @@ func openOrder(bot *models.Bot, currencyName string, beforeAvailAmount float64, 
 		lever = DEFAULT_LEVER
 	}
 	logger.Infof("amount: %v", beforeAvailAmount*lever)
-	logger.Info("calcPriceData[\"XRP\"].prodPrecision", calcPriceData["XRP"].prodPrecision)
 	float64Sz := calcPx(bot.UserId, currencyName, beforeAvailAmount*lever, percent, bot.IsProduction)
 	stringSz := strconv.FormatFloat(float64Sz, 'f', 2, 64)
-	logger.Infof("calcPx: %v", stringSz)
+	logger.Infof("Opening order for bot with id: %v and calcPx: %v", bot.ID, stringSz)
 	operationCode, err := OkxPlaceSubOrder(bot.UserId, currencyName+"-"+BASE_CURRENCY+"-SWAP", bot.OkxBotId, stringSz, direction, bot.IsProduction)
 	if err != nil {
 		return "", 0, err
@@ -296,27 +326,27 @@ func closeOrder(userId uint, currencyName string, algoId string, isProduction bo
 		logger.Errorf("Error in OkxClosePositionSignalBot: %v", err)
 		return false
 	}
-	time.Sleep(2 * time.Second)
+	time.Sleep(4 * time.Second)
 	return true
 }
 
-func getAmount(userId uint, algoId string, isProduction bool) (float64, float64) {
+func getAmount(userId uint, algoId string, isProduction bool) (availBal float64, frozenBal float64, err error) {
 	signalBotData := OkxGetSignalBot(userId, algoId, isProduction)
 	if signalBotData == nil {
-		logger.Errorf("Error in request signal bot")
-		return 0, 0
+		logger.Errorf("Zero signalBot data")
+		return 0, 0, errors.New("Zero signalBot data")
 	}
 	if signalBotData.AvailBal == "" {
-		logger.Errorf("Error in request to amounts")
-		return 0, 0
+		logger.Errorf("Empty AvailBal")
+		return 0, 0, errors.New("Empty AvailBal")
 	}
-	availBal, err := strconv.ParseFloat(signalBotData.AvailBal, 64)
-	frozenBal, err := strconv.ParseFloat(signalBotData.FrozenBal, 64)
+	availBal, err = strconv.ParseFloat(signalBotData.AvailBal, 64)
+	frozenBal, err = strconv.ParseFloat(signalBotData.FrozenBal, 64)
 	if err != nil {
-		logger.Errorf("Error in GetActiveSignalBot: %v", err)
-		return 0, 0
+		logger.Errorf("Error during ParseFloat in GetActiveSignalBot: %v", err)
+		return 0, 0, err
 	}
-	return availBal, frozenBal
+	return availBal, frozenBal, nil
 }
 
 func calcPx(userId uint, symbol string, amount float64, percent float64, isProduction bool) float64 {
@@ -389,15 +419,5 @@ func findSubstring(str string, match string) bool {
 }
 
 var CheckOkx = func(w http.ResponseWriter, r *http.Request) {
-
-	user := r.Context().Value("user").(uint)
-
-	activeSignalBot := OkxGetActiveSignalBot(user, "1843697369594986496", false)
-	if activeSignalBot != nil {
-		logger.Info("Active signalBot: ", activeSignalBot)
-		logger.Info("Active AvailBal: ", activeSignalBot.AvailBal)
-		logger.Info("Active FrozenBal: ", activeSignalBot.FrozenBal)
-	}
-
 	u.Respond(w, u.Message(true, "The checking was finished"))
 }

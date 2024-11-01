@@ -44,8 +44,6 @@ func (okx *OKxV5) GetTicker(symbol string, opt ...model.OptionParameter) (*model
 	if err != nil {
 		return nil, data, err
 	}
-	logger.Info("data", string(data))
-	logger.Info("responseBody", string(responseBody))
 
 	tk, err := okx.UnmarshalOpts.TickerUnmarshaler(data)
 	if err != nil {

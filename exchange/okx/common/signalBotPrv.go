@@ -25,9 +25,6 @@ func (prv *Prv) CreateSignal(req model.CreateSignalRequest, opt ...model.OptionP
 		return &model.CreateSignalResponse{}, responseBody, err
 	}
 
-	logger.Info("responseBody", string(responseBody))
-	logger.Info("data", string(data))
-
 	details, err := prv.UnmarshalOpts.PostCreateSignalUnmarshaler(data)
 
 	return details, responseBody, err
@@ -44,9 +41,6 @@ func (prv *Prv) CreateSignalBot(req model.CreateSignalBotRequest, opt ...model.O
 		return &model.CreateSignalBotResponse{}, responseBody, err
 	}
 
-	logger.Info("responseBody", string(responseBody))
-	logger.Info("data", string(data))
-
 	details, err := prv.UnmarshalOpts.PostCreateSignalBotUnmarshaler(data)
 
 	return details, responseBody, err
@@ -62,9 +56,6 @@ func (prv *Prv) CancelSignalBot(req model.CancelSignalBotRequest, opt ...model.O
 		logger.Errorf("[PostCancelSignalBotUri] err=%s, response=%s", err.Error(), string(data))
 		return &model.CancelSignalBotResponse{}, responseBody, err
 	}
-
-	logger.Info("responseBody", string(responseBody))
-	logger.Info("data", string(data))
 
 	details, err := prv.UnmarshalOpts.PostCancelSignalBotUnmarshaler(data)
 
@@ -89,9 +80,6 @@ func (prv *Prv) PlaceSubOrderSignalBot(req model.PlaceSubOrderSignalBotRequest, 
 		return &model.PlaceSubOrderSignalBotResponse{}, responseBody, err
 	}
 
-	logger.Info("responseBody", string(responseBody))
-	logger.Info("data", string(data))
-
 	details, err := prv.UnmarshalOpts.PostPlaceSubOrderSignalBotUnmarshaler(data)
 
 	return details, responseBody, err
@@ -113,9 +101,6 @@ func (prv *Prv) CancelSubOrderSignalBot(req model.CancelSubOrderSignalBotRequest
 		return &model.CancelSubOrderSignalBotResponse{}, responseBody, err
 	}
 
-	logger.Info("responseBody", string(responseBody))
-	logger.Info("data: ", string(data))
-
 	details, err := prv.UnmarshalOpts.PostCancelSubOrderSignalBotUnmarshaler(data)
 
 	return details, responseBody, err
@@ -136,9 +121,6 @@ func (prv *Prv) ClosePositionSignalBot(req model.ClosePositionSignalBotRequest, 
 		return &model.ClosePositionSignalBotResponse{}, responseBody, err
 	}
 
-	logger.Info("responseBody", string(responseBody))
-	logger.Info("data", string(data))
-
 	details, err := prv.UnmarshalOpts.PostClosePositionSignalBotUnmarshaler(data)
 
 	return details, responseBody, err
@@ -156,8 +138,6 @@ func (prv *Prv) GetSubOrdersSignalBot(req model.GetSubOrdersSignalBotRequest, op
 	util.MergeOptionParams(&params, opt...)
 
 	data, responseBody, err := prv.DoAuthRequest(http.MethodGet, reqUrl, &params, nil)
-	logger.Info("data for GetSubOrdersSignalBot: ", string(data))
-	logger.Info("responseBody for GetSubOrdersSignalBot: ", string(responseBody))
 	if err != nil {
 		logger.Errorf("[GetSubOrdersSignalBotRequest] err=%s, response=%s", err.Error(), string(data))
 		return &model.GetSubOrdersSignalBotResponse{}, responseBody, err
@@ -222,9 +202,6 @@ func (prv *Prv) GetSignalBot(req model.GetSignalBotRequest, opt ...model.OptionP
 		logger.Errorf("[GetSignalBot] err=%s, response=%s", err.Error(), string(data))
 		return &model.GetSignalBotResponse{}, responseBody, err
 	}
-	logger.Info("GetSignalBot data", string(data))
-	logger.Info("GetSignalBot responseBody", string(responseBody))
-
 	details, err := prv.UnmarshalOpts.GetSignalBotUnmarshaler(data)
 
 	return details, responseBody, err
