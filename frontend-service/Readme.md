@@ -267,10 +267,43 @@ https://ru.tradingview.com/support/solutions/43000481368/
 "marketPositionSize": "{{strategy.market_position_size}}",
 "prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
 "instrument": "{{ticker}}",
-"signalToken": "1GQ3uDVa4r1G-NBYSOwX2",
+"signalToken": "onzclWzvTZdewUxfNQLXa",
 "timestamp": "{{timenow}}",
-"investmentType": "Hull Moving Average Swing Trader SOL(2H) (13097.72%)-[210, откр]",
+"investmentType": "Harsi the Whale v6 XRP(2H) ((51154.06%)-[82,44%-1,302])",
 "amount": "{{strategy.order.contracts}}"
 }
+HARSI - The WHALE (buySignalV2, Exit1, TSL, 5, 0,95, 0,2, 5, 14, ohlc4, 7, 1, 14, 4, ohlc4, 7, None, 3, 3, 14, 80, 20, 30, -20, -30, 1, 1, 2 019, 2, 120, 0,1, 5, EMA, 14, SMA, 14, 200, close, 21, 50, low, 9, 5, 10, 0, Bigger, 9, 25, 10, 50, close, Bigger, 10, hl2, 3, 12, 26, close, 9, EMA, EMA, 11, 30, 60, 30, 27, 25, 25, 12, 13, 9, 0, Close, 21, Close, 9, close, 7, 14, 28, 70, 30, 20, 100, -100, 100, 0,2, 2,5, 5, 10, -1, 21, 70, 50, 0, 21, 80, 20, 0, 3, 5, 13, 7, 1, 20, 1, 5, 13): заявка
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "7sXucau7CNJaJjqMfAhfl",
+"timestamp": "{{timenow}}",
+"investmentType": "Harsi the Whale v6 XRP(4H) ((47531.06%)-[82,44%-1,302])",
+"amount": "{{strategy.order.contracts}}"
+}
+HARSI - The WHALE (buySignalV2, Exit1, TSL, 5, 0,95, 0,2, 5, 14, ohlc4, 7, 1, 14, 4, ohlc4, 7, None, 3, 3, 14, 80, 20, 30, -20, -30, 1, 1, 2 019, 2, 120, 0,1, 5, EMA, 14, SMA, 14, 200, close, 21, 50, low, 9, 5, 10, 0, Bigger, 9, 25, 10, 50, close, Bigger, 10, hl2, 3, 12, 26, close, 9, EMA, EMA, 11, 30, 60, 30, 27, 25, 25, 12, 13, 9, 0, Close, 21, Close, 9, close, 7, 14, 28, 70, 30, 20, 100, -100, 100, 0,2, 2,5, 5, 10, -1, 21, 70, 50, 0, 21, 80, 20, 0, 3, 5, 13, 7, 1, 20, 1, 5, 13): заявка
+
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "z2Pbv6dN_B6Zype3SjDYu",
+"timestamp": "{{timenow}}",
+"investmentType": "Harsi the Whale v6 DOGE(4H) (82480.33%)",
+"amount": "{{strategy.order.contracts}}"
+}
+HARSI - The WHALE (buySignalV2, Exit1, TSL, 5, 0,95, 0,2, 5, 14, ohlc4, 7, 1, 14, 4, ohlc4, 7, None, 3, 3, 14, 80, 20, 30, -20, -30, 1, 1, 2 019, 2, 120, 0,1, 5, EMA, 14, SMA, 14, 200, close, 21, 50, low, 9, 5, 10, 0, Bigger, 9, 25, 10, 50, close, Bigger, 10, hl2, 3, 12, 26, close, 9, EMA, EMA, 11, 30, 60, 30, 27, 25, 25, 12, 13, 9, 0, Close, 21, Close, 9, close, 7, 14, 28, 70, 30, 20, 100, -100, 100, 0,2, 2,5, 5, 10, -1, 21, 70, 50, 0, 21, 80, 20, 0, 3, 5, 13, 7, 1, 20, 1, 5, 13): заявка
+
 
 https://cryptet.com/ru/ [BTC, ETH, XRP, ADA, SOL, DOGE, LTC, MATIC, LINK]

@@ -36,65 +36,6 @@ const (
 	DEFAULT_LEVER   float64 = 3
 )
 
-type CalcPriceData struct {
-	demoStep      float64
-	demoMinAmount float64
-	demoPrecision int
-	prodStep      float64
-	prodMinAmount float64
-	prodPrecision int
-}
-
-const (
-	ADA  = "ADA"
-	ATOM = "ATOM"
-	AVAX = "AVAX"
-	APT  = "APT"
-
-	BTC = "BTC"
-	BCH = "BCH"
-	BNB = "BNB"
-
-	CRO = "CRO"
-
-	ETH = "ETH"
-	ETC = "ETC"
-
-	DOGE = "DOGE"
-	DOT  = "DOT"
-
-	FIL = "FIL"
-
-	ICP = "ICP"
-	IMX = "IMX"
-
-	LTC  = "LTC"
-	NEAR = "NEAR"
-
-	SOL  = "SOL"
-	SHIB = "SHIB"
-
-	TON = "TON"
-
-	USD  = "USD"
-	USDT = "USDT"
-	UNI  = "UNI"
-
-	VET = "VET"
-
-	XRP = "XRP"
-	XLM = "XLM"
-)
-
-// for calcPx
-// https://www.okx.com/ru/trade-market/info/swap
-var calcPriceData = map[string]CalcPriceData{
-	ETH: {demoStep: 0.1, demoMinAmount: 0.001, demoPrecision: 1, prodStep: 0.1, prodMinAmount: 0.01, prodPrecision: 1},
-	XRP: {demoStep: 0.1, demoMinAmount: 10, demoPrecision: 1, prodStep: 0.1, prodMinAmount: 10, prodPrecision: 1},
-	SOL: {demoStep: 0.01, demoMinAmount: 0.001, demoPrecision: 2, prodStep: 0.01, prodMinAmount: 0.01, prodPrecision: 2},
-	ADA: {demoStep: 0.1, demoMinAmount: 0.1, demoPrecision: 1, prodStep: 0.1, prodMinAmount: 10, prodPrecision: 1},
-}
-
 type DealStart struct {
 	DealSignal    models.Signal
 	DealBot       models.Bot
@@ -352,11 +293,11 @@ func getAmount(userId uint, algoId string, isProduction bool) (availBal float64,
 func calcPx(userId uint, symbol string, amount float64, percent float64, isProduction bool) float64 {
 	ticker := OkxGetTicker(userId, symbol, isProduction)
 	price := ticker.Last
-	calcData := calcPriceData[symbol]
+	calcData := models.PriceData[symbol]
 	if isProduction {
-		return Round(calcData.prodStep*percent*amount/(calcData.prodMinAmount*price*100), calcData.prodPrecision)
+		return Round(calcData.ProdStep*percent*amount/(calcData.ProdMinAmount*price*100), calcData.ProdPrecision)
 	}
-	return Round(calcData.demoStep*percent*amount/(calcData.demoMinAmount*price*100), calcData.demoPrecision)
+	return Round(calcData.DemoStep*percent*amount/(calcData.DemoMinAmount*price*100), calcData.DemoPrecision)
 }
 
 func Round(x float64, prec int) float64 {
