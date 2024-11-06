@@ -210,6 +210,7 @@ func (dealStart *DealStart) saveError(err error) {
 		StartTime:   time.Now(),
 		SignalRefer: dealStart.DealSignal.ID,
 		OkxBotId:    dealStart.DealBot.OkxBotId,
+		Message:     err.Error(),
 		IsOpenDeal:  true,
 	}
 	botError.SaveBotError()
@@ -220,6 +221,7 @@ func (dealFinish *DealFinish) saveError(err error) {
 		StartTime:   time.Now(),
 		SignalRefer: dealFinish.DealSignal.ID,
 		OkxBotId:    dealFinish.DealBot.OkxBotId,
+		Message:     err.Error(),
 		IsOpenDeal:  false,
 	}
 	botError.SaveBotError()

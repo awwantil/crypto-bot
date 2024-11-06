@@ -43,6 +43,7 @@ type BotError struct {
 	StartTime   time.Time `json:"startTime"`
 	SignalRefer uint      `json:"signalRefer"`
 	OkxBotId    string    `json:"okxBotId"`
+	Message     string    `json:"message"`
 	IsOpenDeal  bool      `json:"isOpenDeal"`
 }
 
