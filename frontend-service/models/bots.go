@@ -37,6 +37,15 @@ type Bot struct {
 	Deals         []Deal    `json:"deals" gorm:"foreignKey:BotRefer"`
 }
 
+type BotError struct {
+	gorm.Model
+	ID          uint      `gorm:"primary_key"`
+	StartTime   time.Time `json:"startTime"`
+	SignalRefer uint      `json:"signalRefer"`
+	OkxBotId    string    `json:"okxBotId"`
+	IsOpenDeal  bool      `json:"isOpenDeal"`
+}
+
 type BotCreateRequest struct {
 	InitialAmount float64 `json:"initialAmount"`
 	CodeSignalId  string  `json:"codeSignalId"`
@@ -76,6 +85,11 @@ func (bot *Bot) Create(signal *Signal) map[string]interface{} {
 	response := u.Message(true, "Bot has been created")
 	response["bot"] = bot
 	return response
+}
+
+func (botError *BotError) SaveBotError() bool {
+	GetDB().Save(botError)
+	return true
 }
 
 func (bot *Bot) Delete() map[string]interface{} {

@@ -2,18 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"github.com/sirupsen/logrus"
-	"math"
 	"net/http"
 	"okx-bot/frontend-service/models"
 	u "okx-bot/frontend-service/utils"
-	"strconv"
-	"time"
+	"sync"
 )
-
-//https://www.okx.com/ru/trade-market/info/swap
 
 var (
 	logger = logrus.WithFields(logrus.Fields{
@@ -25,22 +19,11 @@ var (
 )
 
 const (
-	SELL            string  = "sell"
-	BUY             string  = "buy"
-	LONG            string  = "long"
-	SHORT           string  = "short"
-	FLAT            string  = "flat"
-	ZERO_AMOUNT     string  = "0"
-	BASE_CURRENCY           = "USDT"
-	DEFAULT_PERCENT float64 = 60
-	DEFAULT_LEVER   float64 = 3
+	SELL        string = "sell"
+	BUY         string = "buy"
+	ZERO_AMOUNT string = "0"
+	JOBS_NUMBER int    = 10
 )
-
-type DealStart struct {
-	DealSignal    models.Signal
-	DealBot       models.Bot
-	DealDirection models.DealDirection
-}
 
 var ReceiveSignal = func(w http.ResponseWriter, r *http.Request) {
 
@@ -107,25 +90,47 @@ var GetAllSignals = func(w http.ResponseWriter, r *http.Request) {
 	u.Respond(w, resp)
 }
 
+var CheckOkx = func(w http.ResponseWriter, r *http.Request) {
+	u.Respond(w, u.Message(true, "The checking was finished"))
+}
+
 func startDeal(signalCode string, direction models.DealDirection) error {
 	signal, err := models.FindSignalByCode(signalCode)
 	if err != nil {
 		logger.Errorf("Error in start deal: %v", err)
 		return err
 	}
+
 	bots := models.GetBots(signalCode)
+	if len(bots) > 0 {
+		var wg sync.WaitGroup
+		semaphore := NewSemaphore(JOBS_NUMBER)
+		for _, bot := range bots {
+			deal := models.FindByStatus(bot.ID, models.DealStarted)
+			if deal.ID == 0 {
+				logger.Infof("starting bot's deal with bot id %d and direction: %v", bot.ID, direction)
+				wg.Add(1)
+				dealStart := DealStart{
+					*signal, bot, direction,
+				}
 
-	for _, bot := range bots {
-		deal := models.FindByStatus(bot.ID, models.DealStarted)
-		if deal.ID == 0 {
-			logger.Infof("starting bot's deal with bot id %d and direction: %v", bot.ID, direction)
-			err := openDeal(&bot, signal.NameToken, direction)
-			logger.Errorf("start deal error: %v", err)
-		} else {
-			logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, bot.ID)
+				go func(dealStarting *DealStart) {
+					semaphore.Acquire()
+					defer wg.Done()
+					defer semaphore.Release()
+
+					err := dealStarting.openDeal()
+					if err != nil {
+						logger.Errorf("start deal error: %v", err)
+						dealStarting.saveError(err)
+					}
+				}(&dealStart)
+			} else {
+				logger.Errorf("There is already a deal=%v for the bot=%v", deal.ID, bot.ID)
+			}
 		}
+		wg.Wait()
 	}
-
 	return nil
 }
 
@@ -135,183 +140,35 @@ func endDeal(signalCode string) {
 		logger.Errorf("Error in endDeal: %v", err)
 		return
 	}
+
 	bots := models.GetBots(signalCode)
-
-	for _, bot := range bots {
-		deal := models.FindByStatus(bot.ID, models.DealStarted)
-		if deal.ID > 0 {
-			err := closeDeal(&deal, &bot, signal.NameToken)
-			if err != nil {
-				logger.Errorf("Clode deal error: %v", err)
-			}
-		} else {
-			logger.Errorf("There is no deal for the bot=%v and it cannot be closed", bot.ID)
-		}
-		time.Sleep(time.Second * 1)
-	}
-}
-
-func openDeal(bot *models.Bot, currencyName string, direction models.DealDirection) error {
-	deal := new(models.Deal)
-	deal.StartTime = time.Now()
-	deal.Direction = direction
-	beforeAvailAmount, beforeFrozenAmount, err := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
-	if err != nil {
-		return err
-	}
-	logger.Infof("OpenDeal before available amount: %v, frozen amount: %v", beforeAvailAmount, beforeFrozenAmount)
-	if beforeFrozenAmount > 0 {
-		return errors.New("The deal is already exist")
-	}
-
-	if beforeAvailAmount > 0 {
-		order, px, err := openOrder(bot, currencyName, beforeAvailAmount, direction)
-		if err != nil {
-			return err
-		}
-		deal.OrderId = order
-
-		if px > 0 {
-			time.Sleep(time.Second * 3)
-			afterAvailAmount, afterFrozenAmount, err := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
-			if err != nil {
-				return err
-			}
-			logger.Infof("After available amount: %v, frozen amount: %v", afterAvailAmount, afterFrozenAmount)
-			diffAmount := beforeAvailAmount - afterAvailAmount
-			deal.StartAmount = diffAmount
-			deal.Status = models.DealStarted
-			deal.StartDbSave(bot.ID, diffAmount)
-			bot.CurrentAmount = afterAvailAmount
-			bot.Status = models.MakingDeal
-			bot.PosSide = px
-			bot.Update()
-		} else {
-			strErr := fmt.Sprintf("An order cannot be created for a bot=%v on a crypto exchange", bot.ID)
-			return errors.New(strErr)
-		}
-	} else {
-		strErr := fmt.Sprintf("For openDeal beforeAvailAmount equals zero")
-		logger.Errorf("For openDeal beforeAvailAmount equals zero")
-		return errors.New(strErr)
-	}
-	return nil
-}
-
-func closeDeal(deal *models.Deal, bot *models.Bot, currencyName string) error {
-	beforeAvailAmount, beforeFrozenAmount, err := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
-	if err != nil {
-		return err
-	}
-	if beforeFrozenAmount > 0 {
-		result := closeOrder(bot.UserId, currencyName, bot.OkxBotId, bot.IsProduction)
-		if result {
-			time.Sleep(time.Second * 4)
-			afterAvailAmount, afterFrozenAmount, err := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
-			if err != nil {
-				return err
-			}
-			var times int = 10
-			for afterFrozenAmount > 0 {
-				time.Sleep(time.Second * 4)
-				afterAvailAmount, afterFrozenAmount, err = getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
-				times--
-				if times == 0 {
-					break
+	if len(bots) > 0 {
+		var wg sync.WaitGroup
+		semaphore := NewSemaphore(JOBS_NUMBER)
+		for _, bot := range bots {
+			deal := models.FindByStatus(bot.ID, models.DealStarted)
+			if deal.ID > 0 {
+				wg.Add(1)
+				dealFinish := DealFinish{
+					*signal, bot, deal,
 				}
-			}
-			if afterFrozenAmount == 0 {
-				diffAmount := afterAvailAmount - beforeAvailAmount
-				bot.CurrentAmount = afterAvailAmount
-				bot.Status = models.Waiting
+				go func(dealFinishing *DealFinish) {
+					semaphore.Acquire()
+					defer wg.Done()
+					defer semaphore.Release()
 
-				bot.Update()
-				deal.FinishDbSave(diffAmount)
+					err := dealFinishing.closeDeal()
+					if err != nil {
+						logger.Errorf("Clode deal error: %v", err)
+						dealFinishing.saveError(err)
+					}
+				}(&dealFinish)
 			} else {
-				return errors.New("Error: afterFrozenAmount not zero")
+				logger.Errorf("There is no deal for the bot=%v and it cannot be closed", bot.ID)
 			}
-		} else {
-			logger.Errorf("An order on a crypto exchange cannot be closed for a bot=%v and a deal=%v", bot.ID, deal.ID)
 		}
+		wg.Wait()
 	}
-	return nil
-}
-
-func openOrder(bot *models.Bot, currencyName string, beforeAvailAmount float64, direction models.DealDirection) (string, uint, error) {
-	percent := bot.DealsPercent
-	lever := bot.Lever
-
-	if percent == 0 {
-		percent = DEFAULT_PERCENT
-	}
-	if lever == 0 {
-		lever = DEFAULT_LEVER
-	}
-	logger.Infof("amount: %v", beforeAvailAmount*lever)
-	float64Sz := calcPx(bot.UserId, currencyName, beforeAvailAmount*lever, percent, bot.IsProduction)
-	stringSz := strconv.FormatFloat(float64Sz, 'f', 2, 64)
-	logger.Infof("Opening order for bot with id: %v and calcPx: %v", bot.ID, stringSz)
-	operationCode, err := OkxPlaceSubOrder(bot.UserId, currencyName+"-"+BASE_CURRENCY+"-SWAP", bot.OkxBotId, stringSz, direction, bot.IsProduction)
-	if err != nil {
-		return "", 0, err
-	}
-	time.Sleep(2 * time.Second)
-	logger.Infof("Code for OkxPlaceSubOrder is %s", operationCode)
-
-	return OkxGetSubOrderSignalBot(bot.UserId, bot.OkxBotId, bot.IsProduction), uint(float64Sz), nil
-}
-
-func closeOrder(userId uint, currencyName string, algoId string, isProduction bool) bool {
-	err := OkxClosePositionSignalBot(userId, currencyName, algoId, isProduction)
-	if err != nil {
-		logger.Errorf("Error in OkxClosePositionSignalBot: %v", err)
-		return false
-	}
-	time.Sleep(4 * time.Second)
-	return true
-}
-
-func getAmount(userId uint, algoId string, isProduction bool) (availBal float64, frozenBal float64, err error) {
-	signalBotData := OkxGetSignalBot(userId, algoId, isProduction)
-	if signalBotData == nil {
-		logger.Errorf("Zero signalBot data")
-		return 0, 0, errors.New("Zero signalBot data")
-	}
-	if signalBotData.AvailBal == "" {
-		logger.Errorf("Empty AvailBal")
-		return 0, 0, errors.New("Empty AvailBal")
-	}
-	availBal, err = strconv.ParseFloat(signalBotData.AvailBal, 64)
-	frozenBal, err = strconv.ParseFloat(signalBotData.FrozenBal, 64)
-	if err != nil {
-		logger.Errorf("Error during ParseFloat in GetActiveSignalBot: %v", err)
-		return 0, 0, err
-	}
-	return availBal, frozenBal, nil
-}
-
-func calcPx(userId uint, symbol string, amount float64, percent float64, isProduction bool) float64 {
-	ticker := OkxGetTicker(userId, symbol, isProduction)
-	price := ticker.Last
-	calcData := models.PriceData[symbol]
-	if isProduction {
-		return Round(calcData.ProdStep*percent*amount/(calcData.ProdMinAmount*price*100), calcData.ProdPrecision)
-	}
-	return Round(calcData.DemoStep*percent*amount/(calcData.DemoMinAmount*price*100), calcData.DemoPrecision)
-}
-
-func Round(x float64, prec int) float64 {
-	var rounder float64
-	pow := math.Pow(10, float64(prec))
-	intermed := x * pow
-	_, frac := math.Modf(intermed)
-	if frac >= 0.5 {
-		rounder = math.Ceil(intermed)
-	} else {
-		rounder = math.Floor(intermed)
-	}
-
-	return rounder / pow
 }
 
 func isLongPosition(signal *models.TradingViewSignalReceive) bool {
@@ -357,8 +214,4 @@ func findSubstring(str string, match string) bool {
 		}
 	}
 	return false
-}
-
-var CheckOkx = func(w http.ResponseWriter, r *http.Request) {
-	u.Respond(w, u.Message(true, "The checking was finished"))
 }

@@ -126,7 +126,14 @@ var DeleteBot = func(w http.ResponseWriter, r *http.Request) {
 		signal, err := models.FindSignalById(signalId)
 		if err == nil {
 			if deal.ID > 0 {
-				closeDeal(&deal, &foundBot, signal.NameToken)
+				dealFinish := DealFinish{
+					*signal, foundBot, deal,
+				}
+
+				err := dealFinish.closeDeal()
+				if err != nil {
+					logger.Errorf("Clode deal error: %v", err)
+				}
 			}
 			OkxDeleteSignalBot(user, foundBot.OkxBotId, foundBot.IsProduction)
 			foundBot.Status = models.Stopped
