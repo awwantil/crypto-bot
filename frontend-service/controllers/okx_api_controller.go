@@ -198,7 +198,7 @@ func OkxGetSignalBot(userId uint, algoId string, isProduction bool) *model.GetSi
 	var result = new(model.GetSignalBotResponseData)
 	for _, v := range details.Bots {
 		if v.AlgoId == algoId {
-			result = &v
+			return &v
 		}
 	}
 	return result

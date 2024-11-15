@@ -328,10 +328,11 @@ HARSI - The WHALE (buySignalV2, Exit1, TSL, 5, 0,95, 0,1, 5, 14, ohlc4, 7, 1, 14
 "marketPositionSize": "{{strategy.market_position_size}}",
 "prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
 "instrument": "{{ticker}}",
-"signalToken": "wjtZ9bHn8vrkk7fEYht4b",
+"signalToken": "GM_OYLPO_X9CiAQuaVCPf",
 "timestamp": "{{timenow}}",
-"investmentType": "VPOMO Original BTC(4H) (47 094 092.28%)",
+"investmentType": "VWAP Stdev Bands Strategy (99%-profitable)",
 "amount": "{{strategy.order.contracts}}"
 }
+VWAP Stdev Bands Strategy (Long Only) (1,28, 1,28, 2, 15)
 
 https://cryptet.com/ru/ [BTC, ETH, XRP, ADA, SOL, DOGE, LTC, MATIC, LINK]

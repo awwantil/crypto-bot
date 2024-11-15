@@ -51,7 +51,7 @@ func (dealStart *DealStart) openDeal() error {
 		}
 		deal.OrderId = order
 
-		if px > 0 {
+		if px > 0 || order != "" {
 			time.Sleep(time.Second * 3)
 			afterAvailAmount, afterFrozenAmount, err := getAmount(bot.UserId, bot.OkxBotId, bot.IsProduction)
 			if err != nil {
