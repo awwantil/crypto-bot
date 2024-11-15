@@ -64,7 +64,7 @@ func (dealStart *DealStart) openDeal() error {
 			deal.StartDbSave(bot.ID, diffAmount)
 			bot.CurrentAmount = afterAvailAmount
 			bot.Status = models.MakingDeal
-			bot.PosSide = px
+			bot.PosSide = uint(px)
 			bot.Update()
 		} else {
 			strErr := fmt.Sprintf("An order cannot be created for a bot=%v on a crypto exchange", bot.ID)
@@ -138,7 +138,7 @@ func getAmount(userId uint, algoId string, isProduction bool) (availBal float64,
 	return availBal, frozenBal, nil
 }
 
-func (dealStart *DealStart) openOrder(beforeAvailAmount float64) (string, uint, error) {
+func (dealStart *DealStart) openOrder(beforeAvailAmount float64) (string, float64, error) {
 	bot := dealStart.DealBot
 	currencyName := dealStart.DealSignal.NameToken
 	direction := dealStart.DealDirection
@@ -163,7 +163,7 @@ func (dealStart *DealStart) openOrder(beforeAvailAmount float64) (string, uint, 
 	time.Sleep(2 * time.Second)
 	logger.Infof("Code for OkxPlaceSubOrder is %s", operationCode)
 
-	return OkxGetSubOrderSignalBot(bot.UserId, bot.OkxBotId, bot.IsProduction), uint(float64Sz), nil
+	return OkxGetSubOrderSignalBot(bot.UserId, bot.OkxBotId, bot.IsProduction), float64Sz, nil
 }
 
 func (dealFinish *DealFinish) closeOrder() bool {
