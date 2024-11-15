@@ -113,7 +113,8 @@ func (dealFinish *DealFinish) closeDeal() error {
 				return errors.New("Error: afterFrozenAmount not zero")
 			}
 		} else {
-			logger.Errorf("An order on a crypto exchange cannot be closed for a bot=%v and a deal=%v", bot.ID, deal.ID)
+			strErr := fmt.Sprintf("An order on a crypto exchange cannot be closed for a bot=%v and a deal=%v", bot.ID, deal.ID)
+			return errors.New(strErr)
 		}
 	}
 	return nil
@@ -122,17 +123,16 @@ func (dealFinish *DealFinish) closeDeal() error {
 func getAmount(userId uint, algoId string, isProduction bool) (availBal float64, frozenBal float64, err error) {
 	signalBotData := OkxGetSignalBot(userId, algoId, isProduction)
 	if signalBotData == nil {
-		logger.Errorf("Zero signalBot data")
-		return 0, 0, errors.New("Zero signalBot data")
+		strErr := fmt.Sprintf("Zero signalBot data")
+		return 0, 0, errors.New(strErr)
 	}
 	if signalBotData.AvailBal == "" {
-		logger.Errorf("Empty AvailBal")
-		return 0, 0, errors.New("Empty AvailBal")
+		strErr := fmt.Sprintf("Empty AvailBal")
+		return 0, 0, errors.New(strErr)
 	}
 	availBal, err = strconv.ParseFloat(signalBotData.AvailBal, 64)
 	frozenBal, err = strconv.ParseFloat(signalBotData.FrozenBal, 64)
 	if err != nil {
-		logger.Errorf("Error during ParseFloat in GetActiveSignalBot: %v", err)
 		return 0, 0, err
 	}
 	return availBal, frozenBal, nil
