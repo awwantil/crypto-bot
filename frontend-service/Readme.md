@@ -328,11 +328,95 @@ HARSI - The WHALE (buySignalV2, Exit1, TSL, 5, 0,95, 0,1, 5, 14, ohlc4, 7, 1, 14
 "marketPositionSize": "{{strategy.market_position_size}}",
 "prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
 "instrument": "{{ticker}}",
-"signalToken": "GM_OYLPO_X9CiAQuaVCPf",
+"signalToken": "t9E9mewEZy6BeVfWKLMXh",
 "timestamp": "{{timenow}}",
-"investmentType": "VWAP Stdev Bands Strategy (99%-profitable)",
+"investmentType": "HARSI ADA (4H)",
 "amount": "{{strategy.order.contracts}}"
 }
-VWAP Stdev Bands Strategy (Long Only) (1,28, 1,28, 2, 15)
+HARSI ADA (4H) - 
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "xshvsZETW5zhhvA4-rZqL",
+"timestamp": "{{timenow}}",
+"investmentType": "HARSI XLM (4H)",
+"amount": "{{strategy.order.contracts}}"
+}
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "hPbW3XkwPJJJTmdEHz8sN",
+"timestamp": "{{timenow}}",
+"investmentType": "HARSI AVAX (4H)",
+"amount": "{{strategy.order.contracts}}"
+}
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "lYKT--c81rEMS9qjFi_F_",
+"timestamp": "{{timenow}}",
+"investmentType": "HARSI AVAX (2H)",
+"amount": "{{strategy.order.contracts}}"
+}
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "d5vqGJrLdTDlSLZD1OE3K",
+"timestamp": "{{timenow}}",
+"investmentType": "HARSI SHIB (2H)",
+"amount": "{{strategy.order.contracts}}"
+}
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "jNdn-pjHMalqemtTNkwP4",
+"timestamp": "{{timenow}}",
+"investmentType": "HARSI NEAR (3H)",
+"amount": "{{strategy.order.contracts}}"
+}
+
+{
+"id": "{{strategy.order.id}}",
+"action": "{{strategy.order.action}}",
+"marketPosition": "{{strategy.market_position}}",
+"prevMarketPosition": "{{strategy.prev_market_position}}",
+"marketPositionSize": "{{strategy.market_position_size}}",
+"prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
+"instrument": "{{ticker}}",
+"signalToken": "U4ySfl0Ye4ynJrTcjjwlk",
+"timestamp": "{{timenow}}",
+"investmentType": "HARSI ATOM (4H)",
+"amount": "{{strategy.order.contracts}}"
+}
 
 https://cryptet.com/ru/ [BTC, ETH, XRP, ADA, SOL, DOGE, LTC, MATIC, LINK]

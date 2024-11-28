@@ -39,7 +39,7 @@ const (
 	USDT = "USDT"
 	UNI  = "UNI"
 
-	VET = "VET"
+	ICX = "ICX"
 
 	XRP = "XRP"
 	XLM = "XLM"
@@ -64,4 +64,11 @@ var PriceData = map[string]CalcPriceData{
 	DOGE: {DemoStep: 0.1, DemoMinAmount: 1, DemoPrecision: 1, ProdStep: 0.1, ProdMinAmount: 100, ProdPrecision: 1},
 	LTC:  {DemoStep: 0.1, DemoMinAmount: 0.1, DemoPrecision: 1, ProdStep: 0.1, ProdMinAmount: 0.1, ProdPrecision: 1},
 	BTC:  {DemoStep: 0.1, DemoMinAmount: 0.001, DemoPrecision: 1, ProdStep: 0.1, ProdMinAmount: 0.001, ProdPrecision: 1},
+	XLM:  {DemoStep: 0.1, DemoMinAmount: 0.001, DemoPrecision: 1, ProdStep: 1, ProdMinAmount: 100, ProdPrecision: 0},
+	AVAX: {DemoStep: 0.1, DemoMinAmount: 0.001, DemoPrecision: 1, ProdStep: 0.1, ProdMinAmount: 0.1, ProdPrecision: 1},
+	SHIB: {DemoStep: 0.1, DemoMinAmount: 0.001, DemoPrecision: 1, ProdStep: 0.1, ProdMinAmount: 100000, ProdPrecision: 1},
+	NEAR: {DemoStep: 0.1, DemoMinAmount: 0.001, DemoPrecision: 1, ProdStep: 0.1, ProdMinAmount: 1, ProdPrecision: 1},
+	ATOM: {DemoStep: 0.1, DemoMinAmount: 0.001, DemoPrecision: 1, ProdStep: 1, ProdMinAmount: 1, ProdPrecision: 0},
+	CRO:  {DemoStep: 0.1, DemoMinAmount: 0.001, DemoPrecision: 1, ProdStep: 1, ProdMinAmount: 10, ProdPrecision: 0},
+	ICX:  {DemoStep: 0.1, DemoMinAmount: 0.001, DemoPrecision: 1, ProdStep: 1, ProdMinAmount: 10, ProdPrecision: 0},
 }
