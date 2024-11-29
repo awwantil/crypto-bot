@@ -399,9 +399,9 @@ HARSI ADA (4H) -
 "marketPositionSize": "{{strategy.market_position_size}}",
 "prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
 "instrument": "{{ticker}}",
-"signalToken": "jNdn-pjHMalqemtTNkwP4",
+"signalToken": "H2kZPdnEUOpXjJz_7U8xW",
 "timestamp": "{{timenow}}",
-"investmentType": "HARSI NEAR (3H)",
+"investmentType": "HARSI UNI (4H)",
 "amount": "{{strategy.order.contracts}}"
 }
 

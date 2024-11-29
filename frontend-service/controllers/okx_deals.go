@@ -183,6 +183,9 @@ func (dealFinish *DealFinish) closeOrder() bool {
 
 func calcPx(userId uint, symbol string, amount float64, percent float64, isProduction bool) float64 {
 	ticker := OkxGetTicker(userId, symbol, isProduction)
+	if ticker == nil {
+		return 0
+	}
 	price := ticker.Last
 	calcData := models.PriceData[symbol]
 	if isProduction {
