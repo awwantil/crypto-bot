@@ -104,7 +104,7 @@ func (bot *Bot) Delete() map[string]interface{} {
 func Find(botIdRequest BotWithIdRequest) Bot {
 	var foundBot = Bot{}
 	db.Where("id = ?", botIdRequest.Id).First(&foundBot)
-	logger.Infoln("Found bot: %v", foundBot)
+	//logger.Infoln("Found bot: %v", foundBot)
 
 	return foundBot
 }

@@ -65,7 +65,7 @@ func FindByStatus(botId uint, status DealStatus) Deal {
 		logger.Errorf("Found deal error: %v", tx.Error)
 		return foundDeal
 	}
-	logger.Infoln("Found bot: %v", foundDeal)
+	//logger.Infoln("Found bot: %v", foundDeal)
 
 	return foundDeal
 }
