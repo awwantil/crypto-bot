@@ -413,9 +413,9 @@ HARSI ADA (4H) -
 "marketPositionSize": "{{strategy.market_position_size}}",
 "prevMarketPositionSize": "{{strategy.prev_market_position_size}}",
 "instrument": "{{ticker}}",
-"signalToken": "U4ySfl0Ye4ynJrTcjjwlk",
+"signalToken": "D-0ZnW9e4sS0nyDVGBzc5",
 "timestamp": "{{timenow}}",
-"investmentType": "HARSI ATOM (4H)",
+"investmentType": "HARSI - TRX(4H)",
 "amount": "{{strategy.order.contracts}}"
 }
 

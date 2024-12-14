@@ -24,7 +24,7 @@ const (
 
 	FIL = "FIL"
 
-	ICP = "ICP"
+	TRX = "TRX"
 	TRB = "TRB"
 
 	LTC  = "LTC"
@@ -73,4 +73,5 @@ var PriceData = map[string]CalcPriceData{
 	ICX:  {DemoStep: 0.1, DemoMinAmount: 0.001, DemoPrecision: 1, ProdStep: 1, ProdMinAmount: 10, ProdPrecision: 0},
 	UNI:  {DemoStep: 1, DemoMinAmount: 1, DemoPrecision: 0, ProdStep: 1, ProdMinAmount: 1, ProdPrecision: 0},
 	TRB:  {DemoStep: 1, DemoMinAmount: 0.1, DemoPrecision: 0, ProdStep: 1, ProdMinAmount: 0.1, ProdPrecision: 0},
+	TRX:  {DemoStep: 0.1, DemoMinAmount: 100, DemoPrecision: 1, ProdStep: 0.1, ProdMinAmount: 100, ProdPrecision: 1},
 }
